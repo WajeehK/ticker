@@ -43,6 +43,15 @@ Coverage is rebuilt by `pipeline/fetch_logos.py`, `pipeline/make_asset_marks.py`
 
 [TradingView Lightweight Charts](https://github.com/tradingview/lightweight-charts) v5.3.0, Apache-2.0, vendored at `vendor/lightweight-charts.js`. No call is made to TradingView’s servers.
 
+
+## Stock Fear & Greed and crash risk (`data/market_sentiment.json`)
+
+Built by `pipeline/market_sentiment.py` during the quotes refresh. Nothing is invented: an input that cannot be fetched is marked unavailable and dropped from the average.
+
+**Fear & Greed.** The Action first requests CNN's public Fear & Greed `graphdata` endpoint (`https://production.dataviz.cnn.io/index/fearandgreed/graphdata`). That host returns HTTP 418 to a non-browser user agent, so the script retries this one feed with a documented browser-like UA and a CNN referrer. When the score comes back, Ticker uses CNN's reading, rating, history and sub-indicators, and labels the source "CNN Fear & Greed Index". If the endpoint fails, Ticker falls back to a transparent, equal-weighted composite from Yahoo data already in the repo: VIX versus its 50-day average, S&P 500 versus its 125-day average, breadth (share of Ticker's US stock universe above their 50-day average — not official exchange breadth), TLT versus SPY 20-day return, and HYG versus LQD 20-day return.
+
+**Crash risk.** Always Ticker's Yahoo composite, never a CNN figure: VIX versus VIX3M term structure, S&P 500 drawdown from the 52-week high, S&P 500 versus its 200-day average, the same breadth measure, HYG versus LQD, and the 10-year minus 3-month Treasury slope (`^TNX` − `^IRX`). Each input is shown with its value and the threshold used. The overall level is Low / Elevated / High / Extreme. The on-screen disclaimer is "Indicator, not a prediction, not financial advice."
+
 ## Crypto market list (`data/crypto_markets.json`)
 
 Built by `pipeline/crypto_markets.py` during the quotes refresh. Snapshot of the CoinGecko `/coins/markets` top 100 (USD), `/search/trending`, and recently-added when that category is available, plus 7-day sparklines, market cap and 24h volume. The app overlays live Kraken WebSocket prices on coins that have a Kraken USD pair. CoinGecko is not called from the browser at runtime.

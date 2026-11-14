@@ -67,6 +67,8 @@ UNIVERSE = [
     "GBPUSD=X", "EURUSD=X",
     # Indices
     "^GSPC", "^IXIC", "^DJI", "^FTSE",
+    # Vol and yields (sentiment / crash-risk gauges; shown as points or %)
+    "^VIX", "^VIX3M", "^TNX", "^IRX",
     # Commodities (Yahoo futures, shown in USD with units)
     "GC=F", "SI=F", "CL=F", "BZ=F", "NG=F", "HG=F", "PL=F", "PA=F",
 ]
@@ -305,6 +307,20 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
         rec["shortName"] = cm["short"]
         rec["unit"] = cm["unit"]
         rec["currency"] = "USD"
+    if symbol in ("^TNX", "^IRX"):
+        rec["kind"] = "yield"
+        rec["unit"] = "%"
+        rec["currency"] = "USD"
+        rec["name"] = "10-year Treasury yield" if symbol == "^TNX" else "13-week Treasury bill yield"
+        rec["shortName"] = "10Y yield" if symbol == "^TNX" else "3M yield"
+    if symbol == "^VIX":
+        rec["kind"] = "index"
+        rec["name"] = "Cboe Volatility Index"
+        rec["shortName"] = "VIX"
+    if symbol == "^VIX3M":
+        rec["kind"] = "index"
+        rec["name"] = "Cboe 3-Month Volatility Index"
+        rec["shortName"] = "VIX3M"
     def _dma(n):
         if len(closes_f) < n:
             return None
@@ -449,6 +465,11 @@ def main() -> int:
             fetch_crypto_markets()
         except Exception as e:
             print("crypto markets skipped:", e)
+        try:
+            from market_sentiment import write_sentiment
+            write_sentiment(DATA, quotes, UA)
+        except Exception as e:
+            print("market sentiment skipped:", e)
     except Exception as e:
         print(f"market extras failed: {e}", flush=True)
         errors.append(f"market extras: {e}")

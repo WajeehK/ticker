@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't8';
+const BUILD = 't9';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -57,6 +57,7 @@ let watchFilter = 'all', watchSort = 'change', marketsPane = 'stocks';
 let marketsList = 'mcap', marketsShowAll = false;
 let cryptoMarkets = { coins: [], trending: [], newListings: [], asOf: null };
 let volumes = {};
+let sentiment = null;
 let ws = null, wsRetry = 0, wsTimer = 0, pollTimer = 0;
 let lastFlash = {}, lastHero = null, readerItem = null, fsChartApi = null, newsIndex = {};
 let ptr = null;
@@ -124,8 +125,13 @@ function money(n, native, opts={}) {
   if (v == null) return fmtNum(n, native || 'USD', opts);
   return fmtNum(v, ccy, opts);
 }
+function isYieldId(id, q) {
+  q = q || (id && quotes[id]) || {};
+  return q.kind === 'yield' || id === '^TNX' || id === '^IRX';
+}
 function isIndexId(id, q) {
   q = q || (id && quotes[id]) || {};
+  if (isYieldId(id, q)) return false;
   return q.kind === 'index' || (id != null && String(id).startsWith('^'));
 }
 function fmtPoints(n, opts={}) {
@@ -137,6 +143,7 @@ function fmtPoints(n, opts={}) {
 /* Price/level for a known asset. Indices are points: no currency symbol, no FX conversion. */
 function pxText(id, n, opts={}) {
   const q = quotes[id] || {};
+  if (isYieldId(id, q)) return fmtPoints(n, opts) + '%';
   if (isIndexId(id, q)) return fmtPoints(n, opts);
   if (isCommodityId(id, q)) {
     const unit = q.unit || (COMMODITIES[id] && COMMODITIES[id].unit) || 'USD';
@@ -324,6 +331,14 @@ async function loadCryptoMarkets() {
   } catch (e) {}
   applyCryptoMarkets();
 }
+async function loadSentiment() {
+  try {
+    const r = await fetch('data/market_sentiment.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
+    if (r.ok) sentiment = await r.json();
+  } catch (e) {}
+}
+
+
 async function loadNews() {
   try {
     const r = await fetch('data/news.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
@@ -1069,6 +1084,124 @@ function cryptoRowOpts() {
   };
 }
 
+
+function fgTone(label) {
+  const s = String(label || '').toLowerCase();
+  if (s.includes('extreme fear')) return 'fear-x';
+  if (s.includes('fear')) return 'fear';
+  if (s.includes('extreme greed')) return 'greed-x';
+  if (s.includes('greed')) return 'greed';
+  return 'neutral';
+}
+function riskTone(label) {
+  const s = String(label || '').toLowerCase();
+  if (s === 'low') return 'risk-low';
+  if (s === 'elevated') return 'risk-elev';
+  if (s === 'high') return 'risk-high';
+  if (s === 'extreme') return 'risk-x';
+  return 'neutral';
+}
+function gaugeSVG(score, kind) {
+  if (score == null || !isFinite(score)) return '';
+  const s = Math.max(0, Math.min(100, Number(score)));
+  const w = 160, h = 92, cx = 80, cy = 78, r = 62;
+  const gid = 'gg-' + kind + '-' + Math.round(s) + '-' + Math.random().toString(36).slice(2, 6);
+  const stops = kind === 'risk'
+    ? '<stop offset="0%" stop-color="#00C805"/><stop offset="45%" stop-color="#f5c542"/><stop offset="75%" stop-color="#FF5000"/><stop offset="100%" stop-color="#ff2d2d"/>'
+    : '<stop offset="0%" stop-color="#FF5000"/><stop offset="30%" stop-color="#ff8a3d"/><stop offset="50%" stop-color="#f5c542"/><stop offset="80%" stop-color="#7dce3f"/><stop offset="100%" stop-color="#00C805"/>';
+  const a = Math.PI * (1 - s / 100);
+  const nx = cx + r * Math.cos(a);
+  const ny = cy - r * Math.sin(a);
+  const arc = 'M ' + (cx - r) + ' ' + cy + ' A ' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy;
+  return '<svg class="gauge" viewBox="0 0 ' + w + ' ' + h + '" aria-hidden="true">' +
+    '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' + stops + '</linearGradient></defs>' +
+    '<path d="' + arc + '" fill="none" stroke="var(--line)" stroke-width="9" stroke-linecap="round"/>' +
+    '<path d="' + arc + '" fill="none" stroke="url(#' + gid + ')" stroke-width="9" stroke-linecap="round"/>' +
+    '<line x1="' + cx + '" y1="' + cy + '" x2="' + nx.toFixed(1) + '" y2="' + ny.toFixed(1) + '" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>' +
+    '<circle cx="' + cx + '" cy="' + cy + '" r="3.2" fill="var(--ink)"/></svg>';
+}
+function sentimentCardsHTML() {
+  const fg = sentiment && sentiment.fearGreed;
+  const cr = sentiment && sentiment.crashRisk;
+  if (!(fg && fg.score != null) && !(cr && cr.score != null)) return '';
+  let cards = '';
+  if (fg && fg.score != null) {
+    cards += '<button type="button" class="sent-card" data-act="sentiment" data-id="fear">' +
+      '<div class="lbl">Fear &amp; greed</div>' +
+      gaugeSVG(fg.score, 'fg') +
+      '<div class="reading ' + fgTone(fg.rating) + '">' + esc(String(Math.round(fg.score))) + ' · ' + esc(fg.rating || '') + '</div>' +
+      '<div class="src">' + esc((fg.source || '').replace(/ \\(.*\\)$/, '').replace(' (graphdata)', '')) + '</div>' +
+      '</button>';
+  }
+  if (cr && cr.score != null) {
+    cards += '<button type="button" class="sent-card" data-act="sentiment" data-id="crash">' +
+      '<div class="lbl">Crash risk</div>' +
+      gaugeSVG(cr.score, 'risk') +
+      '<div class="reading ' + riskTone(cr.level) + '">' + esc(cr.level || '') + '</div>' +
+      '<div class="src">Composite · ' + esc(String((cr.used != null ? cr.used : '') + ' inputs')) + '</div>' +
+      '</button>';
+  }
+  return '<div class="sent-grid">' + cards + '</div>' +
+    '<p class="note sent-disc">Indicator, not a prediction, not financial advice.</p>';
+}
+function closeSentiment() {
+  const el = $('#sentiment');
+  if (!el) return;
+  el.hidden = true;
+  el.innerHTML = '';
+  document.body.classList.remove('hide-dock');
+}
+function openSentiment(which) {
+  if (!sentiment) return;
+  const el = $('#sentiment');
+  if (!el) return;
+  const isCrash = which === 'crash';
+  const block = isCrash ? sentiment.crashRisk : sentiment.fearGreed;
+  if (!block) return;
+  const title = isCrash ? 'Market crash risk' : 'Fear & greed';
+  const headline = isCrash
+    ? esc(block.level || '—') + (block.score != null ? ' · ' + Math.round(block.score) : '')
+    : (block.score != null ? Math.round(block.score) + ' · ' + esc(block.rating || '') : '—');
+  const tone = isCrash ? riskTone(block.level) : fgTone(block.rating);
+  const whenBit = block.asOf ? ago(block.asOf) : (sentiment.generated_at ? ago(sentiment.generated_at) : '');
+  const sparkVals = (block.spark || []).map(p => p && p.v).filter(v => v != null && isFinite(v));
+  const spark = sparkVals.length >= 2 ? sparkSVG(sparkVals, !isCrash) : '';
+  let parts = '';
+  (block.parts || []).forEach(pt => {
+    if (!pt) return;
+    if (!pt.available) {
+      parts += '<div class="sent-part off"><div class="h"><b>' + esc(pt.label) + '</b><span>Unavailable</span></div>' +
+        (pt.reason ? '<p class="detail">' + esc(pt.reason) + '</p>' : '') +
+        (pt.threshold ? '<p class="thr">' + esc(pt.threshold) + '</p>' : '') +
+        '</div>';
+      return;
+    }
+    const badge = pt.rating || pt.level || (pt.score != null ? String(pt.score) : '');
+    const val = pt.detail || (pt.value != null ? String(pt.value) + (pt.unit ? ' ' + pt.unit : '') : '');
+    parts += '<div class="sent-part"><div class="h"><b>' + esc(pt.label) + '</b>' +
+      (badge ? '<span class="' + (pt.level ? riskTone(pt.level) : fgTone(pt.rating)) + '">' + esc(String(badge)) + (pt.score != null && (pt.rating || pt.level) ? ' · ' + Math.round(pt.score) : '') + '</span>' : '') +
+      '</div>' +
+      (val ? '<p class="detail">' + esc(val) + '</p>' : '') +
+      (pt.threshold ? '<p class="thr">' + esc(pt.threshold) + '</p>' : '') +
+      '</div>';
+  });
+  el.hidden = false;
+  document.body.classList.add('hide-dock');
+  el.scrollTop = 0;
+  el.innerHTML =
+    '<div class="d-bar"><button class="ib" data-act="close-sentiment" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>' + title + '</h2><span></span></div>' +
+    '<div class="sent-in">' +
+      '<div class="sent-hero">' + gaugeSVG(block.score, isCrash ? 'risk' : 'fg') +
+      '<div class="reading ' + tone + '">' + headline + '</div>' +
+      '<p class="src">' + esc(block.source || '') + (whenBit ? ' · ' + esc(whenBit) : '') + '</p>' +
+      (spark ? '<div class="sent-spark">' + spark + '<span>History</span></div>' : '') +
+      (block.note ? '<p class="note">' + esc(block.note) + '</p>' : '') +
+      '</div>' +
+      '<div class="sec-h"><h2>Inputs</h2></div>' + parts +
+      '<p class="note sent-disc">Indicator, not a prediction, not financial advice.</p>' +
+    '</div>';
+}
+
 function renderMarkets(opts) {
   opts = opts || {};
   const el = $('#marketsIn');
@@ -1099,7 +1232,7 @@ function renderMarkets(opts) {
     const chips = marketChipsFor('stocks');
     const ids = sortMarketIds(eq, marketsList);
     const label = (chips.find(c => c.id === marketsList) || {}).label || 'Stocks';
-    body = '<div class="idx-grid">' + (idxCards || '<div class="empty"><p>Index quotes have not loaded yet.</p></div>') + '</div>' +
+    body = sentimentCardsHTML() + '<div class="idx-grid">' + (idxCards || '<div class="empty"><p>Index quotes have not loaded yet.</p></div>') + '</div>' +
       chipBarHTML(chips, marketsList) +
       '<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids) +
       '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(headlines, 'No market headlines in the latest refresh.');
@@ -2524,6 +2657,10 @@ function onClick(e) {
     renderMarkets({ scroll: false });
     return;
   }
+  const sentBtn = e.target.closest('[data-act="sentiment"]');
+  if (sentBtn) { openSentiment(sentBtn.dataset.id); return; }
+  const closeSent = e.target.closest('[data-act="close-sentiment"]');
+  if (closeSent) { closeSentiment(); return; }
   const fsBtn = e.target.closest('[data-act="chart-fs"]');
   if (fsBtn) { openFullscreenChart(fsBtn.dataset.src); return; }
   const closeFs = e.target.closest('[data-act="close-fs"]');
@@ -2598,7 +2735,7 @@ function onClick(e) {
 }
 
 async function refreshAll() {
-  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadPairs().then(loadCryptoOnce)]); applyCryptoMarkets();
+  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadSentiment(), loadPairs().then(loadCryptoOnce)]); applyCryptoMarkets();
   renderAll();
   loadCryptoSparks().then(() => { if (tab === 'watch' || tab === 'markets') { renderWatch(); renderMarkets(); } if (tab === 'home') updatePortfolioLive(); });
   connectWS();

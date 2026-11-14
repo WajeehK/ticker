@@ -435,3 +435,34 @@ html[data-theme=dark] .news-item b{color:#fff}
 .fng.compact .score{font-size:22px;font-weight:750;letter-spacing:-.03em;min-width:1.4em}
 .fng.compact .fng-meta{font-size:12px;color:var(--mute);font-weight:600;white-space:nowrap}
 .fng.compact .fng-m{flex:1;margin:0;height:8px}
+
+.sent-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0 8px}
+.sent-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 10px 10px;text-align:center;width:100%;color:inherit}
+.sent-card .lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.sent-card svg.gauge,.sent-hero svg.gauge{width:100%;height:76px;display:block;margin:2px auto 0}
+.sent-card .reading,.sent-hero .reading{font-size:16px;font-weight:750;letter-spacing:-.03em;margin-top:2px}
+.sent-card .src,.sent-hero .src{font-size:10px;color:var(--mute);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.sent-disc{margin:0 0 14px!important}
+.sent-in{padding:8px 20px 48px;max-width:560px;margin:0 auto}
+.sent-hero{text-align:center;padding:8px 0 6px}
+.sent-hero .reading{font-size:28px;margin-top:4px}
+.sent-hero .src{white-space:normal;font-size:12px;line-height:1.35}
+.sent-spark{display:flex;align-items:center;gap:10px;margin:12px 0 4px}
+.sent-spark .spark{flex:1;height:36px;width:auto}
+.sent-spark span{font-size:11px;color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.sent-part{padding:14px 0;border-bottom:1px solid var(--line)}
+.sent-part .h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.sent-part .h b{font-size:15px;font-weight:650;letter-spacing:-.02em}
+.sent-part .h span{font-size:13px;font-weight:700;white-space:nowrap}
+.sent-part .detail{margin:6px 0 0;font-size:13px;color:var(--ink2);line-height:1.4}
+.sent-part .thr{margin:6px 0 0;font-size:12px;color:var(--mute);line-height:1.4}
+.sent-part.off{opacity:.7}
+.sent-part.off .h span{font-weight:600;color:var(--mute)}
+.reading.fear,.reading.fear-x,.sent-part .fear,.sent-part .fear-x{color:#FF5000}
+.reading.greed,.reading.greed-x,.sent-part .greed,.sent-part .greed-x{color:#00C805}
+.reading.neutral{color:var(--ink)}
+.reading.risk-low,.sent-part .risk-low{color:#00C805}
+.reading.risk-elev,.sent-part .risk-elev{color:#f5c542}
+.reading.risk-high,.sent-part .risk-high{color:#FF5000}
+.reading.risk-x,.sent-part .risk-x{color:#ff2d2d}
+html[data-theme=light] .sent-card{background:#fff}
