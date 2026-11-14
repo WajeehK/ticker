@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't2';
+const BUILD = 't3';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -98,6 +98,22 @@ function money(n, native, opts={}) {
   const v = convert(n, native || 'USD', ccy);
   if (v == null) return fmtNum(n, native || 'USD', opts);
   return fmtNum(v, ccy, opts);
+}
+function isIndexId(id, q) {
+  q = q || (id && quotes[id]) || {};
+  return q.kind === 'index' || (id != null && String(id).startsWith('^'));
+}
+function fmtPoints(n, opts={}) {
+  if (n == null || !isFinite(n)) return '—';
+  const max = opts.max != null ? opts.max : 2;
+  const body = new Intl.NumberFormat('en-GB', { maximumFractionDigits: max, minimumFractionDigits: Math.min(2, max) }).format(n);
+  return (opts.signed && n > 0 ? '+' : '') + body;
+}
+/* Price/level for a known asset. Indices are points: no currency symbol, no FX conversion. */
+function pxText(id, n, opts={}) {
+  const q = quotes[id] || {};
+  if (isIndexId(id, q)) return fmtPoints(n, opts);
+  return money(n, opts.currency || q.currency || 'USD', opts);
 }
 function pct(n) {
   if (n == null || !isFinite(n)) return '—';
@@ -425,7 +441,7 @@ function rowHTML(id, opts) {
   const spark = opts.spark !== false ? sparkSVG(q.spark, up) : '';
   const cls = (spark ? 'row with-spark' : 'row') + (lastFlash[id] ? ' flash' + (lastFlash[id]==='dn'?' dn':'') : '');
   const sub = opts.sub || ('<span>' + esc(sym) + '</span>' + (tag ? '<span class="tag">' + tag + '</span>' : '') + (q.live ? '<span class="tag">LIVE</span>' : ''));
-  const rgt = opts.rgt || ('<div class="px" data-px="' + esc(id) + '">' + (q.ok && q.price != null ? money(q.price, q.currency || 'USD', {px:true}) : '—') + '</div>' +
+  const rgt = opts.rgt || ('<div class="px" data-px="' + esc(id) + '">' + (q.ok && q.price != null ? pxText(id, q.price, {px:true}) : '—') + '</div>' +
       '<div class="chg ' + chgClass(q.changePct) + '" data-chg="' + esc(id) + '">' + (q.changePct != null ? pct(q.changePct) : '—') + '</div>');
   return '<a class="' + cls + '" href="#/s/' + encodeURIComponent(id) + '" data-id="' + esc(id) + '">' +
     avHTML(id, name, kind) +
@@ -557,7 +573,7 @@ function renderMarkets() {
     const up = (q.changePct || 0) >= 0;
     return '<a class="glass idx ' + (up?'tint-up':'tint-dn') + '" href="#/s/' + encodeURIComponent(q.id) + '">' +
       '<div class="k">' + avHTML(q.id, q.name, 'index') + ' ' + esc(q.shortName || q.name) + '</div>' +
-      '<div class="v">' + (q.price != null ? money(q.price, q.currency, {px:true}) : '—') + '</div>' +
+      '<div class="v">' + (q.price != null ? pxText(q.id, q.price, {px:true}) : '—') + '</div>' +
       '<span class="chip ' + chgClass(q.changePct) + '">' + (q.changePct != null ? pct(q.changePct) : '—') + '</span>' +
       sparkSVG(q.spark, up) + '</a>';
   }).join('');
@@ -705,13 +721,13 @@ function renderAlerts() {
     ? '<div class="glass list">' + alerts.map(a => {
         const q = quotes[a.id] || {};
         const name = q.name || a.id;
-        const cond = a.op === 'pct-up' ? 'rises ' + a.pct + '% from ' + money(a.ref, q.currency || 'USD', {px:true})
-          : a.op === 'pct-down' ? 'falls ' + a.pct + '% from ' + money(a.ref, q.currency || 'USD', {px:true})
-          : esc(a.op) + ' ' + esc(money(a.price, q.currency || 'USD', {px:true}));
+        const cond = a.op === 'pct-up' ? 'rises ' + a.pct + '% from ' + pxText(a.id, a.ref, {px:true})
+          : a.op === 'pct-down' ? 'falls ' + a.pct + '% from ' + pxText(a.id, a.ref, {px:true})
+          : esc(a.op) + ' ' + esc(pxText(a.id, a.price, {px:true}));
         const hit = a.fired ? '<span class="tag">Triggered</span>' : '';
         return '<div class="row" data-alert="' + esc(a.key) + '">' + avHTML(a.id, name, kindOf(a.id, q)) +
           '<div class="mid"><div class="nm">' + esc(name) + '</div><div class="tk">Alert when ' + cond + ' ' + hit + '</div></div>' +
-          '<div class="rgt"><div class="px" data-px="' + esc(a.id) + '">' + (q.price != null ? money(q.price, q.currency || 'USD', {px:true}) : '—') + '</div>' +
+          '<div class="rgt"><div class="px" data-px="' + esc(a.id) + '">' + (q.price != null ? pxText(a.id, q.price, {px:true}) : '—') + '</div>' +
           '<button class="more" data-act="del-alert" data-key="' + esc(a.key) + '" style="margin-top:4px">Remove</button></div></div>';
       }).join('') + '</div>'
     : '<div class="glass empty"><b>No alerts</b><p>Get a banner in the app, and a phone notification if you allow them, when a price crosses a level or moves by a percentage you set.</p></div>';
@@ -732,7 +748,7 @@ function updatePrices() {
   for (const el of $$('[data-px]')) {
     const q = quotes[el.dataset.px];
     if (!q || q.price == null) continue;
-    const t = money(q.price, q.currency || 'USD', { px: true });
+    const t = pxText(el.dataset.px, q.price, { px: true });
     if (el.textContent !== t) {
       el.textContent = t;
       el.classList.remove('tick-up', 'tick-dn');
@@ -756,16 +772,17 @@ function updatePrices() {
   if (detailId && $('#dPx')) {
     const q = quotes[detailId];
     if (q) {
-      $('#dPx').textContent = q.price != null ? money(q.price, q.currency || 'USD', { px: true }) : '—';
+      $('#dPx').textContent = q.price != null ? pxText(detailId, q.price, { px: true }) : '—';
       const c = $('#dChg');
-      if (c) { c.textContent = (q.change != null ? (q.change >= 0 ? '+' : '') + money(q.change, q.currency || 'USD', { px: true }) + ' · ' : '') + (q.changePct != null ? pct(q.changePct) : '—'); c.className = 'chip ' + chgClass(q.changePct); }
+      if (c) { c.textContent = (q.change != null ? pxText(detailId, q.change, { px: true, signed: true }) + ' · ' : '') + (q.changePct != null ? pct(q.changePct) : '—'); c.className = 'chip ' + chgClass(q.changePct); }
     }
   }
   lastFlash = {};
 }
 
-function stat(k, n, ccy0, text) {
-  return '<div class="glass stat"><div class="k">' + esc(k) + '</div><div class="v">' + (text != null ? text : money(n, ccy0 || 'USD', {px:true})) + '</div></div>';
+function stat(k, n, ccy0, text, asPoints) {
+  const val = text != null ? text : (asPoints ? fmtPoints(n) : money(n, ccy0 || 'USD', {px:true}));
+  return '<div class="glass stat"><div class="k">' + esc(k) + '</div><div class="v">' + val + '</div></div>';
 }
 
 async function cryptoBars(id, range) {
@@ -922,16 +939,17 @@ async function loadDetailChart() {
         : Object.assign(await stockPack(compareId, chartRange), { label: compareId });
     }
     const fromA = packA.currency || ((isCryptoId(detailId) || pairs[detailId]) ? 'USD' : ((quotes[detailId] && quotes[detailId].currency) || 'USD'));
-    packA.bars = scaleBars(packA.bars, fromA, ccy);
+    if (!isIndexId(detailId)) packA.bars = scaleBars(packA.bars, fromA, ccy);
     if (packB) {
       const fromB = packB.currency || ((isCryptoId(compareId) || pairs[compareId]) ? 'USD' : ((quotes[compareId] && quotes[compareId].currency) || 'USD'));
-      packB.bars = scaleBars(packB.bars, fromB, ccy);
+      if (!isIndexId(compareId)) packB.bars = scaleBars(packB.bars, fromB, ccy);
     }
     if (note) {
       let delayTxt = packA.delay || (isCryptoId(detailId) ? 'Kraken public OHLC' : meta.delay) || '';
       if (delayTxt && !/[.!?]$/.test(delayTxt.trim())) delayTxt = delayTxt.trim() + '.';
       const bits = [delayTxt];
-      bits.push('Chart in ' + ccy + (fromA !== ccy ? ', converted from ' + fromA + ' at the latest FX rate.' : '.'));
+      if (isIndexId(detailId)) bits.push('Chart in index points, not a currency. Levels are not converted when you switch GBP/USD.');
+      else bits.push('Chart in ' + ccy + (fromA !== ccy ? ', converted from ' + fromA + ' at the latest FX rate.' : '.'));
       if (compareId) bits.push('Compared as % change from first bar.');
       if (chartKind === 'candles' && (!packA.ohlc || compareId)) bits.push(compareId ? 'Comparison uses lines.' : 'This range has close-only bars, so a line is shown.');
       note.textContent = bits.filter(Boolean).join(' ');
@@ -986,9 +1004,9 @@ async function renderDetail(id, reuse) {
       '<div class="d-head">' +
         avHTML(id, name, kind, 'lg') +
         '<div><div class="nm" id="dSym">' + esc(sym) + (q.live ? ' · Live' : '') + '</div>' +
-        '<div class="d-px" id="dPx">' + (q.price != null ? money(q.price, q.currency || 'USD', {px:true}) : '—') + '</div>' +
+        '<div class="d-px" id="dPx">' + (q.price != null ? pxText(id, q.price, {px:true}) : '—') + '</div>' +
         '<span class="chip ' + chgClass(q.changePct) + '" id="dChg">' +
-          (q.change != null ? ((q.change>=0?'+':'') + money(q.change, q.currency || 'USD', {px:true}) + ' · ') : '') +
+          (q.change != null ? pxText(id, q.change, {px:true, signed:true}) + ' · ' : '') +
           (q.changePct != null ? pct(q.changePct) : '—') + '</span></div></div>' +
       '<div class="rng" id="ranges">' + ['1D','1W','1M','3M','1Y','MAX'].map(r =>
         '<button type="button" data-range="' + r + '" class="' + (r===range?'on':'') + '">' + (r==='MAX'?'All':r) + '</button>').join('') + '</div>' +
@@ -1004,13 +1022,13 @@ async function renderDetail(id, reuse) {
       '<div id="vol" hidden></div>' +
       '<p class="note" id="delayNote"></p>' +
       '<div class="stats" id="dMeta">' +
-        stat(stockish ? 'Previous close' : '24h open', q.prev, q.currency) +
-        stat('Day high', q.dayHigh, q.currency) +
-        stat('Day low', q.dayLow, q.currency) +
-        stat('52-week high', q.high52, q.currency) +
-        stat('52-week low', q.low52, q.currency) +
+        stat(stockish ? 'Previous close' : '24h open', q.prev, q.currency, null, kind === 'index') +
+        stat('Day high', q.dayHigh, q.currency, null, kind === 'index') +
+        stat('Day low', q.dayLow, q.currency, null, kind === 'index') +
+        stat('52-week high', q.high52, q.currency, null, kind === 'index') +
+        stat('52-week low', q.low52, q.currency, null, kind === 'index') +
         (q.asOf ? stat('As of', null, null, q.live ? 'Live' : when(q.asOf)) : '') +
-        '<div class="stats-span"><p class="note">' + esc(delay) + (q.currency && q.currency !== ccy ? ' Native currency ' + esc(q.currency) + '.' : '') + '</p>' + divNote + earnNote + '</div>' +
+        '<div class="stats-span"><p class="note">' + esc(delay) + (kind === 'index' ? ' Levels are index points, not a currency, and are not converted when you switch GBP/USD.' : (q.currency && q.currency !== ccy ? ' Native currency ' + esc(q.currency) + '.' : '')) + '</p>' + divNote + earnNote + '</div>' +
       '</div>' +
       (newsBits.length ? '<div class="sec-h"><h2>News</h2></div><div class="glass">' + newsBits.map(newsItem).join('') + '</div>' : '') +
       '<div class="actions">' +
@@ -1152,9 +1170,9 @@ function openAlert(id) {
   const q = quotes[id] || {};
   const px = q.price != null ? q.price : '';
   openModal('<div class="sheet"><div class="grab"></div><header><h3>Price alert</h3><button class="x" data-act="close">Close</button></header>' +
-    '<div class="row" style="margin-bottom:10px">' + avHTML(id, q.name || id, kindOf(id, q)) + '<div class="mid"><div class="nm">' + esc(q.name || id) + '</div><div class="tk">Now ' + (q.price != null ? money(q.price, q.currency || 'USD', {px:true}) : '—') + '</div></div></div>' +
+    '<div class="row" style="margin-bottom:10px">' + avHTML(id, q.name || id, kindOf(id, q)) + '<div class="mid"><div class="nm">' + esc(q.name || id) + '</div><div class="tk">Now ' + (q.price != null ? pxText(id, q.price, {px:true}) : '—') + '</div></div></div>' +
     '<div class="seg" id="aOp"><button type="button" class="on" data-op="above">Above</button><button type="button" data-op="below">Below</button><button type="button" data-op="pct-up">% up</button><button type="button" data-op="pct-down">% down</button></div>' +
-    '<div class="field"><label for="aVal" id="aLab">Price level (native ' + esc(q.currency || 'USD') + ')</label>' +
+    '<div class="field"><label for="aVal" id="aLab">' + (isIndexId(id, q) ? 'Level (index points)' : 'Price level (native ' + esc(q.currency || 'USD') + ')') + '</label>' +
     '<input id="aVal" type="number" inputmode="decimal" step="any" value="' + esc(px) + '"></div>' +
     '<p class="hint">Triggers once, in the app and as a browser notification if you have allowed them. Percentage alerts use the current price as the baseline.</p>' +
     '<div class="btns"><button class="btn" data-act="save-alert" data-id="' + esc(id) + '">Save alert</button></div></div>');
@@ -1163,7 +1181,7 @@ function openAlert(id) {
     b.classList.add('on');
     const pctish = b.dataset.op.startsWith('pct');
     const lab = $('#aLab');
-    if (lab) lab.textContent = pctish ? 'Percent move from now' : 'Price level (native ' + (q.currency || 'USD') + ')';
+    if (lab) lab.textContent = pctish ? 'Percent move from now' : (isIndexId(id, q) ? 'Level (index points)' : 'Price level (native ' + (q.currency || 'USD') + ')');
     if (pctish && (!$('#aVal').value || $('#aVal').value == String(px))) $('#aVal').value = '5';
   }));
 }
@@ -1187,17 +1205,17 @@ function checkAlerts() {
     const q = quotes[a.id];
     if (!q || q.price == null) continue;
     let ok = false, label = '';
-    if (a.op === 'above' && q.price >= a.price) { ok = true; label = 'rose above ' + money(a.price, q.currency || 'USD', {px:true}); }
-    if (a.op === 'below' && q.price <= a.price) { ok = true; label = 'fell below ' + money(a.price, q.currency || 'USD', {px:true}); }
-    if (a.op === 'pct-up' && a.ref && ((q.price - a.ref) / a.ref * 100) >= a.pct) { ok = true; label = 'rose ' + a.pct + '% from ' + money(a.ref, q.currency || 'USD', {px:true}); }
-    if (a.op === 'pct-down' && a.ref && ((a.ref - q.price) / a.ref * 100) >= a.pct) { ok = true; label = 'fell ' + a.pct + '% from ' + money(a.ref, q.currency || 'USD', {px:true}); }
+    if (a.op === 'above' && q.price >= a.price) { ok = true; label = 'rose above ' + pxText(a.id, a.price, {px:true}); }
+    if (a.op === 'below' && q.price <= a.price) { ok = true; label = 'fell below ' + pxText(a.id, a.price, {px:true}); }
+    if (a.op === 'pct-up' && a.ref && ((q.price - a.ref) / a.ref * 100) >= a.pct) { ok = true; label = 'rose ' + a.pct + '% from ' + pxText(a.id, a.ref, {px:true}); }
+    if (a.op === 'pct-down' && a.ref && ((a.ref - q.price) / a.ref * 100) >= a.pct) { ok = true; label = 'fell ' + a.pct + '% from ' + pxText(a.id, a.ref, {px:true}); }
     if (!ok) continue;
     a.fired = true; hit = true;
     const title = (q.name || a.id) + ' ' + label;
     toast(title);
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
       try {
-        const n = new Notification(title, { body: 'Last ' + money(q.price, q.currency || 'USD', {px:true}), tag: a.key, icon: 'icons/icon-192.png' });
+        const n = new Notification(title, { body: 'Last ' + pxText(a.id, q.price, {px:true}), tag: a.key, icon: 'icons/icon-192.png' });
         n.onclick = () => { location.hash = '#/s/' + encodeURIComponent(a.id); n.close(); };
       } catch (e) {}
     }
