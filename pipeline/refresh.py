@@ -67,6 +67,8 @@ UNIVERSE = [
     "GBPUSD=X", "EURUSD=X",
     # Indices
     "^GSPC", "^IXIC", "^DJI", "^FTSE",
+    # Commodities (Yahoo futures, shown in USD with units)
+    "GC=F", "SI=F", "CL=F", "BZ=F", "NG=F", "HG=F", "PL=F", "PA=F",
 ]
 
 # De-dupe while keeping order
@@ -156,10 +158,26 @@ def bars(result: dict, ohlc: bool) -> list[dict]:
     return out
 
 
+COMMODITY_META = {
+    "GC=F": {"name": "Gold", "short": "Gold", "unit": "USD/oz"},
+    "SI=F": {"name": "Silver", "short": "Silver", "unit": "USD/oz"},
+    "CL=F": {"name": "Crude oil (WTI)", "short": "WTI", "unit": "USD/bbl"},
+    "BZ=F": {"name": "Brent crude", "short": "Brent", "unit": "USD/bbl"},
+    "NG=F": {"name": "Natural gas", "short": "Nat gas", "unit": "USD/MMBtu"},
+    "HG=F": {"name": "Copper", "short": "Copper", "unit": "USD/lb"},
+    "PL=F": {"name": "Platinum", "short": "Platinum", "unit": "USD/oz"},
+    "PA=F": {"name": "Palladium", "short": "Palladium", "unit": "USD/oz"},
+}
+
+
 def kind_of(meta: dict, symbol: str) -> str:
     if symbol.endswith("=X"):
         return "fx"
+    if symbol.endswith("=F") or symbol in COMMODITY_META:
+        return "commodity"
     it = (meta.get("instrumentType") or "").upper()
+    if it in ("FUTURE", "FUTURES"):
+        return "commodity"
     if it == "ETF":
         return "etf"
     if it == "MUTUALFUND":
@@ -278,6 +296,13 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
         "ok": True,
         "unit": "pence" if scale != 1.0 else None,
     }
+    cm = COMMODITY_META.get(symbol)
+    if cm:
+        rec["kind"] = "commodity"
+        rec["name"] = cm["name"]
+        rec["shortName"] = cm["short"]
+        rec["unit"] = cm["unit"]
+        rec["currency"] = "USD"
     def _dma(n):
         if len(closes_f) < n:
             return None

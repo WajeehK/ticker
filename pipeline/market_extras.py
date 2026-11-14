@@ -15,6 +15,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from html import unescape
 from pathlib import Path
 
 CTX = ssl.create_default_context()
@@ -198,22 +199,170 @@ def fetch_earnings(symbols: list[str], ua: str, errors: list[str]) -> dict:
     return out
 
 
+
+import re
+from bs4 import BeautifulSoup
+
+MARKET_RE = re.compile(
+    r"\b("
+    r"stock|stocks|share|shares|equity|equities|etf|etfs|nasdaq|nyse|dow|ftse|s&p|sp500|"
+    r"market|markets|wall street|ipo|earnings|dividend|dividends|trader|trading|investor|"
+    r"investors|broker|portfolio|ticker|listed|valuation|bull|bear|rally|selloff|sell-off|"
+    r"futures|commodity|commodities|oil|crude|brent|wti|gold|silver|copper|natural gas|"
+    r"inflation|interest rate|interest rates|federal reserve|the fed|bank of england|"
+    r"recession|bond|bonds|gilt|yield|bitcoin|crypto|cryptocurrency|ethereum"
+    r")\b",
+    re.I,
+)
+CRYPTO_RE = re.compile(
+    r"\b("
+    r"crypto|cryptocurrency|cryptocurrencies|bitcoin|btc|ethereum|ether|eth|solana|sol|"
+    r"blockchain|token|tokens|defi|stablecoin|coinbase|binance|kraken|web3|altcoin|"
+    r"memecoin|dogecoin|xrp|ripple"
+    r")\b",
+    re.I,
+)
+TICKER_RE = re.compile(r"\b([A-Z]{1,5}|[A-Z0-9]+(?:\.[A-Z])?)\b")
+
+
+def _norm_title(t: str) -> str:
+    t = (t or "").lower().strip()
+    t = re.sub(r"\s+", " ", t)
+    t = re.sub(r"[\'\u2018\u2019\u201c\u201d\"]+", "", t)
+    # drop trailing source after a dash if short
+    t = re.sub(r"\s+[-–—]\s+[^-–—]{2,40}$", "", t)
+    return t
+
+
+def _is_crypto_item(it: dict) -> bool:
+    src = (it.get("source") or "")
+    blob = " ".join([it.get("title") or "", it.get("source") or "", it.get("summary") or ""])
+    if src.lower() in ("coindesk", "cointelegraph", "the block", "decrypt"):
+        return True
+    return bool(CRYPTO_RE.search(blob))
+
+
+def _is_market_item(it: dict, tickers: set[str], names: list[str]) -> bool:
+    title = it.get("title") or ""
+    blob = title + " " + (it.get("summary") or "")
+    if MARKET_RE.search(blob):
+        return True
+    if _is_crypto_item(it):
+        return True
+    up = title.upper()
+    skip = {"NOW", "ALL", "FOR", "THE", "ARE", "HAS", "WHO", "NEW", "OUT", "DAY", "ONE", "TWO", "CAN", "MAY", "SAY", "GET", "OWN", "PER", "VIA", "AND", "BUT", "NOT", "YOU", "ITS", "WAS", "HIS", "HER", "OUR", "ANY", "BIG", "LOW", "TOP", "INC", "LTD", "PLC", "CEO", "ATO", "SEE", "SET", "SUN", "AIR", "GAS"}
+    for t in tickers:
+        tu = (t or "").upper().split(".")[0]
+        if not tu or tu in skip or len(tu) < 2:
+            continue
+        if re.search(r"\b" + re.escape(tu) + r"\b", up):
+            return True
+    low = title.lower()
+    skip_tok = {"the", "usa", "united", "group", "global", "international", "plc", "inc", "ltd", "holdings", "land"}
+    for n in names:
+        if n and len(n) > 3 and n in low:
+            return True
+        tok = (n.split() or [""])[0]
+        if tok and len(tok) > 4 and tok not in skip_tok and tok in low:
+            return True
+    return False
+
+
+def _enrich_one(it: dict, ua: str) -> dict:
+    """Best-effort og:image + article text. Never invents body copy."""
+    url = it.get("url") or ""
+    if not url:
+        return it
+    raw = _open(url, ua, tries=1, timeout=12)
+    if not raw:
+        return it
+    try:
+        html = raw.decode("utf-8", "replace")
+    except Exception:
+        return it
+    soup = BeautifulSoup(html, "lxml")
+    def _meta(*keys):
+        for k in keys:
+            tag = soup.find("meta", property=k) or soup.find("meta", attrs={"name": k})
+            if tag and tag.get("content"):
+                return tag["content"].strip()
+        return None
+    img = it.get("thumbnail") or _meta("og:image", "og:image:url", "twitter:image")
+    if img and img.startswith("//"):
+        img = "https:" + img
+    if img:
+        it["thumbnail"] = img
+    title = _meta("og:title")
+    if title and len(title) > 8 and not it.get("title"):
+        it["title"] = unescape(title)
+    # article body
+    article = soup.find("article") or soup.find("div", attrs={"itemprop": "articleBody"})
+    root = article or soup
+    paras = []
+    for p in root.find_all("p"):
+        tx = " ".join(p.get_text(" ", strip=True).split())
+        if len(tx) < 40:
+            continue
+        if re.search(r"cookie|subscribe|sign in|log in|advertisement|enable javascript", tx, re.I):
+            continue
+        paras.append(tx)
+        if len(paras) >= 40:
+            break
+    text = "\n\n".join(paras).strip()
+    if len(text) > 280:
+        it["text"] = text[:12000]
+        it["excerpt"] = (paras[0] if paras else text[:400])[:400]
+    return it
+
+
+def _enrich_many(items: list[dict], ua: str, limit: int) -> None:
+    n = 0
+    for it in items:
+        if n >= limit:
+            break
+        need = (not it.get("thumbnail")) or (not it.get("text"))
+        if not need:
+            continue
+        try:
+            _enrich_one(it, ua)
+            n += 1
+        except Exception:
+            pass
+        time.sleep(0.2)
+
 def write_market(data_dir: Path, quotes: dict, ua: str) -> None:
     errors: list[str] = []
-    market: list[dict] = []
+    raw_items: list[dict] = []
     seen = set()
     for source, url in FEEDS:
         raw = _open(url, ua)
         if not raw:
             errors.append(f"news feed failed: {source}")
             continue
-        for it in _parse_rss(raw, source, limit=12):
-            key = it["title"].lower()
-            if key in seen:
+        for it in _parse_rss(raw, source, limit=16):
+            key = _norm_title(it["title"])
+            if not key or key in seen:
                 continue
             seen.add(key)
-            market.append(it)
+            it["_feed"] = source
+            raw_items.append(it)
         time.sleep(0.3)
+
+    tickers = set((quotes or {}).keys())
+    names = []
+    for rec in (quotes or {}).values():
+        n = (rec or {}).get("name") or (rec or {}).get("shortName") or ""
+        n = n.split(",")[0].split("(")[0].strip().lower()
+        if n:
+            names.append(n)
+    market: list[dict] = []
+    crypto: list[dict] = []
+    for it in raw_items:
+        if _is_crypto_item(it):
+            crypto.append(it)
+            continue
+        if _is_market_item(it, tickers, names):
+            market.append(it)
 
     def _query_for(sym: str, rec: dict | None) -> str:
         if sym in QUERIES:
@@ -243,8 +392,15 @@ def write_market(data_dir: Path, quotes: dict, ua: str) -> None:
             time.sleep(0.4)
             continue
         items = _parse_rss(raw, "Google News", limit=8)
-        if items:
-            by_symbol[sym] = items
+        uniq, local = [], set()
+        for it in items:
+            k = _norm_title(it["title"])
+            if not k or k in local or k in seen:
+                continue
+            local.add(k)
+            uniq.append(it)
+        if uniq:
+            by_symbol[sym] = uniq
         time.sleep(0.28)
 
     fng = fear_greed(ua)
@@ -255,19 +411,25 @@ def write_market(data_dir: Path, quotes: dict, ua: str) -> None:
     earn_syms = [s for s in ["AAPL", "NVDA", "TSLA", "MSFT", "AMZN", "META", "AZN.L", "HSBA.L", "SHEL.L"] if s in (quotes or {})]
     earnings = fetch_earnings(earn_syms, ua, errors)
 
+    # Deduped, readable cards: og:image + extracted article text for the top items
+    _enrich_many(market[:18] + crypto[:10], ua, limit=24)
+    for items in list(by_symbol.values())[:12]:
+        _enrich_many(items[:2], ua, limit=2)
+
     out = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "fng": fng,
         "market": market[:40],
+        "crypto": crypto[:24],
         "bySymbol": by_symbol,
         "earnings": earnings,
         "errors": errors,
-        "delay": "News and the Fear & Greed Index are refreshed with the scheduled quotes job (about every 15 minutes; Actions can run late).",
+        "delay": "News and the Fear & Greed Index are refreshed with the scheduled quotes job (about every 15 minutes; Actions can run late). Headlines are deduped and limited to market or company stories; crypto wires sit on the Crypto tab.",
     }
     data_dir.mkdir(parents=True, exist_ok=True)
     (data_dir / "news.json").write_text(json.dumps(out, separators=(",", ":")), encoding="utf-8")
     print(
-        f"  market extras: {len(market)} headlines, {len(by_symbol)} symbol feeds, "
+        f"  market extras: {len(market)} market, {len(crypto)} crypto, {len(by_symbol)} symbol feeds, "
         f"fng={'yes' if fng else 'no'}, earnings={len(earnings)}, errors={len(errors)}",
         flush=True,
     )
