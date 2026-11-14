@@ -37,6 +37,8 @@ UNIVERSE = [
     "IBM", "INTU", "TXN", "MU", "NOW", "SHOP", "UBER", "SNOW", "PLTR",
     "COIN", "XYZ", "PYPL", "SPOT", "ABNB", "ARM", "SMCI", "MSTR", "HOOD",
     "APP", "PANW", "CRWD", "DDOG", "NET", "AVGO",
+    # Rare earths (user-held)
+    "USAR", "MP",
     # US other + ADRs
     "BRK-B", "JPM", "V", "MA", "UNH", "XOM", "JNJ", "WMT", "PG", "HD",
     "KO", "PEP", "COST", "DIS", "BAC", "GS", "MS", "AXP", "WFC", "C",
@@ -192,6 +194,9 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
         prev = meta.get("chartPreviousClose")
     price = float(price)
     prev = float(prev) if prev is not None else None
+    closes_f = [float(c) for c in daily_closes if c is not None]
+    if prev is None and len(closes_f) >= 2:
+        prev = closes_f[-2]
     chg = (price - prev) if prev not in (None, 0) else None
     pct = (chg / prev * 100) if chg is not None and prev else None
     name = meta.get("longName") or meta.get("shortName") or symbol
@@ -217,7 +222,7 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
         high52 = meta.get("fiftyTwoWeekHigh")
         low52 = meta.get("fiftyTwoWeekLow")
         spark = spark_from(daily_closes)
-    return {
+    rec = {
         "symbol": symbol,
         "name": name,
         "shortName": short,
@@ -237,6 +242,13 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
         "ok": True,
         "unit": "pence" if scale != 1.0 else None,
     }
+    def _dma(n):
+        if len(closes_f) < n:
+            return None
+        return round(sum(closes_f[-n:]) / n * (scale if scale != 1.0 else 1.0), 4)
+    rec["sma50"] = _dma(50)
+    rec["sma200"] = _dma(200)
+    return rec
 
 
 def main() -> int:
@@ -346,6 +358,13 @@ def main() -> int:
     except Exception as e:
         print(f"market extras failed: {e}", flush=True)
         errors.append(f"market extras: {e}")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from analysis import write_analysis
+        write_analysis(DATA, quotes, UA)
+    except Exception as e:
+        print(f"analysis failed: {e}", flush=True)
+        errors.append(f"analysis: {e}")
     return 0
 
 

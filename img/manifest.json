@@ -2200,6 +2200,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/movr.png"
   },
+  "MP": {
+    "chip": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MP.png",
+    "src": "img/stocks/MP.png"
+  },
   "MRK": {
     "chip": true,
     "dark": false,
@@ -3568,6 +3574,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/us.png"
+  },
+  "USAR": {
+    "chip": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/USAR.png",
+    "src": "img/stocks/USAR.png"
   },
   "USAT-USD": {
     "chip": true,

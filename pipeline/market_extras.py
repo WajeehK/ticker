@@ -27,12 +27,15 @@ FEEDS = [
 
 # Core symbols get their own Google News query (kept small to avoid rate limits)
 NEWS_CORE = [
+    "USAR", "MP",
     "AAPL", "NVDA", "TSLA", "MSFT", "AMZN", "GOOGL", "META", "SPY", "QQQ",
     "VUSA.L", "HSBA.L", "AZN.L", "SHEL.L", "BP.L", "GSK.L", "ULVR.L",
     "JPM", "LLY", "AVGO", "AMD", "^GSPC", "^FTSE",
 ]
 
 QUERIES = {
+    "USAR": 'USAR "USA Rare Earth" OR "rare earth" stock',
+    "MP": 'MP Materials "rare earth" OR "rare earths" stock',
     "AAPL": "AAPL Apple stock",
     "NVDA": "NVDA Nvidia stock",
     "TSLA": "TSLA Tesla stock",
@@ -105,7 +108,27 @@ def _parse_rss(raw: bytes, source: str, limit: int = 15) -> list[dict]:
             maybe = title.rsplit(" - ", 1)
             if len(maybe[1]) < 40:
                 title, publisher = maybe[0], maybe[1]
-        items.append({"title": title, "url": link, "source": publisher, "published": iso})
+        thumb = None
+        # media:content / media:thumbnail (Google News sometimes includes one)
+        for tag in it.iter():
+            tn = tag.tag.lower() if isinstance(tag.tag, str) else ""
+            if tn.endswith("thumbnail") or tn.endswith("content") or tn.endswith("enclosure"):
+                url_t = tag.attrib.get("url") or tag.attrib.get("href")
+                typ = (tag.attrib.get("type") or "") + (tag.attrib.get("medium") or "")
+                if url_t and (not typ or "image" in typ or url_t.endswith((".jpg",".jpeg",".png",".webp"))):
+                    thumb = url_t
+                    break
+        if not thumb:
+            desc = it.findtext("description") or ""
+            if "<img" in desc and "src=" in desc:
+                import re as _re
+                m = _re.search(r'<img[^>]+src=["\']([^"\']+)', desc)
+                if m:
+                    thumb = m.group(1)
+        rec = {"title": title, "url": link, "source": publisher, "published": iso}
+        if thumb:
+            rec["thumbnail"] = thumb
+        items.append(rec)
         if len(items) >= limit:
             break
     return items
@@ -192,9 +215,25 @@ def write_market(data_dir: Path, quotes: dict, ua: str) -> None:
             market.append(it)
         time.sleep(0.3)
 
+    def _query_for(sym: str, rec: dict | None) -> str:
+        if sym in QUERIES:
+            return QUERIES[sym]
+        name = (rec or {}).get("name") or (rec or {}).get("shortName") or ""
+        kind = (rec or {}).get("kind") or ""
+        if kind == "index":
+            return f"{name} {sym} index".strip()
+        # ticker + company name; no invented keywords
+        return f"{sym} {name} stock".strip()
+
     by_symbol: dict = {}
-    for sym in NEWS_CORE:
-        q = QUERIES.get(sym) or sym
+    rest = [
+        s for s, rec in (quotes or {}).items()
+        if rec and rec.get("ok") and rec.get("kind") in ("equity", "etf", "index") and s not in NEWS_CORE
+    ]
+    news_symbols = [s for s in NEWS_CORE] + rest
+    for sym in news_symbols:
+        rec = (quotes or {}).get(sym) or {}
+        q = _query_for(sym, rec)
         url = "https://news.google.com/rss/search?" + urllib.parse.urlencode(
             {"q": q, "hl": "en-GB", "gl": "GB", "ceid": "GB:en"}
         )
@@ -203,10 +242,10 @@ def write_market(data_dir: Path, quotes: dict, ua: str) -> None:
             errors.append(f"symbol news failed: {sym}")
             time.sleep(0.4)
             continue
-        items = _parse_rss(raw, "Google News", limit=6)
+        items = _parse_rss(raw, "Google News", limit=8)
         if items:
             by_symbol[sym] = items
-        time.sleep(0.35)
+        time.sleep(0.28)
 
     fng = fear_greed(ua)
     if not fng:

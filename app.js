@@ -1,8 +1,8 @@
 /* Ticker v2 */
-const BUILD = 't3';
+const BUILD = 't4';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
-const DEFAULT_WATCH = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
+const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
 const INDICES = ['^GSPC', '^IXIC', '^DJI', '^FTSE'];
 const IH = 'https://wajeehk.github.io/congress-trades/';
 const KREST = 'https://api.kraken.com/0/public';
@@ -31,7 +31,7 @@ const store = {
 };
 const vib = n => { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.hasBeenActive) try { navigator.vibrate(n); } catch {} };
 
-let quotes = {}, logos = {}, news = null;
+let quotes = {}, logos = {}, news = null, analysis = null;
 let meta = { generated_at: null, delay: '', source: '', fx: {}, stockOk: false, stockErr: null };
 let pairs = {};
 let watchlists = [], activeWatch = 'default';
@@ -39,7 +39,7 @@ let holdings = [], alerts = [], snapshots = [];
 let ccy = 'GBP';
 let tab = 'home', detailId = null, compareId = null;
 let chartApi = null, volApi = null, pvApi = null;
-let chartKind = 'line', chartInd = 'sma', chartRange = '1M';
+let chartKind = 'line', chartInd = 'off', chartRange = '1D';
 let watchFilter = 'all', watchSort = 'change';
 let ws = null, wsRetry = 0, wsTimer = 0, pollTimer = 0;
 let lastFlash = {}, lastHero = null;
@@ -200,7 +200,7 @@ function loadUser() {
   alerts = store.get('alerts', []);
   snapshots = store.get('snapshots', []);
   chartKind = store.get('chartKind', 'line');
-  chartInd = store.get('chartInd', 'sma');
+  chartInd = store.get('chartInd', 'off');
 }
 function saveLists() { store.set('watchlists', watchlists); store.set('activeWatch', activeWatch); }
 function persistHoldings() { store.set('holdings', holdings); }
@@ -224,6 +224,15 @@ async function loadNews() {
     news = await r.json();
   } catch (e) {
     if (!news) news = { error: e.message || String(e), market: [], bySymbol: {}, fng: null };
+  }
+}
+async function loadAnalysis() {
+  try {
+    const r = await fetch('data/analysis.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    analysis = await r.json();
+  } catch (e) {
+    if (!analysis) analysis = { error: e && e.message, bySymbol: {} };
   }
 }
 async function loadStocks() {
@@ -522,8 +531,43 @@ function PALETTE() {
   return ['#32d074', '#5b8def', '#ff453a', '#f5c542', '#c084fc', '#22d3ee', '#fb7185', '#a3e635', '#f97316', '#818cf8'];
 }
 
+function isStubHeadline(n) {
+  const t = String((n && n.title) || '').toLowerCase();
+  return t.includes('stock price, news, quote and history') || t.includes('equity price and quote');
+}
 function newsItem(n) {
-  return '<a class="news-item" href="' + esc(n.url) + '" target="_blank" rel="noopener"><b>' + esc(n.title) + '</b><span>' + esc(n.source) + (n.published ? ' · ' + esc(ago(n.published)) : '') + '</span></a>';
+  const thumb = n.thumbnail ? '<img class="thumb" src="' + esc(n.thumbnail) + '" alt="">' : '';
+  return '<a class="news-item" href="' + esc(n.url) + '" target="_blank" rel="noopener"><span><b>' + esc(n.title) + '</b><span>' + esc(n.source) + (n.published ? ' · ' + esc(ago(n.published)) : '') + '</span></span>' + thumb + '</a>';
+}
+function exchName(q, id) {
+  const e = String((q && q.exchange) || '').toUpperCase();
+  if (['NGM', 'NMS', 'NASDAQ', 'NM', 'NGS'].includes(e)) return 'NASDAQ';
+  if (['NYQ', 'NYSE', 'NYS'].includes(e)) return 'NYSE';
+  if (['LSE', 'IOB'].includes(e) || String(id || (q && q.id) || '').endsWith('.L')) return 'LSE';
+  return (q && q.exchange) || '';
+}
+function sessionTag(q) {
+  if (!q) return '';
+  if (q.kind === 'crypto') return q.live ? 'Live' : '';
+  return 'at close';
+}
+function priceHeadline(id, q) {
+  q = q || {};
+  const native = q.currency || 'USD';
+  const px = q.price != null
+    ? (isIndexId(id, q) ? fmtPoints(q.price) : fmtNum(q.price, native, { px: true }))
+    : '—';
+  let chg = '—';
+  if (q.change != null) {
+    const bit = isIndexId(id, q) ? fmtPoints(Math.abs(q.change)) : fmtNum(Math.abs(q.change), native, { px: true });
+    chg = (q.change < 0 ? '▾ ' : '▴ ') + bit + ' (' + (q.changePct != null ? Math.abs(q.changePct).toFixed(2) + '%' : '—') + ')';
+  } else if (q.changePct != null) {
+    chg = (q.changePct < 0 ? '▾ ' : '▴ ') + Math.abs(q.changePct).toFixed(2) + '%';
+  }
+  return { px, chg, sess: sessionTag(q) };
+}
+function analysisRec(id) {
+  return (analysis && analysis.bySymbol && analysis.bySymbol[id]) || null;
 }
 
 function renderHome() {
@@ -533,14 +577,14 @@ function renderHome() {
   let hero;
   if (st && st.known) {
     const tint = st.day > 0 ? 'tint-up' : st.day < 0 ? 'tint-dn' : '';
-    hero = '<div class="glass hero ' + tint + '"><div class="lbl">Portfolio · ' + esc(ccy) + '</div>' +
+    hero = '<div class="hero ' + tint + '"><div class="lbl">Portfolio · ' + esc(ccy) + '</div>' +
       '<div class="val" id="heroVal">' + money(st.value, 'USD') + '</div><div class="row">' +
       '<span class="chip ' + chgClass(st.day) + '">' + (st.day >= 0 ? '+' : '') + money(st.day, 'USD') + ' day' + (st.dayPct != null ? ' · ' + pct(st.dayPct) : '') + '</span>' +
       (st.pnl != null ? '<span class="chip ' + chgClass(st.pnl) + '">P&amp;L ' + (st.pnl >= 0 ? '+' : '') + money(st.pnl, 'USD') + ' (' + pct(st.pnlPct) + ')</span>' : '') +
       '</div><p class="note">' + (st.missing ? '<b>' + st.missing + ' holding' + (st.missing>1?'s':'') + '</b> could not be valued. ' : '') +
       'Totals in ' + esc(ccy) + '. FX uses the latest GBPUSD rate' + (meta.fx.GBPUSD ? ' (' + meta.fx.GBPUSD.toFixed(4) + ')' : '') + '.</p></div>';
   } else {
-    hero = '<div class="glass hero"><div class="lbl">Your portfolio</div>' +
+    hero = '<div class="hero"><div class="lbl">Your portfolio</div>' +
       '<div class="val" style="font-size:28px;letter-spacing:-.03em">Nothing here yet</div>' +
       '<p class="note">Add the shares and coins you hold when you are ready. Everything stays on this device.</p>' +
       '<div style="margin-top:12px"><button class="btn sm" data-act="add-hold">Add a holding</button></div></div>';
@@ -654,7 +698,7 @@ function renderPort() {
       '<div style="margin-top:12px;display:flex;gap:8px"><button class="btn ghost full" data-act="add-hold">Add another</button><button class="btn ghost" data-act="import-csv">Import</button></div>';
   let hero = '';
   if (st && st.known) {
-    hero = '<div class="glass hero ' + (st.day>0?'tint-up':st.day<0?'tint-dn':'') + '"><div class="lbl">Portfolio · ' + esc(ccy) + '</div>' +
+    hero = '<div class="hero ' + (st.day>0?'tint-up':st.day<0?'tint-dn':'') + '"><div class="lbl">Portfolio · ' + esc(ccy) + '</div>' +
       '<div class="val" id="portVal">' + money(st.value, 'USD') + '</div><div class="row">' +
       '<span class="chip ' + chgClass(st.day) + '">' + (st.day >= 0 ? '+' : '') + money(st.day, 'USD') + ' day</span>' +
       (st.pnl != null ? '<span class="chip ' + chgClass(st.pnl) + '">Total ' + (st.pnl >= 0 ? '+' : '') + money(st.pnl, 'USD') + ' (' + pct(st.pnlPct) + ')</span>' : '') +
@@ -703,7 +747,7 @@ function drawPvChart() {
   const LW = window.LightweightCharts;
   const chart = LW.createChart(host, {
     autoSize: true, height: 180,
-    layout: { background: { color: 'transparent' }, textColor: dark ? '#c2c0b8' : '#45433e', fontFamily: 'Geist, system-ui', attributionLogo: false },
+    layout: { background: { color: 'transparent' }, textColor: dark ? '#8e8e93' : '#8e8e93', fontFamily: 'Inter, -apple-system, system-ui', attributionLogo: false },
     grid: { vertLines: { visible: false }, horzLines: { color: dark ? 'rgba(255,255,250,.06)' : 'rgba(16,16,14,.06)' } },
     rightPriceScale: { borderVisible: false }, timeScale: { borderVisible: false, timeVisible: false },
     handleScroll: false, handleScale: false
@@ -772,17 +816,21 @@ function updatePrices() {
   if (detailId && $('#dPx')) {
     const q = quotes[detailId];
     if (q) {
-      $('#dPx').textContent = q.price != null ? pxText(detailId, q.price, { px: true }) : '—';
+      const hl = priceHeadline(detailId, q);
+      $('#dPx').textContent = hl.px;
       const c = $('#dChg');
-      if (c) { c.textContent = (q.change != null ? pxText(detailId, q.change, { px: true, signed: true }) + ' · ' : '') + (q.changePct != null ? pct(q.changePct) : '—'); c.className = 'chip ' + chgClass(q.changePct); }
+      if (c) {
+        c.className = 'd-chg ' + chgClass(q.changePct);
+        c.innerHTML = hl.chg + (hl.sess ? ' <span class="sess">' + esc(hl.sess) + '</span>' : '');
+      }
     }
   }
   lastFlash = {};
 }
 
 function stat(k, n, ccy0, text, asPoints) {
-  const val = text != null ? text : (asPoints ? fmtPoints(n) : money(n, ccy0 || 'USD', {px:true}));
-  return '<div class="glass stat"><div class="k">' + esc(k) + '</div><div class="v">' + val + '</div></div>';
+  const val = text != null ? text : (asPoints ? fmtPoints(n) : fmtNum(n, ccy0 || 'USD', {px:true}));
+  return '<div class="stat"><div class="k">' + esc(k) + '</div><div class="v">' + val + '</div></div>';
 }
 
 async function cryptoBars(id, range) {
@@ -806,12 +854,21 @@ async function stockPack(id, range) {
   const r = await fetch(file + '?t=' + Math.floor(Date.now() / 60_000), { cache: 'no-cache' });
   if (!r.ok) throw new Error('History file missing');
   const d = await r.json();
-  const intra = (d.intra || []).map(b => ({ time: b.t, value: b.c, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v })).filter(b => b.time && b.value != null);
+  const intra = (d.intraday || d.intra || []).map(b => ({ time: b.t, value: b.c, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v })).filter(b => b.time && b.value != null);
   const daily = (d.daily || []).map(b => ({ time: b.t, value: b.c, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v })).filter(b => b.time && b.value != null);
   const now = Math.floor(Date.now() / 1000);
-  const cut = { '1D': now - 86400, '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'MAX': 0 }[range] || 0;
-  let bars = (range === '1D' ? intra : daily).filter(b => b.time >= cut);
-  if (range === '1D' && bars.length < 2) bars = daily.filter(b => b.time >= now - 5 * 86400);
+  const cut = { '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'MAX': 0 }[range] || 0;
+  let bars;
+  if (range === '1D') {
+    if (intra.length >= 2) {
+      const last = intra[intra.length - 1].time;
+      bars = intra.filter(b => b.time >= last - 20 * 3600);
+    } else {
+      bars = daily.filter(b => b.time >= now - 5 * 86400);
+    }
+  } else {
+    bars = daily.filter(b => !cut || b.time >= cut);
+  }
   const ohlc = bars.some(b => b.o != null && b.h != null && b.l != null);
   return { bars: bars, delay: d.delay || meta.delay, source: d.source, currency: d.currency, dividends: d.dividends || [], ohlc: ohlc };
 }
@@ -865,18 +922,18 @@ function drawChart(host, packA, packB, range, kind, ind) {
   const bars = packA.bars || [];
   if (bars.length < 2) { host.innerHTML = '<div class="ph" style="display:grid;place-items:center;color:var(--mute)">Not enough history for this range.</div>'; return; }
   const up = bars[bars.length - 1].value >= bars[0].value;
-  const col = up ? (dark ? '#32d074' : '#128a4c') : (dark ? '#ff453a' : '#d11f2a');
+  const col = '#00B4E6';
   const comparing = !!(packB && packB.bars && packB.bars.length > 1);
   const wantCandles = kind === 'candles' && !comparing && bars.some(b => b.o != null && b.h != null && b.l != null);
   const volHost = $('#vol');
-  const hasVol = !comparing && bars.some(b => b.v != null && b.v > 0);
+  const hasVol = !comparing && kind === 'candles' && bars.some(b => b.v != null && b.v > 0);
   if (volHost) volHost.hidden = !hasVol;
   const chart = LW.createChart(host, {
     autoSize: true,
-    layout: { background: { color: 'transparent' }, textColor: dark ? '#c2c0b8' : '#45433e', fontFamily: 'Geist, system-ui', fontSize: 11, attributionLogo: false },
+    layout: { background: { color: 'transparent' }, textColor: dark ? '#8e8e93' : '#8e8e93', fontFamily: 'Inter, -apple-system, system-ui', fontSize: 11, attributionLogo: false },
     grid: { vertLines: { visible: false }, horzLines: { color: dark ? 'rgba(255,255,250,.06)' : 'rgba(16,16,14,.06)' } },
     rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.12, bottom: 0.08 } },
-    timeScale: { borderVisible: false, timeVisible: range === '1D', secondsVisible: false },
+    timeScale: { borderVisible: false, timeVisible: range === '1D', secondsVisible: false, rightOffset: 4, fixLeftEdge: true },
     crosshair: { vertLine: { color: dark ? 'rgba(255,255,250,.18)' : 'rgba(16,16,14,.18)', width: 1, style: 3, labelBackgroundColor: dark ? '#1c1c20' : '#eceae4' }, horzLine: { color: dark ? 'rgba(255,255,250,.18)' : 'rgba(16,16,14,.18)', width: 1, style: 3, labelBackgroundColor: dark ? '#1c1c20' : '#eceae4' } },
     handleScroll: { mouseWheel: true, pressedMouseMove: true },
     handleScale: { mouseWheel: true, pinch: true }
@@ -894,7 +951,7 @@ function drawChart(host, packA, packB, range, kind, ind) {
     const sb = chart.addSeries(LW.LineSeries, { color: dark ? '#5b8def' : '#3a63c8', lineWidth: 2, priceLineVisible: false, title: packB.label || 'B' });
     sa.setData(a); sb.setData(b);
   } else {
-    const s = chart.addSeries(LW.AreaSeries, { lineColor: col, topColor: col + '55', bottomColor: 'transparent', lineWidth: 2, priceLineVisible: false });
+    const s = chart.addSeries(LW.AreaSeries, { lineColor: col, topColor: 'rgba(0,180,230,.28)', bottomColor: 'rgba(0,180,230,0)', lineWidth: 2, priceLineVisible: true, lastValueVisible: true, crosshairMarkerRadius: 5, priceFormat: { type: 'price', precision: 2, minMove: 0.01 } });
     s.setData(bars.map(b => ({ time: b.time, value: b.value })));
   }
   if (!comparing && ind === 'sma') {
@@ -908,12 +965,12 @@ function drawChart(host, packA, packB, range, kind, ind) {
     volHost.innerHTML = '';
     const vc = LW.createChart(volHost, {
       autoSize: true, height: 72,
-      layout: { background: { color: 'transparent' }, textColor: dark ? '#c2c0b8' : '#45433e', fontFamily: 'Geist, system-ui', fontSize: 10, attributionLogo: false },
+      layout: { background: { color: 'transparent' }, textColor: dark ? '#8e8e93' : '#8e8e93', fontFamily: 'Inter, -apple-system, system-ui', fontSize: 10, attributionLogo: false },
       grid: { vertLines: { visible: false }, horzLines: { visible: false } },
       rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.15, bottom: 0 } },
       timeScale: { visible: false, borderVisible: false }, handleScroll: false, handleScale: false
     });
-    const vs = vc.addSeries(LW.HistogramSeries, { priceLineVisible: false, lastValueVisible: false });
+    const vs = vc.addSeries(LW.HistogramSeries, { priceLineVisible: false, lastValueVisible: false, priceFormat: { type: 'volume' } });
     vs.setData(bars.map((b, i) => ({ time: b.time, value: b.v || 0, color: (i && b.c < bars[i-1].c) ? (dark?'#ff453a88':'#d11f2a88') : (dark?'#32d07488':'#128a4c88') })));
     vc.timeScale().setVisibleLogicalRange(chart.timeScale().getVisibleLogicalRange());
     chart.timeScale().subscribeVisibleLogicalRangeChange(r => { try { vc.timeScale().setVisibleLogicalRange(r); } catch (e) {} });
@@ -939,17 +996,13 @@ async function loadDetailChart() {
         : Object.assign(await stockPack(compareId, chartRange), { label: compareId });
     }
     const fromA = packA.currency || ((isCryptoId(detailId) || pairs[detailId]) ? 'USD' : ((quotes[detailId] && quotes[detailId].currency) || 'USD'));
-    if (!isIndexId(detailId)) packA.bars = scaleBars(packA.bars, fromA, ccy);
-    if (packB) {
-      const fromB = packB.currency || ((isCryptoId(compareId) || pairs[compareId]) ? 'USD' : ((quotes[compareId] && quotes[compareId].currency) || 'USD'));
-      if (!isIndexId(compareId)) packB.bars = scaleBars(packB.bars, fromB, ccy);
-    }
+    /* Asset chart stays in the native quote currency, matching the large last price. */
     if (note) {
-      let delayTxt = packA.delay || (isCryptoId(detailId) ? 'Kraken public OHLC' : meta.delay) || '';
-      if (delayTxt && !/[.!?]$/.test(delayTxt.trim())) delayTxt = delayTxt.trim() + '.';
-      const bits = [delayTxt];
-      if (isIndexId(detailId)) bits.push('Chart in index points, not a currency. Levels are not converted when you switch GBP/USD.');
-      else bits.push('Chart in ' + ccy + (fromA !== ccy ? ', converted from ' + fromA + ' at the latest FX rate.' : '.'));
+      const cur = isCryptoId(detailId) ? 'USD' : (isIndexId(detailId) ? 'index points' : (fromA === 'GBp' ? 'GBP' : fromA));
+      const bits = [];
+      if (isCryptoId(detailId)) bits.push('Kraken public OHLC.');
+      else bits.push('Yahoo Finance, delayed up to 15 minutes.');
+      if (!compareId) bits.push('Chart in ' + cur + '.');
       if (compareId) bits.push('Compared as % change from first bar.');
       if (chartKind === 'candles' && (!packA.ohlc || compareId)) bits.push(compareId ? 'Comparison uses lines.' : 'This range has close-only bars, so a line is shown.');
       note.textContent = bits.filter(Boolean).join(' ');
@@ -959,6 +1012,133 @@ async function loadDetailChart() {
     host.innerHTML = '<div class="ph" style="display:grid;place-items:center;padding:20px;color:var(--mute);text-align:center">Could not load this chart. ' + esc(e.message || e) + '</div>';
     if (note) note.textContent = '';
   }
+}
+
+
+
+function investHTML(id, q) {
+  const held = holdings.filter(h => h.id === id);
+  if (!held.length) return '';
+  const qty = held.reduce((s, h) => s + (h.qty || 0), 0);
+  const costN = held.reduce((s, h) => s + ((h.avg != null && h.qty) ? h.avg * h.qty : 0), 0);
+  const hasCost = held.some(h => h.avg != null);
+  const native = (q && q.currency) || 'USD';
+  const valN = (q && q.price != null) ? q.price * qty : null;
+  const pnlN = (valN != null && hasCost) ? valN - costN : null;
+  const pnlPct = (pnlN != null && costN) ? pnlN / costN * 100 : null;
+  const avgN = (hasCost && qty) ? costN / qty : (held[0] && held[0].avg);
+  const valShow = valN != null ? money(valN, native) : '—';
+  const pnlShow = pnlN != null ? ((pnlN >= 0 ? '+' : '') + money(pnlN, native)) : '—';
+  const avgNative = avgN != null ? fmtNum(avgN, native, { px: true, native: true }) : '—';
+  const avgOther = (avgN != null && native !== ccy && fxRate(native, ccy)) ? ' (' + fmtNum(convert(avgN, native, ccy), ccy, { px: true }) + ')' : '';
+  const qtyStr = (qty != null && isFinite(qty)) ? String(qty) : '—';
+  return '<div class="invest"><h2>Your investment</h2>' +
+    '<div class="kv"><span class="k">Value</span><span class="v">' + valShow + '</span></div>' +
+    '<div class="kv"><span class="k">Return</span><span class="v ' + chgClass(pnlN) + '">' + pnlShow + (pnlPct != null ? ' (' + Math.abs(pnlPct).toFixed(2) + '%)' : '') + '</span></div>' +
+    '<div class="kv"><span class="k">Shares</span><span class="v">' + esc(qtyStr) + '</span></div>' +
+    '<div class="kv"><span class="k">Average price</span><span class="v">' + avgNative + avgOther + '</span></div>' +
+    '<div class="trade-btns"><button class="btn" data-act="edit-hold" data-id="' + esc(id) + '">Sell</button>' +
+    '<button class="btn" data-act="add-hold" data-id="' + esc(id) + '">Buy</button></div>' +
+    '<p class="fine-under">Updates the holding stored on this device. This is not a broker order.</p></div>';
+}
+
+function consensusHTML(rec) {
+  const c = rec && rec.consensus;
+  if (!c || (!c.n && !c.key)) return '<p class="note">No analyst consensus is available from our sources for this asset.</p>';
+  const sb = c.strongBuy, b = c.buy || 0, h = c.hold || 0, sl = c.sell || 0, ss = c.strongSell;
+  const five = sb != null || ss != null;
+  const n = c.n || ((sb || 0) + b + h + sl + (ss || 0));
+  const segs = five
+    ? [['sb', sb || 0, 'Strong Buy'], ['b', b, 'Buy'], ['h', h, 'Hold'], ['s', sl, 'Sell'], ['ss', ss || 0, 'Strong Sell']]
+    : [['b', b, 'Buy'], ['h', h, 'Hold'], ['s', sl, 'Sell']];
+  const bar = segs.map(x => x[1] ? '<i class="' + x[0] + '" style="width:' + ((x[1] / (n || 1)) * 100).toFixed(2) + '%"></i>' : '').join('');
+  const keys = segs.map(x => '<span><i class="cons-bar" style="display:inline-block;width:8px;height:8px;vertical-align:middle;margin-right:5px;border-radius:2px"></i>' + x[1] + ' ' + x[2] + '</span>');
+  // simpler legend
+  const legend = segs.map(x => '<span><i class="' + x[0] + '"></i>' + x[1] + ' ' + x[2] + '</span>').join('');
+  let changes = '';
+  const ups = ((rec && rec.upgradesDowngrades) || []).slice(0, 8);
+  const hist = ((rec && rec.ratingChanges) || []).slice(-4);
+  if (ups.length) {
+    changes = ups.map(u => {
+      const bits = [u.firm || u.brokerName, u.action, (u.fromGrade && u.toGrade) ? (u.fromGrade + ' → ' + u.toGrade) : (u.toGrade || ''), u.date].filter(Boolean);
+      return '<div class="event"><span class="k">Rating</span><span class="v">' + esc(bits.join(' · ')) + '</span></div>';
+    }).join('');
+  } else if (hist.length) {
+    changes = hist.map(u => '<div class="event"><span class="k">' + esc(u.date || 'Consensus') + '</span><span class="v">' + esc(u.label || ((u.from || '') + ' → ' + (u.to || ''))) + '</span></div>').join('');
+  }
+  return '<div class="cons-bar">' + bar + '</div>' +
+    '<p class="cons-meta"><b>' + esc(c.key || '—') + '</b>' + (n ? ' · ' + n + ' analyst' + (n === 1 ? '' : 's') : '') +
+    (c.scheme === 'buy-hold-sell' ? ' · Buy / Hold / Sell (Nasdaq does not split Strong Buy or Strong Sell)' : '') + '</p>' +
+    '<div class="cons-keys">' + legend + '</div>' +
+    changes +
+    (rec.source ? '<p class="note">Source: Nasdaq' + (rec.asOf ? ' · as of ' + esc(ago(rec.asOf)) : '') + '. Mean target is compared with the Yahoo last price in this app.</p>' : '');
+}
+
+function targetHTML(rec, q) {
+  const t = rec && rec.targets;
+  if (!t || (t.mean == null && t.low == null && t.high == null)) {
+    return '<p class="note">No published price targets were available from our sources.</p>';
+  }
+  const cur = (q && q.currency) || t.currency || 'USD';
+  const px = q && q.price;
+  const nums = [t.low, t.mean, t.high, px].filter(v => v != null && isFinite(v));
+  const min = Math.min(...nums), max = Math.max(...nums);
+  const span = (max - min) || 1;
+  const pad = span * 0.08;
+  const lo = min - pad, hi = max + pad, w = hi - lo;
+  const pos = v => ((v - lo) / w * 100);
+  const lab = v => fmtNum(v, t.currency || cur, { px: true, native: true });
+  let marks = '';
+  if (t.low != null) marks += '<span class="tgt-lab" style="left:' + pos(t.low) + '%">Low ' + lab(t.low) + '</span><i class="tgt-mark" style="left:' + pos(t.low) + '%"></i>';
+  if (t.high != null) marks += '<span class="tgt-lab" style="left:' + pos(t.high) + '%">High ' + lab(t.high) + '</span><i class="tgt-mark" style="left:' + pos(t.high) + '%"></i>';
+  if (t.mean != null) marks += '<span class="tgt-lab" style="left:' + pos(t.mean) + '%;top:-32px">Mean ' + lab(t.mean) + '</span><i class="tgt-mark mean" style="left:' + pos(t.mean) + '%"></i>';
+  if (px != null) marks += '<span class="tgt-lab now" style="left:' + pos(px) + '%">Now ' + lab(px) + '</span><i class="tgt-mark now" style="left:' + pos(px) + '%"></i>';
+  const left = t.low != null ? pos(t.low) : pos(min);
+  const right = t.high != null ? pos(t.high) : pos(max);
+  const upside = rec.impliedUpsidePct;
+  const cap = (t.mean != null && upside != null)
+    ? (upside >= 0
+      ? 'The mean target is ' + Math.abs(upside).toFixed(0) + '% above the latest Yahoo price.'
+      : 'The mean target is ' + Math.abs(upside).toFixed(0) + '% below the latest Yahoo price.')
+    : '';
+  const mid = (t.median != null) ? ' Median ' + lab(t.median) + '.' : ' Nasdaq does not publish a median target.';
+  return '<div class="tgt"><div class="tgt-scale"><div class="tgt-track"><i class="tgt-range" style="left:' + left + '%;width:' + (right - left) + '%"></i>' + marks + '</div></div>' +
+    '<p class="tgt-cap">' + cap + mid + (t.low != null && t.high != null ? ' Range ' + lab(t.low) + '–' + lab(t.high) + '.' : '') + '</p></div>';
+}
+
+function eventsHTML(rec, q) {
+  const rows = [];
+  const nxt = rec && rec.nextEarnings;
+  if (nxt) {
+    const d = nxt.date || nxt.earningsDate || nxt.time;
+    rows.push(['Next earnings', String(d)]);
+  }
+  const last = rec && rec.lastEarnings;
+  if (last) {
+    const bits = [];
+    if (last.dateReported) bits.push(last.dateReported);
+    if (last.fiscalQtrEnd) bits.push('FQ ' + last.fiscalQtrEnd);
+    if (last.eps != null) bits.push('EPS ' + last.eps);
+    if (last.consensusForecast != null) bits.push('est. ' + last.consensusForecast);
+    if (last.surprisePct != null) bits.push((last.surprisePct >= 0 ? '+' : '') + last.surprisePct + '% surprise');
+    rows.push(['Last earnings', bits.join(' · ') || 'Reported']);
+  }
+  if (q && q.lastDiv && q.lastDiv.date) {
+    const when = new Date((q.lastDiv.date < 1e12 ? q.lastDiv.date * 1000 : q.lastDiv.date)).toLocaleDateString('en-GB', { timeZone: 'Europe/London' });
+    const amt = q.lastDiv.amount != null ? fmtNum(q.lastDiv.amount, q.currency || 'USD', { px: true, native: true }) : '';
+    rows.push(['Last dividend', (amt ? amt + ' · ' : '') + when]);
+  }
+  if (!rows.length) return '<p class="note">No upcoming earnings date or dividend was listed in the latest refresh.</p>';
+  return rows.map(r => '<div class="event"><span class="k">' + esc(r[0]) + '</span><span class="v">' + esc(r[1]) + '</span></div>').join('');
+}
+
+function outlookHTML(rec, kind) {
+  if (kind === 'crypto') {
+    return '<p class="outlook">No analyst coverage. Crypto prices come from Kraken; there is no broker recommendation set in our sources.</p>';
+  }
+  const o = rec && rec.outlook;
+  if (!o || !o.text) return '<p class="note">No automated outlook has been generated yet for this asset.</p>';
+  return '<p class="outlook">' + esc(o.text) + '<span class="lbl">' + esc(o.label || 'Automated outlook from analyst data and news, not financial advice') + (o.asOf ? ' · ' + esc(ago(o.asOf)) : '') + '</span></p>';
 }
 
 
@@ -972,76 +1152,88 @@ async function renderDetail(id, reuse) {
   const held = holdings.filter(h => h.id === id);
   const ihOk = kind !== 'crypto' && !String(id).startsWith('^') && !id.includes('=X');
   const stockish = kind !== 'crypto';
+  const rec = analysisRec(id);
   const delay = stockish
     ? (meta.delay || 'Stock, ETF and index quotes are delayed up to 15 minutes (Yahoo Finance).')
     : (q.live ? 'Live last trade from Kraken.' : 'Kraken public ticker.');
-  const newsBits = ((news && news.bySymbol && news.bySymbol[id]) || []).slice(0, 8);
-  const lastDiv = q.lastDiv;
-  const range = chartRange || el.dataset.range || (kind === 'crypto' ? '1D' : '1M');
+  const newsBits = ((news && news.bySymbol && news.bySymbol[id]) || []).filter(n => !isStubHeadline(n)).slice(0, 12);
+  const range = chartRange || el.dataset.range || (kind === 'crypto' ? '1D' : '1D');
   chartRange = range;
   el.dataset.range = range;
-  const kindLabel = kind === 'crypto' ? 'Crypto · Kraken' : kind === 'etf' ? 'ETF' : kind === 'index' ? 'Index' : (String(id).endsWith('.L') ? 'London Stock Exchange' : 'Equity');
-  const divNote = lastDiv && lastDiv.date
-    ? '<p class="note">Last dividend' + (lastDiv.amount != null ? ' ' + esc(money(lastDiv.amount, q.currency || 'USD', {px:true, native:true})) : '') + ' on ' + esc(new Date((lastDiv.date < 1e12 ? lastDiv.date * 1000 : lastDiv.date)).toLocaleDateString('en-GB', { timeZone: 'Europe/London' })) + ' (from Yahoo chart events; may be delayed).</p>'
-    : '';
-  const earnNote = (news && news.earnings && news.earnings[id])
-    ? '<p class="note">Next earnings: ' + esc(news.earnings[id].date || news.earnings[id].label || '') + '.</p>' : '';
-  const cmpLabel = compareId ? ('vs ' + ((quotes[compareId] && (quotes[compareId].symbol || compareId)) || compareId)) : 'Compare';
+  const ex = exchName(q, id);
+  const sess = sessionTag(q);
+  const hl = priceHeadline(id, q);
+  const pts = kind === 'index';
+
+  let extras = '';
+  extras += investHTML(id, q);
+  extras += '<div class="block"><h2>Outlook</h2>' + outlookHTML(rec, kind) + '</div>';
+  if (kind === 'crypto') {
+    extras += '<div class="block"><h2>Analyst consensus</h2><p class="note">No analyst coverage.</p></div>';
+    extras += '<div class="block"><h2>Market data</h2><div class="stats">' +
+      stat('24h open', q.prev, q.currency, null, false) +
+      stat('Day high', q.dayHigh, q.currency) +
+      stat('Day low', q.dayLow, q.currency) +
+      stat('52-week high', q.high52, q.currency) +
+      stat('52-week low', q.low52, q.currency) +
+      (q.asOf ? stat('As of', null, null, q.live ? 'Live' : when(q.asOf)) : '') +
+      '</div></div>';
+  } else {
+    extras += '<div class="block"><h2>Analyst consensus</h2>' + consensusHTML(rec) + '</div>';
+    extras += '<div class="block"><h2>Price target</h2>' + targetHTML(rec, q) + '</div>';
+    extras += '<div class="block"><h2>Key stats</h2><div class="stats">' +
+      stat(stockish ? 'Previous close' : '24h open', q.prev, q.currency, null, pts) +
+      stat('Day high', q.dayHigh, q.currency, null, pts) +
+      stat('Day low', q.dayLow, q.currency, null, pts) +
+      stat('52-week high', q.high52, q.currency, null, pts) +
+      stat('52-week low', q.low52, q.currency, null, pts) +
+      ((rec && rec.sma50 != null) || q.sma50 != null ? stat('50-day average', rec && rec.sma50 != null ? rec.sma50 : q.sma50, q.currency, null, pts) : '') +
+      ((rec && rec.sma200 != null) || q.sma200 != null ? stat('200-day average', rec && rec.sma200 != null ? rec.sma200 : q.sma200, q.currency, null, pts) : '') +
+      (q.asOf ? stat('As of', null, null, q.live ? 'Live' : when(q.asOf)) : '') +
+      '<div class="stats-span"><p class="note">' + esc(delay) + (kind === 'index' ? ' Levels are index points, not a currency, and are not converted when you switch GBP/USD.' : '') + '</p></div></div></div>';
+    extras += '<div class="block"><h2>Upcoming events</h2>' + eventsHTML(rec, q) + '</div>';
+  }
+  extras += '<div class="block"><h2>News</h2>' +
+    (newsBits.length ? newsBits.map(newsItem).join('') : '<p class="note">No headlines in the latest refresh for this symbol.</p>') +
+    ((news && news.delay) ? '<p class="note">' + esc(news.delay) + '</p>' : '') + '</div>';
+  if (ihOk) extras += '<p class="fine-under" style="margin-top:20px"><a href="' + IH + '#t=' + encodeURIComponent(id) + '" target="_blank" rel="noopener">Open in Insider House</a></p>';
+
   el.hidden = false;
   document.body.classList.add('hide-dock');
   if (!reuse) { el.classList.remove('out'); el.scrollTop = 0; }
   el.innerHTML =
     '<div class="d-bar">' +
       '<button class="ib" data-act="close-detail" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>' +
-      '<h2>' + esc(name) + '</h2>' +
+      '<h2></h2>' +
       '<button class="ib" data-act="toggle-watch" data-id="' + esc(id) + '" aria-label="' + (saved ? 'Remove from watchlist' : 'Add to watchlist') + '">' +
         '<svg viewBox="0 0 24 24">' + (saved
           ? '<path d="M12 4l2.4 5 5.6.8-4 3.9.9 5.6L12 16.8 7.1 19.3l.9-5.6-4-3.9 5.6-.8z" fill="currentColor" stroke="none"/>'
           : '<path d="M12 4l2.4 5 5.6.8-4 3.9.9 5.6L12 16.8 7.1 19.3l.9-5.6-4-3.9 5.6-.8z"/>') + '</svg></button>' +
     '</div>' +
     '<div class="d-in">' +
-      '<p class="eyebrow" id="dEyebrow">' + esc(kindLabel) + (q.exchange && kindLabel.toLowerCase().indexOf(String(q.exchange).toLowerCase()) < 0 ? ' · ' + esc(q.exchange) : '') + '</p>' +
-      '<div class="d-head">' +
-        avHTML(id, name, kind, 'lg') +
-        '<div><div class="nm" id="dSym">' + esc(sym) + (q.live ? ' · Live' : '') + '</div>' +
-        '<div class="d-px" id="dPx">' + (q.price != null ? pxText(id, q.price, {px:true}) : '—') + '</div>' +
-        '<span class="chip ' + chgClass(q.changePct) + '" id="dChg">' +
-          (q.change != null ? pxText(id, q.change, {px:true, signed:true}) + ' · ' : '') +
-          (q.changePct != null ? pct(q.changePct) : '—') + '</span></div></div>' +
+      '<div class="d-head">' + avHTML(id, name, kind, 'lg') +
+        '<div class="who"><div class="ex">' + esc(sym) + (ex ? ' · ' + esc(ex) : '') + '</div>' +
+        '<div class="nm">' + esc(name) + '</div></div></div>' +
+      '<div class="d-px" id="dPx">' + hl.px + '</div>' +
+      '<div class="d-chg ' + chgClass(q.changePct) + '" id="dChg">' + hl.chg + (sess ? ' <span class="sess">' + esc(sess) + '</span>' : '') + '</div>' +
+      '<div class="chart-bleed"><div id="chart"><div class="ph">Loading chart…</div></div><div id="vol" hidden></div></div>' +
       '<div class="rng" id="ranges">' + ['1D','1W','1M','3M','1Y','MAX'].map(r =>
-        '<button type="button" data-range="' + r + '" class="' + (r===range?'on':'') + '">' + (r==='MAX'?'All':r) + '</button>').join('') + '</div>' +
+        '<button type="button" data-range="' + r + '" class="' + (r===range?'on':'') + '">' + (r==='MAX'?'MAX':r) + '</button>').join('') + '</div>' +
       '<div class="tools">' +
         '<button type="button" data-kind="line" class="' + (chartKind!=='candles'?'on':'') + '">Line</button>' +
         '<button type="button" data-kind="candles" class="' + (chartKind==='candles'?'on':'') + '">Candles</button>' +
         '<button type="button" data-ind="off" class="' + ((chartInd||'off')==='off'?'on':'') + '">No MA</button>' +
         '<button type="button" data-ind="sma" class="' + (chartInd==='sma'?'on':'') + '">SMA 20</button>' +
         '<button type="button" data-ind="ema" class="' + (chartInd==='ema'?'on':'') + '">EMA 20</button>' +
-        '<button type="button" data-act="compare" class="' + (compareId?'on':'') + '">' + esc(cmpLabel) + '</button>' +
+        '<button type="button" data-act="compare" class="' + (compareId?'on':'') + '">' + esc(compareId ? ('vs ' + ((quotes[compareId] && (quotes[compareId].symbol || compareId)) || compareId)) : 'Compare') + '</button>' +
       '</div>' +
-      '<div id="chart"><div class="ph">Loading chart…</div></div>' +
-      '<div id="vol" hidden></div>' +
       '<p class="note" id="delayNote"></p>' +
-      '<div class="stats" id="dMeta">' +
-        stat(stockish ? 'Previous close' : '24h open', q.prev, q.currency, null, kind === 'index') +
-        stat('Day high', q.dayHigh, q.currency, null, kind === 'index') +
-        stat('Day low', q.dayLow, q.currency, null, kind === 'index') +
-        stat('52-week high', q.high52, q.currency, null, kind === 'index') +
-        stat('52-week low', q.low52, q.currency, null, kind === 'index') +
-        (q.asOf ? stat('As of', null, null, q.live ? 'Live' : when(q.asOf)) : '') +
-        '<div class="stats-span"><p class="note">' + esc(delay) + (kind === 'index' ? ' Levels are index points, not a currency, and are not converted when you switch GBP/USD.' : (q.currency && q.currency !== ccy ? ' Native currency ' + esc(q.currency) + '.' : '')) + '</p>' + divNote + earnNote + '</div>' +
-      '</div>' +
-      (newsBits.length ? '<div class="sec-h"><h2>News</h2></div><div class="glass">' + newsBits.map(newsItem).join('') + '</div>' : '') +
-      '<div class="actions">' +
-        (held.length
-          ? '<button class="btn ghost" data-act="edit-hold" data-id="' + esc(id) + '">Edit holding</button>'
-          : '<button class="btn" data-act="add-hold" data-id="' + esc(id) + '">Add to portfolio</button>') +
-        '<button class="btn ghost" data-act="add-alert" data-id="' + esc(id) + '">Set alert</button>' +
-      '</div>' +
-      (ihOk ? '<a class="glass ih-link" href="' + IH + '#t=' + encodeURIComponent(id) + '" target="_blank" rel="noopener"><b>Open in Insider House</b><span>Congressional trading context for this ticker.</span></a>' : '') +
+      extras +
     '</div>';
   bindDetailTools();
   loadDetailChart();
 }
+
 
 function bindDetailTools() {
   const ranges = $('#ranges');
@@ -1309,7 +1501,46 @@ function openAsset(id, vs) {
   if (isCryptoId(id) || pairs[id]) { connectWS(); loadCryptoOnce(); }
 }
 
+function consumeImport() {
+  const h = location.hash || '';
+  const m = h.match(/^#\/?import=(.+)$/);
+  if (!m) return false;
+  try {
+    let b64 = decodeURIComponent(m[1]);
+    b64 += '='.repeat((4 - (b64.length % 4)) % 4);
+    const json = JSON.parse(atob(b64.replace(/-/g, '+').replace(/_/g, '/')));
+    const rows = Array.isArray(json) ? json : (json.holdings || []);
+    if (!Array.isArray(rows)) throw new Error('bad shape');
+    const next = [];
+    for (const r of rows) {
+      if (!r || typeof r !== 'object') continue;
+      const id = String(r.id || r.symbol || '').trim();
+      const qty = parseFloat(r.qty ?? r.quantity);
+      const avgRaw = r.avg ?? r.avg_price;
+      const avg = (avgRaw === '' || avgRaw == null) ? null : parseFloat(avgRaw);
+      if (!id || id.length > 24 || !isFinite(qty) || qty <= 0) continue;
+      next.push({ id: id, qty: qty, avg: (avg != null && isFinite(avg) && avg >= 0) ? avg : null });
+    }
+    if (!next.length) throw new Error('no rows');
+    holdings = next;
+    persistHoldings();
+    const l = watchlists.find(x => x.id === activeWatch) || watchlists[0];
+    if (l) {
+      for (const row of next) if (!l.symbols.includes(row.id)) l.symbols.push(row.id);
+      saveLists();
+    }
+    history.replaceState(null, '', '#/portfolio');
+    toast('Imported ' + next.length + ' holding' + (next.length > 1 ? 's' : ''));
+    return true;
+  } catch (err) {
+    history.replaceState(null, '', '#/');
+    toast('Could not import those holdings.');
+    return false;
+  }
+}
+
 function applyHash() {
+  if (consumeImport()) { tab = 'port'; go(TABS.indexOf('port'), { nohash: true, instant: true }); renderAll(); return; }
   const h = location.hash || '#/';
   const m = h.match(/^#\/s\/([^/]+)(?:\/vs\/([^/]+))?/);
   if (m) {
@@ -1564,7 +1795,7 @@ function onClick(e) {
 }
 
 async function refreshAll() {
-  await Promise.all([loadStocks(), loadNews(), loadLogos(), loadPairs().then(loadCryptoOnce)]);
+  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadPairs().then(loadCryptoOnce)]);
   renderAll();
   loadCryptoSparks().then(() => { if (tab === 'home' || tab === 'watch' || tab === 'markets') { renderHome(); renderWatch(); renderMarkets(); } });
   connectWS();
@@ -1574,7 +1805,7 @@ async function refreshAll() {
 function applyTheme(t, persist) {
   document.documentElement.dataset.theme = t;
   const metaEl = document.querySelector('meta[name="theme-color"]');
-  if (metaEl) metaEl.content = t === 'dark' ? '#070708' : '#f4f3ef';
+  if (metaEl) metaEl.content = t === 'dark' ? '#000000' : '#f5f5f5';
   const btn = $('#themeBtn');
   if (btn) btn.innerHTML = t === 'dark'
     ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
