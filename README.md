@@ -40,7 +40,7 @@ python3 pipeline/fetch_logos.py  # rebuild img/ (needs a prior quotes.json and t
 python3 -m http.server 8080      # then open http://localhost:8080
 ```
 
-The service-worker cache name in `sw.js` must be bumped on every release (`ticker-shell-t6` → `t7`, and the `?v=t6` query strings on CSS/JS). Logos are runtime-cached, not precached.
+The service-worker cache name in `sw.js` must be bumped on every release (`ticker-shell-t7` → `t8`, and the `?v=t7` query strings on CSS/JS). Logos are runtime-cached, not precached.
 
 ## Disclaimer
 

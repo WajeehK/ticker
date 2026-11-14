@@ -311,10 +311,10 @@ html[data-theme=dark] .seg button.on{color:#000;background:#fff;border-color:#ff
 .tabs::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%)}
 .tabs .dpill{position:absolute;top:5px;bottom:5px;left:0;width:0;border-radius:999px;pointer-events:none;will-change:transform;transform-origin:center}
-.tabs .dpill i{position:absolute;inset:0;border-radius:inherit;background:rgba(0,163,224,.16);border:.5px solid rgba(0,163,224,.3);transform-origin:center;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 4px 12px rgba(0,163,224,.16);transition:background .2s}
+.tabs .dpill i{position:absolute;inset:0;border-radius:inherit;background:color-mix(in srgb,var(--accent) 22%,transparent);border:.5px solid color-mix(in srgb,var(--accent) 40%,transparent);transform-origin:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 4px 12px color-mix(in srgb,var(--accent) 22%,transparent);transition:background .2s,border-color .2s}
 .tabs .dpill i::after{content:"";position:absolute;inset:1px;border-radius:inherit;background:radial-gradient(80% 60% at 50% 0%,rgba(255,255,255,.6),transparent 70%)}
-.tabs.drag .dpill i{background:rgba(0,163,224,.24)}
+.tabs.drag .dpill i{background:color-mix(in srgb,var(--accent) 32%,transparent)}
 .tabs .dpill i.jelly{animation:jelly .5s cubic-bezier(.3,.7,.4,1)}
 @keyframes jelly{0%{transform:scale(1,1)}25%{transform:scale(.94,1.07)}50%{transform:scale(1.04,.97)}75%{transform:scale(.99,1.01)}100%{transform:scale(1,1)}}
 .tabs button{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 5px;border-radius:999px;
@@ -330,11 +330,11 @@ html[data-theme=dark] .tabs{background:rgba(20,20,22,.94);border-color:rgba(255,
   html[data-theme=dark] .tabs{background:rgba(20,20,22,.86)}
 }
 html[data-theme=dark] .tabs::before{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,0) 55%)}
-html[data-theme=dark] .tabs .dpill i{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.26);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px rgba(0,0,0,.35)}
-html[data-theme=dark] .tabs.drag .dpill i{background:rgba(255,255,255,.22)}
+html[data-theme=dark] .tabs .dpill i{background:color-mix(in srgb,var(--accent) 28%,rgba(255,255,255,.08));border-color:color-mix(in srgb,var(--accent) 50%,transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 16px color-mix(in srgb,var(--accent) 18%,transparent)}
+html[data-theme=dark] .tabs.drag .dpill i{background:color-mix(in srgb,var(--accent) 38%,rgba(255,255,255,.08))}
 html[data-theme=dark] .tabs button{color:rgba(235,238,242,.6)}
-html[data-theme=dark] .tabs .on,html[data-theme=dark] .tabs .on svg{color:#00b4e6;stroke:#00b4e6}
+html[data-theme=dark] .tabs .on,html[data-theme=dark] .tabs .on svg{color:var(--accent);stroke:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){
   .tabs .dpill i.jelly, .sk{animation:none}

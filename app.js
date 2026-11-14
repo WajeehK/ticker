@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't6';
+const BUILD = 't7';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -592,7 +592,7 @@ function donutSVG(parts) {
   return '<svg viewBox="0 0 120 120">' + rings + '<circle cx="60" cy="60" r="28" fill="var(--bg)"/></svg><ul class="legend">' + legend + '</ul>';
 }
 function PALETTE() {
-  return ['#32d074', '#5b8def', '#ff453a', '#f5c542', '#c084fc', '#22d3ee', '#fb7185', '#a3e635', '#f97316', '#818cf8'];
+  return ['#00C805', '#3d8b5c', '#FF5000', '#f5c542', '#c084fc', '#8d8d8d', '#fb7185', '#a3e635', '#f97316', '#6b8f71'];
 }
 
 function isStubHeadline(n) {
@@ -619,8 +619,22 @@ function newsDayBucket(iso) {
   if (d === yest) return 'Yesterday';
   return 'Earlier';
 }
+function isFinanceHeadline(n) {
+  if (!n || !n.title || isStubHeadline(n)) return false;
+  const blob = ((n.title || '') + ' ' + (n.summary || n.excerpt || '')).toLowerCase();
+  const finance = /\b(shares?|stocks?|investors?|earnings?|revenue|profits?|guidance|analysts?|price target|upgrade|downgrade|ipo|valuation|market cap|nasdaq|nyse|s&p|sp500|sp 500|ftse|\bdow\b|rally|sell-?off|futures?|yields?|the fed|federal reserve|interest rates?|\brates\b|inflation|dividends?|buybacks?|merger|acquisition|\bdeal\b|equit(?:y|ies)|etfs?|wall street|listed|traders?|trading)\b/i;
+  const money = /[$£€]\s*\d[\d,.]*(?:\s*(?:bn|billion|mn|m|million|tn|trillion)\b)?|\b\d+(?:\.\d+)?\s*(?:bn|billion|mn|million|tn|trillion)\b/i;
+  if (!(finance.test(blob) || money.test(blob))) return false;
+  const scandal = /\b(scandal|affair|outage|outages|testify|testimony|espionage|\bspy\b|white house|congress|sex scandal)\b/i;
+  if (scandal.test(blob)) {
+    const stripped = blob.replace(/\b(etfs?|stocks?|trading|listed|\bdeal\b|traders?)\b/gi, ' ');
+    const strong = /\b(earnings?|revenue|profits?|guidance|price target|upgrade|downgrade|ipo|valuation|market cap|buybacks?|dividends?|merger|acquisition|shares?|futures?|yields?|inflation|the fed|federal reserve|interest rates?)\b/i;
+    if (!(finance.test(stripped) || money.test(stripped) || strong.test(blob))) return false;
+  }
+  return true;
+}
 function newsListHTML(items, emptyText) {
-  const rows = (items || []).filter(n => n && n.title && !isStubHeadline(n));
+  const rows = (items || []).filter(n => n && n.title && !isStubHeadline(n) && isFinanceHeadline(n));
   const seen = new Set();
   const uniq = [];
   rows.forEach(n => {

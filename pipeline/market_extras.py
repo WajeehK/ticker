@@ -21,8 +21,14 @@ from pathlib import Path
 CTX = ssl.create_default_context()
 
 FEEDS = [
-    ("BBC Business", "https://feeds.bbci.co.uk/news/business/rss.xml"),
-    ("Google Business", "https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-GB&gl=GB&ceid=GB:en"),
+    ("Reuters Business", "https://feeds.reuters.com/reuters/businessNews"),
+    ("Reuters Markets", "https://feeds.reuters.com/reuters/UKMarketsNews"),
+    ("CNBC Markets", "https://www.cnbc.com/id/20910258/device/rss/rss.html"),
+    ("CNBC Finance", "https://www.cnbc.com/id/10000664/device/rss/rss.html"),
+    ("MarketWatch", "https://feeds.marketwatch.com/marketwatch/marketpulse/"),
+    ("FT Markets", "https://www.ft.com/markets?format=rss"),
+    ("Yahoo Finance", "https://news.google.com/rss/search?q=site:finance.yahoo.com+when:1d+stock+OR+markets&hl=en-GB&gl=GB&ceid=GB:en"),
+    ("Google Markets", "https://news.google.com/rss/search?q=when:1d+stock+market+OR+shares+OR+earnings+OR+IPO&hl=en-GB&gl=GB&ceid=GB:en"),
     ("CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"),
 ]
 
@@ -203,17 +209,24 @@ def fetch_earnings(symbols: list[str], ua: str, errors: list[str]) -> dict:
 import re
 from bs4 import BeautifulSoup
 
-MARKET_RE = re.compile(
+# Company names alone are not enough. A headline must carry a market/finance signal.
+FINANCE_RE = re.compile(
     r"\b("
-    r"stock|stocks|share|shares|equity|equities|etf|etfs|nasdaq|nyse|dow|ftse|s&p|sp500|"
-    r"market|markets|wall street|ipo|earnings|dividend|dividends|trader|trading|investor|"
-    r"investors|broker|portfolio|ticker|listed|valuation|bull|bear|rally|selloff|sell-off|"
-    r"futures|commodity|commodities|oil|crude|brent|wti|gold|silver|copper|natural gas|"
-    r"inflation|interest rate|interest rates|federal reserve|the fed|bank of england|"
-    r"recession|bond|bonds|gilt|yield|bitcoin|crypto|cryptocurrency|ethereum"
+    r"shares?|stocks?|investors?|earnings?|revenue|profits?|guidance|"
+    r"analysts?|price target|upgrade|downgrade|ipo|valuation|market cap|"
+    r"nasdaq|nyse|s&p|s & p|sp500|sp 500|ftse|\bdow\b|rally|sell-?off|"
+    r"futures?|yields?|the fed|federal reserve|interest rates?|\brates\b|"
+    r"inflation|dividends?|buybacks?|merger|acquisition|\bdeal\b|"
+    r"equit(?:y|ies)|etfs?|wall street|listed|traders?|trading"
     r")\b",
     re.I,
 )
+MONEY_RE = re.compile(
+    r"[$£€]\s*\d[\d,.]*(?:\s*(?:bn|billion|mn|m|million|tn|trillion)\b)?"
+    r"|\b\d+(?:\.\d+)?\s*(?:bn|billion|mn|million|tn|trillion)\b",
+    re.I,
+)
+MARKET_RE = FINANCE_RE  # alias used by older helpers
 CRYPTO_RE = re.compile(
     r"\b("
     r"crypto|cryptocurrency|cryptocurrencies|bitcoin|btc|ethereum|ether|eth|solana|sol|"
@@ -242,30 +255,42 @@ def _is_crypto_item(it: dict) -> bool:
     return bool(CRYPTO_RE.search(blob))
 
 
-def _is_market_item(it: dict, tickers: set[str], names: list[str]) -> bool:
-    title = it.get("title") or ""
-    blob = title + " " + (it.get("summary") or "")
-    if MARKET_RE.search(blob):
-        return True
-    if _is_crypto_item(it):
-        return True
-    up = title.upper()
-    skip = {"NOW", "ALL", "FOR", "THE", "ARE", "HAS", "WHO", "NEW", "OUT", "DAY", "ONE", "TWO", "CAN", "MAY", "SAY", "GET", "OWN", "PER", "VIA", "AND", "BUT", "NOT", "YOU", "ITS", "WAS", "HIS", "HER", "OUR", "ANY", "BIG", "LOW", "TOP", "INC", "LTD", "PLC", "CEO", "ATO", "SEE", "SET", "SUN", "AIR", "GAS"}
-    for t in tickers:
-        tu = (t or "").upper().split(".")[0]
-        if not tu or tu in skip or len(tu) < 2:
-            continue
-        if re.search(r"\b" + re.escape(tu) + r"\b", up):
-            return True
-    low = title.lower()
-    skip_tok = {"the", "usa", "united", "group", "global", "international", "plc", "inc", "ltd", "holdings", "land"}
-    for n in names:
-        if n and len(n) > 3 and n in low:
-            return True
-        tok = (n.split() or [""])[0]
-        if tok and len(tok) > 4 and tok not in skip_tok and tok in low:
-            return True
-    return False
+SCANDAL_RE = re.compile(
+    r"\b(scandal|affair|outage|outages|testify|testimony|espionage|\bspy\b|"
+    r"white house|congress|sex scandal)\b",
+    re.I,
+)
+STRONG_RE = re.compile(
+    r"\b(earnings?|revenue|profits?|guidance|price target|upgrade|downgrade|ipo|"
+    r"valuation|market cap|buybacks?|dividends?|merger|acquisition|"
+    r"shares?\s+(?:jump|jumps|jumped|fell|fall|rises?|rose|slips?|slipped|rally|rallied)|"
+    r"futures?|yields?|inflation|the fed|federal reserve|interest rates?)\b",
+    re.I,
+)
+STUB_RE = re.compile(r"stock price, news, quote and history|equity price and quote|stock quote price and forecast", re.I)
+
+
+def _has_finance_signal(it: dict) -> bool:
+    blob = " ".join([it.get("title") or "", it.get("summary") or "", it.get("excerpt") or ""])
+    if STUB_RE.search(blob):
+        return False
+    if not (FINANCE_RE.search(blob) or MONEY_RE.search(blob)):
+        return False
+    # Scandal / politics / outage hooks need a real finance signal, not just "stock" or "ETF".
+    if SCANDAL_RE.search(blob):
+        stripped = re.sub(r"\b(etfs?|stocks?|trading|listed|\bdeal\b|traders?)\b", " ", blob, flags=re.I)
+        if not (FINANCE_RE.search(stripped) or MONEY_RE.search(stripped) or STRONG_RE.search(blob)):
+            return False
+    return True
+
+
+def _is_market_item(it: dict, tickers: set[str] | None = None, names: list[str] | None = None) -> bool:
+    """Require a market/finance signal. A company name or ticker is not enough.
+
+    Scandal, politics or outage stories are dropped unless they also use
+    finance language (shares, earnings, IPO, $1bn, etc.).
+    """
+    return _has_finance_signal(it)
 
 
 def _enrich_one(it: dict, ua: str) -> dict:
@@ -396,6 +421,8 @@ def write_market(data_dir: Path, quotes: dict, ua: str) -> None:
         for it in items:
             k = _norm_title(it["title"])
             if not k or k in local or k in seen:
+                continue
+            if not _has_finance_signal(it):
                 continue
             local.add(k)
             uniq.append(it)
