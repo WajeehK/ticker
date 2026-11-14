@@ -1,11 +1,11 @@
-/* Ticker service worker (build t1).
+/* Ticker service worker (build t2).
    App shell: cache-first, refreshed per build. Quote/history JSON: network-first. */
-const SHELL = 'ticker-shell-t1';
+const SHELL = 'ticker-shell-t2';
 const DATA = 'ticker-data';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
-  './style.css?v=t1', './app.js?v=t1',
-  './vendor/lightweight-charts.js?v=t1',
+  './style.css?v=t2', './app.js?v=t2',
+  './vendor/lightweight-charts.js?v=t2',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/apple-touch-icon.png', './icons/favicon.svg', './icons/favicon-32.png'
 ];
@@ -27,6 +27,17 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
+  if (url.pathname.includes('/img/')) {
+    e.respondWith(
+      caches.open('ticker-img').then(c =>
+        c.match(req).then(hit => hit || fetch(req).then(r => {
+          if (r.ok) c.put(req, r.clone());
+          return r;
+        }).catch(() => hit))
+      )
+    );
+    return;
+  }
   if (url.pathname.includes('/data/')) {
     e.respondWith(
       fetch(req).then(r => {

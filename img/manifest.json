@@ -1,0 +1,4169 @@
+{
+  "0G-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/0g.png"
+  },
+  "1INCH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/1inch.svg"
+  },
+  "2Z-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/2z.png"
+  },
+  "A-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/a.png"
+  },
+  "AAL.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AAL.L.png",
+    "src": "img/stocks/AAL.L.png"
+  },
+  "AAPL": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AAPL.png",
+    "src": "img/stocks/AAPL.png"
+  },
+  "AAVE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/aave.svg"
+  },
+  "AB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ab.png"
+  },
+  "ABBV": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ABBV.png",
+    "src": "img/stocks/ABBV.png"
+  },
+  "ABF.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ABF.L.png",
+    "src": "img/stocks/ABF.L.png"
+  },
+  "ABNB": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ABNB.png",
+    "src": "img/stocks/ABNB.png"
+  },
+  "ACT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/act.svg"
+  },
+  "ACU-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/acu.png"
+  },
+  "ADA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ada.svg"
+  },
+  "ADBE": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ADBE.png",
+    "src": "img/stocks/ADBE.png"
+  },
+  "ADI-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/adi.png"
+  },
+  "ADX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/adx.svg"
+  },
+  "AERO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aero.png"
+  },
+  "AEVO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aevo.png"
+  },
+  "AGG": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AGG.png",
+    "src": "img/stocks/AGG.png"
+  },
+  "AI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ai.png"
+  },
+  "AIN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ain.png"
+  },
+  "AIOZ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aioz.png"
+  },
+  "AIXBT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aixbt.png"
+  },
+  "AKE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ake.png"
+  },
+  "AKT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/akt.png"
+  },
+  "ALCH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/alch.png"
+  },
+  "ALEO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aleo.png"
+  },
+  "ALGO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/algo.svg"
+  },
+  "ALICE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/alice.png"
+  },
+  "ALLO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/allo.png"
+  },
+  "ALT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/alt.png"
+  },
+  "AMAT": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AMAT.png",
+    "src": "img/stocks/AMAT.png"
+  },
+  "AMD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AMD.png",
+    "src": "img/stocks/AMD.png"
+  },
+  "AMZN": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AMZN.png",
+    "src": "img/stocks/AMZN.png"
+  },
+  "ANIME-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/anime.png"
+  },
+  "ANKR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ankr.svg"
+  },
+  "ANTO.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ANTO.L.png",
+    "src": "img/stocks/ANTO.L.png"
+  },
+  "APE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ape.svg"
+  },
+  "API3-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/api3.png"
+  },
+  "APP": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/APP.png",
+    "src": "img/stocks/APP.png"
+  },
+  "APR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/apr.png"
+  },
+  "APT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/apt.png"
+  },
+  "APXUSD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/apxusd.png"
+  },
+  "AR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ar.png"
+  },
+  "ARB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/arb.png"
+  },
+  "ARC-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/arc.png"
+  },
+  "ARKK": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ARKK.png",
+    "src": "img/stocks/ARKK.png"
+  },
+  "ARKM-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/arkm.png"
+  },
+  "ARM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ARM.png",
+    "src": "img/stocks/ARM.png"
+  },
+  "ARPA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/arpa.png"
+  },
+  "ARX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/arx.png"
+  },
+  "ASML": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ASML.png",
+    "src": "img/stocks/ASML.png"
+  },
+  "ASSET-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/asset.png"
+  },
+  "ASTER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aster.png"
+  },
+  "ASTR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/astr.png"
+  },
+  "ATH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ath.png"
+  },
+  "ATLAS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/atlas.svg"
+  },
+  "ATOM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/atom.svg"
+  },
+  "AUCTION-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/auction.png"
+  },
+  "AUDIO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/audio.png"
+  },
+  "AUSD-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ausd.png"
+  },
+  "AUTO.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AUTO.L.png",
+    "src": "img/stocks/AUTO.L.png"
+  },
+  "AV.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AV.L.png",
+    "src": "img/stocks/AV.L.png"
+  },
+  "AVA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ava.png"
+  },
+  "AVAX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/avax.svg"
+  },
+  "AVGO": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AVGO.png",
+    "src": "img/stocks/AVGO.png"
+  },
+  "AVNT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/avnt.png"
+  },
+  "AXP": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AXP.png",
+    "src": "img/stocks/AXP.png"
+  },
+  "AXS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/axs.png"
+  },
+  "AZN.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/AZN.L.png",
+    "src": "img/stocks/AZN.L.png"
+  },
+  "AZTEC-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/aztec.png"
+  },
+  "B2-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/b2.png"
+  },
+  "B3-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/b3.png"
+  },
+  "BA": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BA.png",
+    "src": "img/stocks/BA.png"
+  },
+  "BA.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BA.L.png",
+    "src": "img/stocks/BA.L.png"
+  },
+  "BABA": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BABA.png",
+    "src": "img/stocks/BABA.png"
+  },
+  "BABY-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/baby.png"
+  },
+  "BAC": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BAC.png",
+    "src": "img/stocks/BAC.png"
+  },
+  "BAL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/bal.svg"
+  },
+  "BANANAS31-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bananas31.png"
+  },
+  "BAND-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/band.svg"
+  },
+  "BARC.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BARC.L.png",
+    "src": "img/stocks/BARC.L.png"
+  },
+  "BASED-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/based.png"
+  },
+  "BAT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/bat.svg"
+  },
+  "BATS.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BATS.L.png",
+    "src": "img/stocks/BATS.L.png"
+  },
+  "BCH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/bch.svg"
+  },
+  "BEAM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/beam.svg"
+  },
+  "BERA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bera.png"
+  },
+  "BGB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bgb.png"
+  },
+  "BICO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bico.png"
+  },
+  "BIGTIME-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bigtime.png"
+  },
+  "BILL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bill.png"
+  },
+  "BIO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bio.png"
+  },
+  "BLEND-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/blend.png"
+  },
+  "BLESS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bless.png"
+  },
+  "BLUR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/blur.png"
+  },
+  "BLZ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/blz.svg"
+  },
+  "BMT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bmt.png"
+  },
+  "BNB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/bnb.svg"
+  },
+  "BND": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BND.png",
+    "src": "img/stocks/BND.png"
+  },
+  "BNKR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bnkr.png"
+  },
+  "BNT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/bnt.svg"
+  },
+  "BNZL.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BNZL.L.png",
+    "src": "img/stocks/BNZL.L.png"
+  },
+  "BOB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bob.png"
+  },
+  "BONK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/bonk.png"
+  },
+  "BOTZ": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BOTZ.png",
+    "src": "img/stocks/BOTZ.png"
+  },
+  "BP.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BP.L.png",
+    "src": "img/stocks/BP.L.png"
+  },
+  "BREV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/brev.png"
+  },
+  "BRK-B": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BRK-B.png",
+    "src": "img/stocks/BRK-B.png"
+  },
+  "BT-A.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BT-A.L.png",
+    "src": "img/stocks/BT-A.L.png"
+  },
+  "BTC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/btc.svg"
+  },
+  "BTR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/btr.png"
+  },
+  "BTRW.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/BTRW.L.png",
+    "src": "img/stocks/BTRW.L.png"
+  },
+  "BTT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/btt.svg"
+  },
+  "C": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/C.png",
+    "src": "img/stocks/C.png"
+  },
+  "C98-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/c98.png"
+  },
+  "CAKE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cake.png"
+  },
+  "CAP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cap.png"
+  },
+  "CARV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/carv.png"
+  },
+  "CASH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cash.png"
+  },
+  "CAT": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CAT.png",
+    "src": "img/stocks/CAT.png"
+  },
+  "CAT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cat.png"
+  },
+  "CC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/cc.svg"
+  },
+  "CCD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ccd.png"
+  },
+  "CCH.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CCH.L.png",
+    "src": "img/stocks/CCH.L.png"
+  },
+  "CELO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/celo.png"
+  },
+  "CELR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/celr.png"
+  },
+  "CFG-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cfg.png"
+  },
+  "CFX-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cfx.png"
+  },
+  "CHEEMS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cheems.png"
+  },
+  "CHEX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/chex.png"
+  },
+  "CHIP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/chip.png"
+  },
+  "CHR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/chr.png"
+  },
+  "CHZ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/chz.svg"
+  },
+  "CLANKER-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/clanker.png"
+  },
+  "CNA.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CNA.L.png",
+    "src": "img/stocks/CNA.L.png"
+  },
+  "COIN": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/COIN.png",
+    "src": "img/stocks/COIN.png"
+  },
+  "COMP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/comp.svg"
+  },
+  "COP": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/COP.png",
+    "src": "img/stocks/COP.png"
+  },
+  "COST": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/COST.png",
+    "src": "img/stocks/COST.png"
+  },
+  "COTI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/coti.png"
+  },
+  "COW-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cow.png"
+  },
+  "CPG.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CPG.L.png",
+    "src": "img/stocks/CPG.L.png"
+  },
+  "CPOOL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cpool.png"
+  },
+  "CRDA.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CRDA.L.png",
+    "src": "img/stocks/CRDA.L.png"
+  },
+  "CRM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CRM.png",
+    "src": "img/stocks/CRM.png"
+  },
+  "CRO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cro.png"
+  },
+  "CRV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/crv.svg"
+  },
+  "CRWD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CRWD.png",
+    "src": "img/stocks/CRWD.png"
+  },
+  "CSCO": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CSCO.png",
+    "src": "img/stocks/CSCO.png"
+  },
+  "CSP1.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CSP1.L.png",
+    "src": "img/stocks/CSP1.L.png"
+  },
+  "CSPR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cspr.png"
+  },
+  "CT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ct.png"
+  },
+  "CTC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ctc.png"
+  },
+  "CTR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ctr.svg"
+  },
+  "CTSI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ctsi.png"
+  },
+  "CVC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/cvc.svg"
+  },
+  "CVX": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CVX.png",
+    "src": "img/stocks/CVX.png"
+  },
+  "CVX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cvx.png"
+  },
+  "CYBER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/cyber.png"
+  },
+  "DAG-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dag.png"
+  },
+  "DAI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/dai.svg"
+  },
+  "DASH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/dash.svg"
+  },
+  "DBR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dbr.png"
+  },
+  "DCC.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/DCC.L.png",
+    "src": "img/stocks/DCC.L.png"
+  },
+  "DCR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/dcr.svg"
+  },
+  "DDOG": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/DDOG.png",
+    "src": "img/stocks/DDOG.png"
+  },
+  "DEBIT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/debit.png"
+  },
+  "DEEP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/deep.png"
+  },
+  "DEGEN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/degen.png"
+  },
+  "DENT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/dent.svg"
+  },
+  "DGAI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dgai.png"
+  },
+  "DGE.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/DGE.L.png",
+    "src": "img/stocks/DGE.L.png"
+  },
+  "DIA": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/DIA.png",
+    "src": "img/stocks/DIA.png"
+  },
+  "DIS": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/DIS.png",
+    "src": "img/stocks/DIS.png"
+  },
+  "DNA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dna.png"
+  },
+  "DOG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dog.png"
+  },
+  "DOGS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dogs.png"
+  },
+  "DOLO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dolo.png"
+  },
+  "DOS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dos.png"
+  },
+  "DOT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/dot.svg"
+  },
+  "DRV-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/drv.png"
+  },
+  "DUAL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dual.png"
+  },
+  "DYDX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dydx.png"
+  },
+  "DYM-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/dym.png"
+  },
+  "EAT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/eat.png"
+  },
+  "EDGE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/edge.png"
+  },
+  "EDU-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/edu.png"
+  },
+  "EEM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/EEM.png",
+    "src": "img/stocks/EEM.png"
+  },
+  "EFA": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/EFA.png",
+    "src": "img/stocks/EFA.png"
+  },
+  "EGLD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/egld.png"
+  },
+  "EIGEN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/eigen.png"
+  },
+  "ENA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ena.png"
+  },
+  "ENJ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/enj.svg"
+  },
+  "ENS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ens.png"
+  },
+  "ENT.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ENT.L.png",
+    "src": "img/stocks/ENT.L.png"
+  },
+  "ESP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/esp.png"
+  },
+  "ETC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/etc.svg"
+  },
+  "ETH-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/eth.svg"
+  },
+  "ETHFI-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ethfi.png"
+  },
+  "EUL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/eul.png"
+  },
+  "EUR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/eur.svg"
+  },
+  "EURC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/eurc.png"
+  },
+  "EURCV-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/eurcv.png"
+  },
+  "EUROP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/europ.png"
+  },
+  "EV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ev.png"
+  },
+  "EWT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ewt.png"
+  },
+  "EXPN.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/EXPN.L.png",
+    "src": "img/stocks/EXPN.L.png"
+  },
+  "FARTCOIN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/fartcoin.png"
+  },
+  "FET-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/fet.png"
+  },
+  "FF-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ff.png"
+  },
+  "FIDA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/fida.svg"
+  },
+  "FIDD-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/fidd.png"
+  },
+  "FIL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/fil.svg"
+  },
+  "FLOCK-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/flock.png"
+  },
+  "FLOKI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/floki.png"
+  },
+  "FLOW-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/flow.png"
+  },
+  "FLR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/flr.png"
+  },
+  "FLTR.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/FLTR.L.png",
+    "src": "img/stocks/FLTR.L.png"
+  },
+  "FLUX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/flux.svg"
+  },
+  "FOLD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/fold.png"
+  },
+  "FOLKS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/folks.png"
+  },
+  "FRES.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/FRES.L.png",
+    "src": "img/stocks/FRES.L.png"
+  },
+  "FUN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/fun.svg"
+  },
+  "G-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/g.png"
+  },
+  "GALA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/gala.png"
+  },
+  "GAS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/gas.svg"
+  },
+  "GBP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/gbp.svg"
+  },
+  "GE": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GE.png",
+    "src": "img/stocks/GE.png"
+  },
+  "GENIUS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/genius.png"
+  },
+  "GIGA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/giga.png"
+  },
+  "GLD": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GLD.png",
+    "src": "img/stocks/GLD.png"
+  },
+  "GLEN.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GLEN.L.png",
+    "src": "img/stocks/GLEN.L.png"
+  },
+  "GMT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/gmt.svg"
+  },
+  "GMX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/gmx.png"
+  },
+  "GNO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/gno.svg"
+  },
+  "GNOT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/gnot.png"
+  },
+  "GOAT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/goat.png"
+  },
+  "GOMINING-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/gomining.png"
+  },
+  "GOOG": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GOOG.png",
+    "src": "img/stocks/GOOG.png"
+  },
+  "GOOGL": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GOOGL.png",
+    "src": "img/stocks/GOOGL.png"
+  },
+  "GRASS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/grass.png"
+  },
+  "GRIFFAIN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/griffain.png"
+  },
+  "GRT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/grt.svg"
+  },
+  "GS": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GS.png",
+    "src": "img/stocks/GS.png"
+  },
+  "GSK.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/GSK.L.png",
+    "src": "img/stocks/GSK.L.png"
+  },
+  "GTC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/gtc.png"
+  },
+  "GWEI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/gwei.png"
+  },
+  "HBAR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/hbar.png"
+  },
+  "HD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/HD.png",
+    "src": "img/stocks/HD.png"
+  },
+  "HIK.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/HIK.L.png",
+    "src": "img/stocks/HIK.L.png"
+  },
+  "HLMA.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/HLMA.L.png",
+    "src": "img/stocks/HLMA.L.png"
+  },
+  "HMSTR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/hmstr.png"
+  },
+  "HNT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/hnt.png"
+  },
+  "HOLO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/holo.png"
+  },
+  "HONEY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/honey.png"
+  },
+  "HOOD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/HOOD.png",
+    "src": "img/stocks/HOOD.png"
+  },
+  "HSBA.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/HSBA.L.png",
+    "src": "img/stocks/HSBA.L.png"
+  },
+  "HSK-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/hsk.png"
+  },
+  "HYG": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/HYG.png",
+    "src": "img/stocks/HYG.png"
+  },
+  "HYPE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/hype.png"
+  },
+  "IAG.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IAG.L.png",
+    "src": "img/stocks/IAG.L.png"
+  },
+  "IAU": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IAU.png",
+    "src": "img/stocks/IAU.png"
+  },
+  "IBM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IBM.png",
+    "src": "img/stocks/IBM.png"
+  },
+  "ICNT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/icnt.png"
+  },
+  "ICP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/icp.svg"
+  },
+  "IEF": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IEF.png",
+    "src": "img/stocks/IEF.png"
+  },
+  "IGLT.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IGLT.L.png",
+    "src": "img/stocks/IGLT.L.png"
+  },
+  "IHG.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IHG.L.png",
+    "src": "img/stocks/IHG.L.png"
+  },
+  "III.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/III.L.png",
+    "src": "img/stocks/III.L.png"
+  },
+  "IMB.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IMB.L.png",
+    "src": "img/stocks/IMB.L.png"
+  },
+  "IMX-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/imx.png"
+  },
+  "INF.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/INF.L.png",
+    "src": "img/stocks/INF.L.png"
+  },
+  "INIT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/init.png"
+  },
+  "INJ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/inj.png"
+  },
+  "INTC": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/INTC.png",
+    "src": "img/stocks/INTC.png"
+  },
+  "INTU": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/INTU.png",
+    "src": "img/stocks/INTU.png"
+  },
+  "ISF.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ISF.L.png",
+    "src": "img/stocks/ISF.L.png"
+  },
+  "IUSA.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IUSA.L.png",
+    "src": "img/stocks/IUSA.L.png"
+  },
+  "IVV": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IVV.png",
+    "src": "img/stocks/IVV.png"
+  },
+  "IWM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/IWM.png",
+    "src": "img/stocks/IWM.png"
+  },
+  "JASMY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/jasmy.png"
+  },
+  "JD.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/JD.L.png",
+    "src": "img/stocks/JD.L.png"
+  },
+  "JNJ": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/JNJ.png",
+    "src": "img/stocks/JNJ.png"
+  },
+  "JOE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/joe.png"
+  },
+  "JPM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/JPM.png",
+    "src": "img/stocks/JPM.png"
+  },
+  "JST-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/jst.png"
+  },
+  "JTO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/jto.png"
+  },
+  "JUP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/jup.png"
+  },
+  "KAITO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kaito.png"
+  },
+  "KAS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kas.png"
+  },
+  "KAT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kat.png"
+  },
+  "KAVA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kava.png"
+  },
+  "KEEP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/keep.png"
+  },
+  "KERNEL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kernel.png"
+  },
+  "KGEN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kgen.png"
+  },
+  "KGF.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/KGF.L.png",
+    "src": "img/stocks/KGF.L.png"
+  },
+  "KII-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kii.png"
+  },
+  "KMNO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kmno.png"
+  },
+  "KNC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/knc.svg"
+  },
+  "KNTQ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kntq.png"
+  },
+  "KO": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/KO.png",
+    "src": "img/stocks/KO.png"
+  },
+  "KSM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ksm.svg"
+  },
+  "KTA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/kta.png"
+  },
+  "LAND.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/LAND.L.png",
+    "src": "img/stocks/LAND.L.png"
+  },
+  "LAVA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/lava.png"
+  },
+  "LAYER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/layer.png"
+  },
+  "LCX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/lcx.png"
+  },
+  "LDO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ldo.png"
+  },
+  "LINEA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/linea.png"
+  },
+  "LINK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/link.svg"
+  },
+  "LION-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/lion.png"
+  },
+  "LIT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/lit.png"
+  },
+  "LLOY.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/LLOY.L.png",
+    "src": "img/stocks/LLOY.L.png"
+  },
+  "LLY": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/LLY.png",
+    "src": "img/stocks/LLY.png"
+  },
+  "LPT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/lpt.svg"
+  },
+  "LQD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/LQD.png",
+    "src": "img/stocks/LQD.png"
+  },
+  "LQTY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/lqty.png"
+  },
+  "LRC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/lrc.svg"
+  },
+  "LSEG.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/LSEG.L.png",
+    "src": "img/stocks/LSEG.L.png"
+  },
+  "LSK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/lsk.svg"
+  },
+  "LTC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ltc.svg"
+  },
+  "LUNA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/luna.png"
+  },
+  "MA": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MA.png",
+    "src": "img/stocks/MA.png"
+  },
+  "MANA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/mana.svg"
+  },
+  "MANTRA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mantra.png"
+  },
+  "MASK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mask.png"
+  },
+  "MCD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MCD.png",
+    "src": "img/stocks/MCD.png"
+  },
+  "ME-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/me.png"
+  },
+  "MEGA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mega.png"
+  },
+  "MELANIA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/melania.png"
+  },
+  "MEME-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/meme.png"
+  },
+  "MERL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/merl.png"
+  },
+  "MET-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/met.png"
+  },
+  "META": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/META.png",
+    "src": "img/stocks/META.png"
+  },
+  "METIS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/metis.png"
+  },
+  "MEW-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mew.png"
+  },
+  "MINA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mina.png"
+  },
+  "MIRA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mira.png"
+  },
+  "MKS.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MKS.L.png",
+    "src": "img/stocks/MKS.L.png"
+  },
+  "MLN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/mln.svg"
+  },
+  "MNDI.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MNDI.L.png",
+    "src": "img/stocks/MNDI.L.png"
+  },
+  "MNT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mnt.png"
+  },
+  "MOCA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/moca.png"
+  },
+  "MOG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mog.png"
+  },
+  "MON-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mon.png"
+  },
+  "MOODENG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/moodeng.png"
+  },
+  "MORPHO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/morpho.png"
+  },
+  "MOVR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/movr.png"
+  },
+  "MRK": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MRK.png",
+    "src": "img/stocks/MRK.png"
+  },
+  "MRNA": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MRNA.png",
+    "src": "img/stocks/MRNA.png"
+  },
+  "MS": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MS.png",
+    "src": "img/stocks/MS.png"
+  },
+  "MSFT": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MSFT.png",
+    "src": "img/stocks/MSFT.png"
+  },
+  "MSTR": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MSTR.png",
+    "src": "img/stocks/MSTR.png"
+  },
+  "MU": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/MU.png",
+    "src": "img/stocks/MU.png"
+  },
+  "MUBARAK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/mubarak.png"
+  },
+  "MYX-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/myx.png"
+  },
+  "NANO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/nano.svg"
+  },
+  "NEAR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/near.png"
+  },
+  "NEIRO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/neiro.png"
+  },
+  "NEO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/neo.svg"
+  },
+  "NES-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/nes.png"
+  },
+  "NET": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NET.png",
+    "src": "img/stocks/NET.png"
+  },
+  "NEX-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/nex.png"
+  },
+  "NEXO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/nexo.svg"
+  },
+  "NFLX": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NFLX.png",
+    "src": "img/stocks/NFLX.png"
+  },
+  "NG.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NG.L.png",
+    "src": "img/stocks/NG.L.png"
+  },
+  "NIGHT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/night.png"
+  },
+  "NIL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/nil.png"
+  },
+  "NIO": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NIO.png",
+    "src": "img/stocks/NIO.png"
+  },
+  "NKE": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NKE.png",
+    "src": "img/stocks/NKE.png"
+  },
+  "NMR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/nmr.svg"
+  },
+  "NOCK-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/nock.png"
+  },
+  "NOS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/nos.png"
+  },
+  "NOT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/not.png"
+  },
+  "NOW": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NOW.png",
+    "src": "img/stocks/NOW.png"
+  },
+  "NPC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/npc.png"
+  },
+  "NVDA": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NVDA.png",
+    "src": "img/stocks/NVDA.png"
+  },
+  "NVO": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NVO.png",
+    "src": "img/stocks/NVO.png"
+  },
+  "NWG.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NWG.L.png",
+    "src": "img/stocks/NWG.L.png"
+  },
+  "NXT.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/NXT.L.png",
+    "src": "img/stocks/NXT.L.png"
+  },
+  "OCDO.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/OCDO.L.png",
+    "src": "img/stocks/OCDO.L.png"
+  },
+  "OCEAN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ocean.png"
+  },
+  "OGN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ogn.png"
+  },
+  "OKB-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/okb.png"
+  },
+  "OMG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/omg.svg"
+  },
+  "OMI-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/omi.png"
+  },
+  "ONDO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ondo.png"
+  },
+  "ONE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/one.svg"
+  },
+  "OP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/op.png"
+  },
+  "OPEN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/open.png"
+  },
+  "ORCA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/orca.png"
+  },
+  "ORCL": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ORCL.png",
+    "src": "img/stocks/ORCL.png"
+  },
+  "ORDER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/order.png"
+  },
+  "OSMO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/osmo.png"
+  },
+  "OUSD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ousd.png"
+  },
+  "OXT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/oxt.svg"
+  },
+  "PANW": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PANW.png",
+    "src": "img/stocks/PANW.png"
+  },
+  "PAXG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/paxg.svg"
+  },
+  "PEAQ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/peaq.png"
+  },
+  "PEARL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pearl.png"
+  },
+  "PENDLE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pendle.png"
+  },
+  "PENGU-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pengu.png"
+  },
+  "PEP": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PEP.png",
+    "src": "img/stocks/PEP.png"
+  },
+  "PEPE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pepe.png"
+  },
+  "PFE": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PFE.png",
+    "src": "img/stocks/PFE.png"
+  },
+  "PG": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PG.png",
+    "src": "img/stocks/PG.png"
+  },
+  "PHA-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pha.png"
+  },
+  "PI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pi.png"
+  },
+  "PIEVERSE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pieverse.png"
+  },
+  "PLTR": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PLTR.png",
+    "src": "img/stocks/PLTR.png"
+  },
+  "PLUME-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/plume.png"
+  },
+  "PNUT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pnut.png"
+  },
+  "POL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pol.png"
+  },
+  "POLIS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/polis.svg"
+  },
+  "PONS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pons.png"
+  },
+  "POPCAT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/popcat.png"
+  },
+  "PORTAL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/portal.png"
+  },
+  "POWR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/powr.svg"
+  },
+  "PRIME-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/prime.png"
+  },
+  "PRO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pro.png"
+  },
+  "PROS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pros.png"
+  },
+  "PROVE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/prove.png"
+  },
+  "PRU.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PRU.L.png",
+    "src": "img/stocks/PRU.L.png"
+  },
+  "PSH.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PSH.L.png",
+    "src": "img/stocks/PSH.L.png"
+  },
+  "PSN.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PSN.L.png",
+    "src": "img/stocks/PSN.L.png"
+  },
+  "PSON.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PSON.L.png",
+    "src": "img/stocks/PSON.L.png"
+  },
+  "PUFFER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/puffer.png"
+  },
+  "PUMP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pump.png"
+  },
+  "PYPL": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/PYPL.png",
+    "src": "img/stocks/PYPL.png"
+  },
+  "PYTH-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pyth.png"
+  },
+  "PYUSD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/pyusd.png"
+  },
+  "Q-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/q.png"
+  },
+  "QCOM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/QCOM.png",
+    "src": "img/stocks/QCOM.png"
+  },
+  "QI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/qi.png"
+  },
+  "QNT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/qnt.svg"
+  },
+  "QQQ": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/QQQ.png",
+    "src": "img/stocks/QQQ.png"
+  },
+  "QTUM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/qtum.svg"
+  },
+  "RAD-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rad.png"
+  },
+  "RAY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ray.svg"
+  },
+  "RE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/re.png"
+  },
+  "RED-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/red.png"
+  },
+  "REKT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rekt.png"
+  },
+  "REL.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/REL.L.png",
+    "src": "img/stocks/REL.L.png"
+  },
+  "REN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/ren.svg"
+  },
+  "RENDER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/render.png"
+  },
+  "REQ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/req.svg"
+  },
+  "REZ-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rez.png"
+  },
+  "RIO.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/RIO.L.png",
+    "src": "img/stocks/RIO.L.png"
+  },
+  "RIVER-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/river.png"
+  },
+  "RIVN": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/RIVN.png",
+    "src": "img/stocks/RIVN.png"
+  },
+  "RKT.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/RKT.L.png",
+    "src": "img/stocks/RKT.L.png"
+  },
+  "RLC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/rlc.svg"
+  },
+  "RLUSD-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rlusd.png"
+  },
+  "ROBO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/robo.png"
+  },
+  "ROLL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/roll.png"
+  },
+  "RPL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rpl.png"
+  },
+  "RR.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/RR.L.png",
+    "src": "img/stocks/RR.L.png"
+  },
+  "RSC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rsc.png"
+  },
+  "RSR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rsr.png"
+  },
+  "RTO.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/RTO.L.png",
+    "src": "img/stocks/RTO.L.png"
+  },
+  "RUNE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/rune.png"
+  },
+  "S-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/s.png"
+  },
+  "SAFE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/safe.svg"
+  },
+  "SAHARA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sahara.png"
+  },
+  "SAND-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/sand.svg"
+  },
+  "SAP": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SAP.png",
+    "src": "img/stocks/SAP.png"
+  },
+  "SAPIEN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sapien.png"
+  },
+  "SBRY.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SBRY.L.png",
+    "src": "img/stocks/SBRY.L.png"
+  },
+  "SBUX": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SBUX.png",
+    "src": "img/stocks/SBUX.png"
+  },
+  "SC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/sc.svg"
+  },
+  "SCHD": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SCHD.png",
+    "src": "img/stocks/SCHD.png"
+  },
+  "SEI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sei.png"
+  },
+  "SENT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sent.png"
+  },
+  "SGB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sgb.png"
+  },
+  "SGE.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SGE.L.png",
+    "src": "img/stocks/SGE.L.png"
+  },
+  "SGLN.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SGLN.L.png",
+    "src": "img/stocks/SGLN.L.png"
+  },
+  "SGRO.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SGRO.L.png",
+    "src": "img/stocks/SGRO.L.png"
+  },
+  "SHEL.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SHEL.L.png",
+    "src": "img/stocks/SHEL.L.png"
+  },
+  "SHIB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/shib.png"
+  },
+  "SHOP": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SHOP.png",
+    "src": "img/stocks/SHOP.png"
+  },
+  "SHX-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/shx.png"
+  },
+  "SIGN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sign.png"
+  },
+  "SKR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/skr.png"
+  },
+  "SKY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/sky.svg"
+  },
+  "SLV": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SLV.png",
+    "src": "img/stocks/SLV.png"
+  },
+  "SMCI": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SMCI.png",
+    "src": "img/stocks/SMCI.png"
+  },
+  "SMH": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SMH.png",
+    "src": "img/stocks/SMH.png"
+  },
+  "SMIN.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SMIN.L.png",
+    "src": "img/stocks/SMIN.L.png"
+  },
+  "SMT.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SMT.L.png",
+    "src": "img/stocks/SMT.L.png"
+  },
+  "SN.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SN.L.png",
+    "src": "img/stocks/SN.L.png"
+  },
+  "SN44-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sn44.png"
+  },
+  "SN51-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sn51.png"
+  },
+  "SN62-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sn62.png"
+  },
+  "SN64-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sn64.png"
+  },
+  "SN75-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sn75.png"
+  },
+  "SNEK-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/snek.png"
+  },
+  "SNOW": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SNOW.png",
+    "src": "img/stocks/SNOW.png"
+  },
+  "SNX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/snx.svg"
+  },
+  "SOFI": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SOFI.png",
+    "src": "img/stocks/SOFI.png"
+  },
+  "SOFID-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sofid.png"
+  },
+  "SOL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/sol.svg"
+  },
+  "SOLV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/solv.png"
+  },
+  "SOMI-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/somi.png"
+  },
+  "SONY": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SONY.png",
+    "src": "img/stocks/SONY.png"
+  },
+  "SOON-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/soon.png"
+  },
+  "SOSO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/soso.png"
+  },
+  "SOXX": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SOXX.png",
+    "src": "img/stocks/SOXX.png"
+  },
+  "SPACE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/space.png"
+  },
+  "SPELL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/spell.png"
+  },
+  "SPK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/spk.png"
+  },
+  "SPOT": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SPOT.png",
+    "src": "img/stocks/SPOT.png"
+  },
+  "SPX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/spx.png"
+  },
+  "SPX.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SPX.L.png",
+    "src": "img/stocks/SPX.L.png"
+  },
+  "SPY": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SPY.png",
+    "src": "img/stocks/SPY.png"
+  },
+  "SPYD": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SPYD.png",
+    "src": "img/stocks/SPYD.png"
+  },
+  "SSE.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SSE.L.png",
+    "src": "img/stocks/SSE.L.png"
+  },
+  "SSV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ssv.png"
+  },
+  "STABLE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/stable.png"
+  },
+  "STAN.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/STAN.L.png",
+    "src": "img/stocks/STAN.L.png"
+  },
+  "STBL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/stbl.png"
+  },
+  "STG-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/stg.png"
+  },
+  "STORJ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/storj.svg"
+  },
+  "STRK-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/strk.png"
+  },
+  "STX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/stx.svg"
+  },
+  "SUI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sui.png"
+  },
+  "SUN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sun.png"
+  },
+  "SUPER-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/super.png"
+  },
+  "SUSHI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/sushi.svg"
+  },
+  "SVT.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/SVT.L.png",
+    "src": "img/stocks/SVT.L.png"
+  },
+  "SXT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/sxt.png"
+  },
+  "SYN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/syn.png"
+  },
+  "SYRUP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/syrup.png"
+  },
+  "T": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/T.png",
+    "src": "img/stocks/T.png"
+  },
+  "T-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/t.png"
+  },
+  "TAKE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/take.png"
+  },
+  "TAO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tao.png"
+  },
+  "TEL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/tel.svg"
+  },
+  "TGBP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tgbp.png"
+  },
+  "TIA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tia.png"
+  },
+  "TLT": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TLT.png",
+    "src": "img/stocks/TLT.png"
+  },
+  "TM": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TM.png",
+    "src": "img/stocks/TM.png"
+  },
+  "TNSR-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tnsr.png"
+  },
+  "TON-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ton.png"
+  },
+  "TOSHI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/toshi.png"
+  },
+  "TRAC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/trac.png"
+  },
+  "TREAD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tread.png"
+  },
+  "TREE-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tree.png"
+  },
+  "TRUMP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/trump.png"
+  },
+  "TRX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/trx.svg"
+  },
+  "TSCO.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TSCO.L.png",
+    "src": "img/stocks/TSCO.L.png"
+  },
+  "TSLA": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TSLA.png",
+    "src": "img/stocks/TSLA.png"
+  },
+  "TSM": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TSM.png",
+    "src": "img/stocks/TSM.png"
+  },
+  "TURBO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/turbo.png"
+  },
+  "TW.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TW.L.png",
+    "src": "img/stocks/TW.L.png"
+  },
+  "TX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/tx.png"
+  },
+  "TXN": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/TXN.png",
+    "src": "img/stocks/TXN.png"
+  },
+  "UBER": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/UBER.png",
+    "src": "img/stocks/UBER.png"
+  },
+  "ULVR.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/ULVR.L.png",
+    "src": "img/stocks/ULVR.L.png"
+  },
+  "UMA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/uma.svg"
+  },
+  "UMXM-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/umxm.png"
+  },
+  "UNH": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/UNH.png",
+    "src": "img/stocks/UNH.png"
+  },
+  "UNI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/uni.svg"
+  },
+  "UP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/up.png"
+  },
+  "US-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/us.png"
+  },
+  "USAT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usat.png"
+  },
+  "USD1-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usd1.png"
+  },
+  "USDC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/usdc.svg"
+  },
+  "USDD-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usdd.png"
+  },
+  "USDE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usde.png"
+  },
+  "USDG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usdg.png"
+  },
+  "USDGO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usdgo.png"
+  },
+  "USDPT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usdpt.png"
+  },
+  "USDS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usds.png"
+  },
+  "USDSM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usdsm.png"
+  },
+  "USDSUI-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usdsui.png"
+  },
+  "USDT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/usdt.svg"
+  },
+  "USELESS-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/useless.png"
+  },
+  "USUAL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/usual.png"
+  },
+  "UU.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/UU.L.png",
+    "src": "img/stocks/UU.L.png"
+  },
+  "V": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/V.png",
+    "src": "img/stocks/V.png"
+  },
+  "VEA": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VEA.png",
+    "src": "img/stocks/VEA.png"
+  },
+  "VELO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/velo.png"
+  },
+  "VELVET-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/velvet.png"
+  },
+  "VET-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/vet.svg"
+  },
+  "VIG": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VIG.png",
+    "src": "img/stocks/VIG.png"
+  },
+  "VIRTUAL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/virtual.png"
+  },
+  "VNQ": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VNQ.png",
+    "src": "img/stocks/VNQ.png"
+  },
+  "VOD.L": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VOD.L.png",
+    "src": "img/stocks/VOD.L.png"
+  },
+  "VOO": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VOO.png",
+    "src": "img/stocks/VOO.png"
+  },
+  "VSN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/vsn.png"
+  },
+  "VTHO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/vtho.svg"
+  },
+  "VTI": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VTI.png",
+    "src": "img/stocks/VTI.png"
+  },
+  "VUAG.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VUAG.L.png",
+    "src": "img/stocks/VUAG.L.png"
+  },
+  "VUKE.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VUKE.L.png",
+    "src": "img/stocks/VUKE.L.png"
+  },
+  "VUSA.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VUSA.L.png",
+    "src": "img/stocks/VUSA.L.png"
+  },
+  "VVV-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/vvv.png"
+  },
+  "VWO": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VWO.png",
+    "src": "img/stocks/VWO.png"
+  },
+  "VWRL.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VWRL.L.png",
+    "src": "img/stocks/VWRL.L.png"
+  },
+  "VWRP.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VWRP.L.png",
+    "src": "img/stocks/VWRP.L.png"
+  },
+  "VZ": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/VZ.png",
+    "src": "img/stocks/VZ.png"
+  },
+  "W-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/w.png"
+  },
+  "WAL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wal.png"
+  },
+  "WBT-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wbt.png"
+  },
+  "WBTC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/wbtc.svg"
+  },
+  "WCT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wct.png"
+  },
+  "WEIR.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/WEIR.L.png",
+    "src": "img/stocks/WEIR.L.png"
+  },
+  "WEMIX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wemix.png"
+  },
+  "WFC": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/WFC.png",
+    "src": "img/stocks/WFC.png"
+  },
+  "WIF-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wif.png"
+  },
+  "WIN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/win.png"
+  },
+  "WINGS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/wings.svg"
+  },
+  "WLD-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wld.png"
+  },
+  "WLFI-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wlfi.png"
+  },
+  "WMT": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/WMT.png",
+    "src": "img/stocks/WMT.png"
+  },
+  "WMTX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wmtx.png"
+  },
+  "WOJAK-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/wojak.png"
+  },
+  "WOO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/woo.png"
+  },
+  "WPP.L": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/WPP.L.png",
+    "src": "img/stocks/WPP.L.png"
+  },
+  "XAN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xan.png"
+  },
+  "XAUT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xaut.png"
+  },
+  "XCN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xcn.png"
+  },
+  "XDC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xdc.png"
+  },
+  "XDP-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xdp.png"
+  },
+  "XION-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xion.png"
+  },
+  "XLE": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XLE.png",
+    "src": "img/stocks/XLE.png"
+  },
+  "XLF": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XLF.png",
+    "src": "img/stocks/XLF.png"
+  },
+  "XLI": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XLI.png",
+    "src": "img/stocks/XLI.png"
+  },
+  "XLK": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XLK.png",
+    "src": "img/stocks/XLK.png"
+  },
+  "XLM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/xlm.svg"
+  },
+  "XLV": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XLV.png",
+    "src": "img/stocks/XLV.png"
+  },
+  "XLY": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XLY.png",
+    "src": "img/stocks/XLY.png"
+  },
+  "XMR-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/xmr.svg"
+  },
+  "XNY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xny.png"
+  },
+  "XOM": {
+    "chip": true,
+    "dark": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XOM.png",
+    "src": "img/stocks/XOM.png"
+  },
+  "XPL-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xpl.png"
+  },
+  "XRP-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/xrp.svg"
+  },
+  "XTZ-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/xtz.svg"
+  },
+  "XU3O8-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xu3o8.png"
+  },
+  "XYO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/xyo.png"
+  },
+  "XYZ": {
+    "chip": true,
+    "dark": false,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/XYZ.png",
+    "src": "img/stocks/XYZ.png"
+  },
+  "YB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/yb.png"
+  },
+  "YFI-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/yfi.svg"
+  },
+  "YGG-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/ygg.png"
+  },
+  "ZAMA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zama.png"
+  },
+  "ZBCN-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zbcn.png"
+  },
+  "ZBT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zbt.png"
+  },
+  "ZCHF-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zchf.png"
+  },
+  "ZEC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/zec.svg"
+  },
+  "ZEREBRO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zerebro.png"
+  },
+  "ZETA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zeta.png"
+  },
+  "ZIG-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zig.png"
+  },
+  "ZK-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zk.png"
+  },
+  "ZORA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zora.png"
+  },
+  "ZRO-USD": {
+    "chip": true,
+    "kind": "crypto",
+    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "src": "img/crypto/zro.png"
+  },
+  "ZRX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "spothq/cryptocurrency-icons (CC0)",
+    "src": "img/crypto/zrx.svg"
+  },
+  "^DJI": {
+    "chip": true,
+    "kind": "index",
+    "source": "Generated typographic mark (no official bitmap found)",
+    "src": "img/stocks/_DJI.png"
+  },
+  "^FTSE": {
+    "chip": true,
+    "kind": "index",
+    "source": "Generated typographic mark (no official bitmap found)",
+    "src": "img/stocks/_FTSE.png"
+  },
+  "^GSPC": {
+    "chip": true,
+    "kind": "index",
+    "source": "Generated typographic mark (no official bitmap found)",
+    "src": "img/stocks/_GSPC.png"
+  },
+  "^IXIC": {
+    "chip": true,
+    "kind": "index",
+    "source": "Generated typographic mark (no official bitmap found)",
+    "src": "img/stocks/_IXIC.png"
+  }
+}

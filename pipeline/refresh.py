@@ -63,6 +63,8 @@ UNIVERSE = [
     "BA.L", "SPX.L", "RTO.L", "HLMA.L", "HIK.L", "PSH.L",
     # FX
     "GBPUSD=X", "EURUSD=X",
+    # Indices
+    "^GSPC", "^IXIC", "^DJI", "^FTSE",
 ]
 
 # De-dupe while keeping order
@@ -135,6 +137,12 @@ def bars(result: dict, ohlc: bool) -> list[dict]:
         if c is None or t is None:
             continue
         row = {"t": int(t), "c": float(c)}
+        vol = (q.get("volume") or [None] * len(ts))[i]
+        if vol is not None:
+            try:
+                row["v"] = float(vol)
+            except (TypeError, ValueError):
+                pass
         if ohlc:
             o = (q.get("open") or [None] * len(ts))[i]
             h = (q.get("high") or [None] * len(ts))[i]
@@ -157,6 +165,22 @@ def kind_of(meta: dict, symbol: str) -> str:
     if it == "INDEX":
         return "index"
     return "equity"
+
+
+
+def dividends_from(result: dict, scale: float = 1.0) -> list[dict]:
+    ev = ((result.get("events") or {}).get("dividends") or {})
+    out = []
+    for item in ev.values() if isinstance(ev, dict) else ev:
+        try:
+            amt = float(item.get("amount"))
+            dt = int(item.get("date") or item.get("t") or 0)
+        except (TypeError, ValueError):
+            continue
+        if dt and amt:
+            out.append({"t": dt, "amount": amt * scale})
+    out.sort(key=lambda x: x["t"])
+    return out[-12:]
 
 
 def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
@@ -260,6 +284,8 @@ def main() -> int:
                 # Yahoo FX: GBPUSD=X price is USD per 1 GBP
                 fx[sym.replace("=X", "")] = q["price"]
 
+            scale = 0.01 if q.get("unit") == "pence" else 1.0
+            divs = dividends_from(daily, scale)
             if q.get("unit") == "pence":
                 def _sc(rows):
                     out = []
@@ -272,12 +298,15 @@ def main() -> int:
                     return out
                 daily_bars = _sc(daily_bars)
                 intra = _sc(intra)
+            if divs:
+                q["lastDiv"] = divs[-1]
             hist_path = HIST / f"{sym}.json"
             payload = {
                 "symbol": sym,
                 "currency": q["currency"],
                 "daily": daily_bars,
                 "intraday": intra,
+                "dividends": divs,
             }
             hist_path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
             print(f"  {sym:12} {q['currency']} {q['price']}", flush=True)
@@ -310,6 +339,13 @@ def main() -> int:
     )
     if errors:
         print("Errors:", *errors, sep="\n  ", flush=True)
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from market_extras import write_market
+        write_market(DATA, quotes, UA)
+    except Exception as e:
+        print(f"market extras failed: {e}", flush=True)
+        errors.append(f"market extras: {e}")
     return 0
 
 
