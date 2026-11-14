@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't9';
+const BUILD = 't10';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -58,6 +58,7 @@ let marketsList = 'mcap', marketsShowAll = false;
 let cryptoMarkets = { coins: [], trending: [], newListings: [], asOf: null };
 let volumes = {};
 let sentiment = null;
+let ipos = { upcoming: [], priced: [], filed: [], withdrawn: [], counts: {}, asOf: null };
 let ws = null, wsRetry = 0, wsTimer = 0, pollTimer = 0;
 let lastFlash = {}, lastHero = null, readerItem = null, fsChartApi = null, newsIndex = {};
 let ptr = null;
@@ -335,6 +336,12 @@ async function loadSentiment() {
   try {
     const r = await fetch('data/market_sentiment.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
     if (r.ok) sentiment = await r.json();
+  } catch (e) {}
+}
+async function loadIpos() {
+  try {
+    const r = await fetch('data/ipos.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
+    if (r.ok) ipos = Object.assign({ upcoming: [], priced: [], filed: [], withdrawn: [], counts: {} }, await r.json());
   } catch (e) {}
 }
 
@@ -1034,6 +1041,7 @@ function marketChipsFor(pane, extras) {
   if (pane === 'crypto') chips.push({ id: 'mcap', label: 'Market cap' });
   else chips.push({ id: 'all', label: pane === 'commodities' ? 'All contracts' : 'All' });
   chips.push({ id: 'gainers', label: 'Top gainers' }, { id: 'losers', label: 'Top losers' }, { id: 'volume', label: 'Most active' });
+  if (pane === 'stocks') chips.push({ id: 'ipos', label: 'IPOs' });
   if (extras && extras.newListings) chips.push({ id: 'new', label: 'New listings' });
   if (extras && extras.trending) chips.push({ id: 'trending', label: 'Trending' });
   return chips;
@@ -1202,6 +1210,243 @@ function openSentiment(which) {
     '</div>';
 }
 
+
+function ipoById(id) {
+  if (!id || !ipos) return null;
+  const bags = ['upcoming', 'priced', 'filed', 'withdrawn'];
+  for (const b of bags) {
+    const hit = (ipos[b] || []).find(r => r && r.id === id);
+    if (hit) return hit;
+  }
+  return null;
+}
+function isIpoQuoteable(rec) {
+  if (!rec) return false;
+  const sym = rec.quoteSymbol || rec.ticker;
+  const q = sym && quotes[sym];
+  return !!(rec.quoteable && q && q.ok && q.price != null);
+}
+function ipoHref(rec) {
+  if (isIpoQuoteable(rec)) return '#/s/' + encodeURIComponent(rec.quoteSymbol || rec.ticker);
+  return '#/ipo/' + encodeURIComponent(rec.id);
+}
+function fmtIpoDate(iso) {
+  if (!iso) return '';
+  const s = String(iso);
+  const d = new Date(s.length <= 10 ? s + 'T00:00:00Z' : s);
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+function fmtShares(n, text) {
+  if (n != null && isFinite(n)) {
+    if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(n >= 1e8 ? 0 : 1) + 'M';
+    return Math.round(n).toLocaleString('en-GB');
+  }
+  return text || '';
+}
+function ipoAv(rec) {
+  const id = rec.quoteSymbol || rec.ticker || rec.id;
+  const L = (rec.logo ? { src: rec.logo, chip: String(rec.logo).endsWith('.png') } : null) || logoRec(id);
+  const chip = L && L.chip !== false;
+  const cls = ['av', chip ? 'chip' : ''].filter(Boolean).join(' ');
+  if (L && L.src) return '<div class="' + cls + '"><img src="' + esc(L.src) + '" alt="" onerror="window.__avErr&&__avErr(this)" data-ph="' + esc(initials(rec.company, rec.ticker || rec.id)) + '"></div>';
+  return '<div class="' + cls + ' ph">' + esc(initials(rec.company, rec.ticker || rec.id)) + '</div>';
+}
+function ipoRight(rec) {
+  if (rec.status === 'priced') {
+    const ret = rec.returnPct;
+    const cur = rec.currentPrice != null
+      ? money(rec.currentPrice, rec.currentCurrency || 'USD', { px: true })
+      : '';
+    const ipo = rec.ipoPrice != null
+      ? fmtUsdTerms(rec.ipoPrice, rec.ipoPriceText)
+      : (rec.ipoPriceText || '');
+    if (cur) {
+      return '<div class="px">' + esc(cur) + '</div>' +
+        (ret != null
+          ? '<div class="chg ' + chgClass(ret) + '">' + esc(pct(ret)) + ' since IPO</div>'
+          : '');
+    }
+    return '<div class="px">' + esc(ipo || '—') + '</div><div class="chg">IPO price</div>';
+  }
+  const range = rec.priceRange || (rec.ipoPrice != null ? fmtUsdTerms(rec.ipoPrice, rec.ipoPriceText) : (rec.ipoPriceText || ''));
+  const deal = rec.dealSize != null ? fmtUsdTerms(rec.dealSize, rec.dealSizeText) : (rec.dealSizeText || '');
+  return '<div class="px">' + esc(range || '—') + '</div>' +
+    (deal ? '<div class="chg">' + esc(deal) + '</div>' : '');
+}
+function shortExchange(ex) {
+  if (!ex) return '';
+  const s = String(ex);
+  if (/nasdaq/i.test(s)) return 'Nasdaq';
+  if (/^nyse/i.test(s)) return 'NYSE';
+  return s;
+}
+function fmtUsdTerms(n, text) {
+  if (n != null && isFinite(n)) {
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    if (abs >= 1e12) return sign + '$' + (abs / 1e12).toFixed(2) + 'T';
+    if (abs >= 1e9) return sign + '$' + (abs / 1e9).toFixed(2) + 'B';
+    if (abs >= 1e6) return sign + '$' + (abs / 1e6).toFixed(abs >= 1e8 ? 0 : 1) + 'M';
+    return sign + '$' + abs.toLocaleString('en-GB', { minimumFractionDigits: abs >= 100 ? 0 : 2, maximumFractionDigits: 2 });
+  }
+  return text || '';
+}
+function ipoMeta(rec) {
+  const bits = [];
+  if (rec.ticker) bits.push(rec.ticker);
+  if (rec.exchange) bits.push(shortExchange(rec.exchange));
+  const dt = rec.expectedDate || rec.pricedDate || rec.filedDate || rec.withdrawnDate || rec.date;
+  if (dt) bits.push(fmtIpoDate(dt));
+  return bits.map(b => '<span>' + esc(b) + '</span>').join('');
+}
+function ipoRowHTML(rec) {
+  if (!rec) return '';
+  return '<a class="row ipo-row" href="' + ipoHref(rec) + '" data-act="ipo" data-id="' + esc(rec.id) + '">' +
+    ipoAv(rec) +
+    '<div class="mid"><div class="nm">' + esc(rec.company || rec.ticker || 'IPO') + '</div><div class="tk">' + ipoMeta(rec) + '</div></div>' +
+    '<div class="rgt">' + ipoRight(rec) + '</div></a>';
+}
+function ipoSectionHTML(title, rows, opts) {
+  opts = opts || {};
+  const all = rows || [];
+  const limit = opts.limit || 0;
+  const show = limit && !opts.full && all.length > limit ? all.slice(0, limit) : all;
+  const more = (!opts.full && limit && all.length > limit)
+    ? '<button type="button" class="see-all" data-act="open-ipos" data-id="' + esc(opts.anchor || '') + '">See all ' + all.length + '</button>'
+    : '';
+  const empty = all.length ? '' : '<div class="empty"><p>' + esc(opts.empty || 'None in the latest calendar.') + '</p></div>';
+  return '<div class="sec-h"' + (opts.anchor ? ' id="' + esc(opts.anchor) + '"' : '') + '><h2>' + esc(title) + '</h2>' +
+    (all.length ? '<small class="more">' + all.length + '</small>' : '') + '</div>' +
+    '<div class="list">' + (show.map(ipoRowHTML).join('') || empty) + '</div>' + more;
+}
+function iposAsOfLine() {
+  const whenBit = ipos && ipos.asOf ? ago(ipos.asOf) : '';
+  const srcs = (ipos && ipos.sources) || [];
+  let src = 'Nasdaq IPO calendar';
+  if (srcs.some(function(s) { return /stockanalysis/i.test(s || ''); })) src += ' and StockAnalysis';
+  return '<p class="note">As of ' + esc(whenBit || 'the latest refresh') + ' · ' + esc(src) + '. Terms are not an offer. Not financial advice.</p>';
+}
+function iposPreviewHTML() {
+  const up = (ipos && ipos.upcoming) || [];
+  const pr = (ipos && ipos.priced) || [];
+  const fi = (ipos && ipos.filed) || [];
+  if (!up.length && !pr.length && !fi.length) {
+    return '<div class="sec-h"><h2>IPOs</h2></div><div class="empty"><p>No IPO calendar data in the latest refresh.</p></div>' + iposAsOfLine();
+  }
+  return iposAsOfLine() +
+    ipoSectionHTML('Upcoming', up, { limit: 10, empty: 'No upcoming IPOs in the calendar window.', anchor: 'ipo-up' }) +
+    ipoSectionHTML('Recently priced', pr, { limit: 10, empty: 'No recently priced IPOs in the calendar window.', anchor: 'ipo-pr' }) +
+    ipoSectionHTML('Filed', fi, { limit: 10, empty: 'No recent filings in the calendar window.', anchor: 'ipo-fi' }) +
+    '<button type="button" class="see-all" data-act="open-ipos">See all IPOs</button>';
+}
+function closeIpoSheets() {
+  const a = $('#ipos'), b = $('#ipoDetail');
+  let closed = false;
+  if (a && !a.hidden) { a.hidden = true; a.innerHTML = ''; closed = true; }
+  if (b && !b.hidden) { b.hidden = true; b.innerHTML = ''; closed = true; }
+  if (closed) document.body.classList.remove('hide-dock');
+}
+function closeIpoDetail() {
+  const el = $('#ipoDetail');
+  if (el) { el.hidden = true; el.innerHTML = ''; }
+  if ($('#ipos') && !$('#ipos').hidden) return;
+  document.body.classList.remove('hide-dock');
+}
+function openIposPage() {
+  const el = $('#ipos');
+  if (!el) return;
+  closeIpoDetail();
+  const uk = ipos && ipos.uk;
+  const ukBit = (uk && !uk.skipped && uk.items && uk.items.length)
+    ? ipoSectionHTML('UK / LSE', uk.items, { full: true })
+    : '';
+  const wd = (ipos && ipos.withdrawn) || [];
+  el.hidden = false;
+  document.body.classList.add('hide-dock');
+  el.scrollTop = 0;
+  el.innerHTML =
+    '<div class="d-bar"><button class="ib" data-act="close-ipos" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>IPOs</h2><span></span></div>' +
+    '<div class="ipo-page">' + iposAsOfLine() +
+      ipoSectionHTML('Upcoming', (ipos && ipos.upcoming) || [], { full: true, empty: 'No upcoming IPOs in the calendar window.', anchor: 'ipo-up' }) +
+      ipoSectionHTML('Recently priced', (ipos && ipos.priced) || [], { full: true, empty: 'No recently priced IPOs in the calendar window.', anchor: 'ipo-pr' }) +
+      ipoSectionHTML('Filed', (ipos && ipos.filed) || [], { full: true, empty: 'No recent filings in the calendar window.', anchor: 'ipo-fi' }) +
+      (wd.length ? ipoSectionHTML('Withdrawn', wd, { full: true }) : '') +
+      ukBit +
+    '</div>';
+}
+function ipoFacts(rec) {
+  const rows = [];
+  const add = (k, v) => { if (v) rows.push([k, v]); };
+  add('Ticker', rec.ticker);
+  add('Exchange', rec.exchange);
+  if (rec.status === 'upcoming') add('Expected date', fmtIpoDate(rec.expectedDate || rec.date));
+  if (rec.status === 'priced') add('Priced', fmtIpoDate(rec.pricedDate || rec.date));
+  if (rec.status === 'filed') add('Filed', fmtIpoDate(rec.filedDate || rec.date));
+  if (rec.status === 'withdrawn') {
+    add('Withdrawn', fmtIpoDate(rec.withdrawnDate || rec.date));
+    add('Filed', fmtIpoDate(rec.filedDate));
+  }
+  add('Price range', rec.priceRange);
+  if (rec.ipoPrice != null) add('IPO price', fmtUsdTerms(rec.ipoPrice, rec.ipoPriceText));
+  else if (rec.ipoPriceText) add('IPO price', rec.ipoPriceText);
+  if (rec.currentPrice != null) add('Current', money(rec.currentPrice, rec.currentCurrency || 'USD', { px: true }));
+  if (rec.returnPct != null) add('Since IPO', pct(rec.returnPct));
+  if (rec.sharesOffered != null) add('Shares offered', fmtShares(rec.sharesOffered, rec.sharesText));
+  else if (rec.sharesText) add('Shares offered', rec.sharesText);
+  if (rec.dealSize != null) add('Deal size', fmtUsdTerms(rec.dealSize, rec.dealSizeText));
+  else if (rec.dealSizeText) add('Deal size', rec.dealSizeText);
+  add('Status', rec.status ? rec.status.charAt(0).toUpperCase() + rec.status.slice(1) : '');
+  add('Source', rec.source);
+  let html = '<div class="ipo-facts">';
+  rows.forEach(function(r) {
+    html += '<div><span>' + esc(r[0]) + '</span><b>' + esc(String(r[1])) + '</b></div>';
+  });
+  html += '</div>';
+  return html;
+}
+function openIpoDetail(id) {
+  const rec = ipoById(id);
+  const el = $('#ipoDetail');
+  if (!el) return;
+  if (!rec) {
+    el.hidden = false;
+    document.body.classList.add('hide-dock');
+    el.innerHTML = '<div class="d-bar"><button class="ib" data-act="close-ipo-detail" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>IPO</h2><span></span></div>' +
+      '<div class="ipo-page"><div class="empty"><p>This deal was not in the latest calendar.</p></div></div>';
+    return;
+  }
+  if (isIpoQuoteable(rec)) {
+    closeIpoSheets();
+    location.hash = '#/s/' + encodeURIComponent(rec.quoteSymbol || rec.ticker);
+    return;
+  }
+  const newsItems = rec.news || [];
+  rememberNews(newsItems);
+  // Also pull any later by-symbol / market matches already in memory.
+  const extra = [];
+  const tickers = [rec.ticker, rec.quoteSymbol].filter(Boolean);
+  tickers.forEach(function(tk) {
+    ((news && news.bySymbol && news.bySymbol[tk]) || []).forEach(function(n) { extra.push(n); });
+  });
+  const combined = newsItems.concat(extra);
+  el.hidden = false;
+  document.body.classList.add('hide-dock');
+  el.scrollTop = 0;
+  el.innerHTML =
+    '<div class="d-bar"><button class="ib" data-act="close-ipo-detail" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>IPO</h2><span></span></div>' +
+    '<div class="ipo-page">' +
+      '<div class="ipo-hero">' + ipoAv(rec) +
+        '<div><h3>' + esc(rec.company || rec.ticker || 'IPO') + '</h3>' +
+        '<p class="tk">' + ipoMeta(rec) + '</p></div></div>' +
+      ipoFacts(rec) +
+      iposAsOfLine() +
+      '<div class="sec-h"><h2>Related news</h2></div>' +
+      newsListHTML(combined, 'No related headlines in the latest refresh.') +
+    '</div>';
+}
+
 function renderMarkets(opts) {
   opts = opts || {};
   const el = $('#marketsIn');
@@ -1209,7 +1454,7 @@ function renderMarkets(opts) {
   marketsPane = pane;
   const allowed = pane === 'crypto'
     ? ['mcap','gainers','losers','volume','new','trending']
-    : ['all','gainers','losers','volume'];
+    : (pane === 'stocks' ? ['all','gainers','losers','volume','ipos'] : ['all','gainers','losers','volume']);
   if (!allowed.includes(marketsList)) marketsList = defaultMarketsList(pane);
 
   const universe = Object.values(quotes).filter(q => q && q.ok && q.changePct != null && q.kind !== 'fx');
@@ -1230,11 +1475,13 @@ function renderMarkets(opts) {
     const headlines = (news && news.market) || [];
     rememberNews(headlines);
     const chips = marketChipsFor('stocks');
-    const ids = sortMarketIds(eq, marketsList);
+    const ids = sortMarketIds(eq, marketsList === 'ipos' ? 'volume' : marketsList);
     const label = (chips.find(c => c.id === marketsList) || {}).label || 'Stocks';
+    const mid = marketsList === 'ipos'
+      ? iposPreviewHTML()
+      : ('<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids));
     body = sentimentCardsHTML() + '<div class="idx-grid">' + (idxCards || '<div class="empty"><p>Index quotes have not loaded yet.</p></div>') + '</div>' +
-      chipBarHTML(chips, marketsList) +
-      '<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids) +
+      chipBarHTML(chips, marketsList) + mid +
       '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(headlines, 'No market headlines in the latest refresh.');
   } else if (pane === 'crypto') {
     applyCryptoMarkets();
@@ -2273,7 +2520,27 @@ function applyHash() {
   if (m) {
     const id = decodeURIComponent(m[1]);
     const vs = m[2] ? decodeURIComponent(m[2]) : null;
+    closeIpoSheets();
     if (detailId !== id || compareId !== vs) { detailId = id; compareId = vs; renderDetail(id); }
+    return;
+  }
+  if (h === '#/ipos' || h.startsWith('#/ipos/')) {
+    if (detailId) closeDetail(false);
+    if (readerItem) closeReader(true);
+    go(1, { nohash: true });
+    marketsPane = 'stocks';
+    marketsList = 'ipos';
+    openIposPage();
+    return;
+  }
+  const ipoM = h.match(/^#\/ipo\/(.+)$/);
+  if (ipoM) {
+    if (detailId) closeDetail(false);
+    if (readerItem) closeReader(true);
+    go(1, { nohash: true });
+    marketsPane = 'stocks';
+    marketsList = 'ipos';
+    openIpoDetail(decodeURIComponent(ipoM[1]));
     return;
   }
   if (h.startsWith('#/read')) {
@@ -2282,6 +2549,7 @@ function applyHash() {
   }
   if (readerItem) closeReader(true);
   if (detailId) closeDetail(false);
+  closeIpoSheets();
   let i = 0;
   if (h.startsWith('#/markets')) {
     i = 1;
@@ -2409,6 +2677,7 @@ dock.addEventListener('keydown', e => {
 
 pager.addEventListener('pointerdown', e => {
   if (detailId || !$('#modal').hidden || e.button > 0) return;
+  if (document.body.classList.contains('hide-dock')) return;
   if (e.target.closest('#chart,#vol,.rng,.tools,input,select,textarea,button,.sheet')) return;
   swipe = { x: e.clientX, y: e.clientY, t: performance.now(), w: pager.clientWidth, i: TABS.indexOf(tab), moved: false };
 });
@@ -2661,6 +2930,22 @@ function onClick(e) {
   if (sentBtn) { openSentiment(sentBtn.dataset.id); return; }
   const closeSent = e.target.closest('[data-act="close-sentiment"]');
   if (closeSent) { closeSentiment(); return; }
+  const openIpos = e.target.closest('[data-act="open-ipos"]');
+  if (openIpos) { location.hash = '#/ipos'; return; }
+  const closeIposBtn = e.target.closest('[data-act="close-ipos"]');
+  if (closeIposBtn) {
+    closeIpoSheets();
+    if (history.length > 1) history.back();
+    else { marketsList = 'ipos'; history.replaceState(null, '', '#/markets/stocks'); renderMarkets(); }
+    return;
+  }
+  const closeIpoD = e.target.closest('[data-act="close-ipo-detail"]');
+  if (closeIpoD) {
+    closeIpoDetail();
+    if (history.length > 1) history.back();
+    else location.hash = '#/ipos';
+    return;
+  }
   const fsBtn = e.target.closest('[data-act="chart-fs"]');
   if (fsBtn) { openFullscreenChart(fsBtn.dataset.src); return; }
   const closeFs = e.target.closest('[data-act="close-fs"]');
@@ -2735,7 +3020,7 @@ function onClick(e) {
 }
 
 async function refreshAll() {
-  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadSentiment(), loadPairs().then(loadCryptoOnce)]); applyCryptoMarkets();
+  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadSentiment(), loadIpos(), loadPairs().then(loadCryptoOnce)]); applyCryptoMarkets();
   renderAll();
   loadCryptoSparks().then(() => { if (tab === 'watch' || tab === 'markets') { renderWatch(); renderMarkets(); } if (tab === 'home') updatePortfolioLive(); });
   connectWS();

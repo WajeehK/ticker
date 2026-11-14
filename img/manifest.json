@@ -60,6 +60,12 @@
     "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/ABF.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/ABF.L.png"
   },
+  "ABGC": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ABGC.svg"
+  },
   "ABNB": {
     "chip": true,
     "dark": false,
@@ -209,12 +215,24 @@
     "source": "Financial Modeling Prep image-stock/AMD.png",
     "src": "img/stocks/AMD.png"
   },
+  "AMRO": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/AMRO.svg"
+  },
   "AMZN": {
     "chip": true,
     "dark": false,
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/AMZN.png",
     "src": "img/stocks/AMZN.png"
+  },
+  "ANACU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ANACU.svg"
   },
   "ANIME-USD": {
     "chip": false,
@@ -228,12 +246,24 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/ankr.svg"
   },
+  "ANT": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ANT.svg"
+  },
   "ANTO.L": {
     "chip": true,
     "dark": true,
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/ANTO.L.png",
     "src": "img/stocks/ANTO.L.png"
+  },
+  "APCDU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/APCDU.svg"
   },
   "APE-USD": {
     "chip": false,
@@ -265,6 +295,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/apt.png"
+  },
+  "APTTU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/APTTU.svg"
   },
   "APXUSD-USD": {
     "chip": true,
@@ -326,6 +362,12 @@
     "kind": "stock",
     "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/ASML.png (stored locally, not hotlinked)",
     "src": "img/stocks/ASML.png"
+  },
+  "ASPE": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ASPE.svg"
   },
   "ASSET-USD": {
     "chip": true,
@@ -532,6 +574,12 @@
     "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/BTI.png (stored locally, not hotlinked)",
     "src": "img/stocks/BATS.L.png"
   },
+  "BBTX": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/BBTX.svg"
+  },
   "BCH-USD": {
     "chip": false,
     "kind": "crypto",
@@ -550,6 +598,12 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/beam.svg"
   },
+  "BENE": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/BENE.svg"
+  },
   "BERA-USD": {
     "chip": false,
     "kind": "crypto",
@@ -567,6 +621,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/bgb.png"
+  },
+  "BHAIU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/BHAIU.svg"
   },
   "BICO-USD": {
     "chip": true,
@@ -857,6 +917,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/chr.png"
   },
+  "CHWM": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for CHWM",
+    "src": "img/ipos/CHWM.png"
+  },
   "CHZ-USD": {
     "chip": false,
     "kind": "crypto",
@@ -880,6 +946,12 @@
     "kind": "stock",
     "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/CNA.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/CNA.L.png"
+  },
+  "CNTL": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/CNTL.svg"
   },
   "COIN": {
     "chip": true,
@@ -1009,6 +1081,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/ctsi.png"
   },
+  "CTY": {
+    "chip": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CTY.png",
+    "src": "img/ipos/CTY.png"
+  },
   "CVC-USD": {
     "chip": false,
     "kind": "crypto",
@@ -1027,6 +1105,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/cvx.png"
+  },
+  "CXIVU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/CXIVU.svg"
   },
   "CYBER-USD": {
     "chip": false,
@@ -1051,6 +1135,12 @@
     "kind": "crypto",
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/dash.svg"
+  },
+  "DAVI": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for DAVI",
+    "src": "img/ipos/DAVI.png"
   },
   "DBR-USD": {
     "chip": false,
@@ -1132,6 +1222,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/dna.png"
+  },
+  "DODC": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/DODC.svg"
   },
   "DOG-USD": {
     "chip": false,
@@ -1363,6 +1459,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/ff.png"
   },
+  "FFLY": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/FFLY.svg"
+  },
   "FIDA-USD": {
     "chip": false,
     "kind": "crypto",
@@ -1411,6 +1513,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/flr.png"
   },
+  "FLSC": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/FLSC.svg"
+  },
   "FLTR.L": {
     "chip": true,
     "dark": false,
@@ -1423,6 +1531,12 @@
     "kind": "crypto",
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/flux.svg"
+  },
+  "FMSN": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/FMSN.svg"
   },
   "FOLD-USD": {
     "chip": true,
@@ -1466,6 +1580,12 @@
     "kind": "crypto",
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/gas.svg"
+  },
+  "GBC": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/GBC.svg"
   },
   "GBP-USD": {
     "chip": false,
@@ -1731,6 +1851,12 @@
     "source": "Financial Modeling Prep image-stock/IAG.L.png",
     "src": "img/stocks/IAG.L.png"
   },
+  "IAM": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/IAM.svg"
+  },
   "IAU": {
     "chip": true,
     "dark": false,
@@ -1833,6 +1959,12 @@
     "source": "Downloaded https://financialmodelingprep.com/image-stock/ISF.png (stored locally, not hotlinked)",
     "src": "img/stocks/ISF.L.png"
   },
+  "ISTL": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ISTL.svg"
+  },
   "IUSA.L": {
     "chip": true,
     "kind": "etf",
@@ -1910,6 +2042,12 @@
     "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/jup.png"
   },
+  "KACQU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/KACQU.svg"
+  },
   "KAITO-USD": {
     "chip": true,
     "kind": "crypto",
@@ -1927,6 +2065,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/kat.png"
+  },
+  "KATX": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/KATX.svg"
   },
   "KAVA-USD": {
     "chip": false,
@@ -2062,6 +2206,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/lion.png"
   },
+  "LIS": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/LIS.svg"
+  },
   "LIT-USD": {
     "chip": false,
     "kind": "crypto",
@@ -2081,6 +2231,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/LLY.png",
     "src": "img/stocks/LLY.png"
+  },
+  "LPCI": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/LPCI.svg"
   },
   "LPT-USD": {
     "chip": false,
@@ -2131,6 +2287,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/luna.png"
   },
+  "LYCA": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for LYCA",
+    "src": "img/ipos/LYCA.png"
+  },
   "M-USD": {
     "chip": false,
     "kind": "crypto",
@@ -2168,6 +2330,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/MCD.png",
     "src": "img/stocks/MCD.png"
+  },
+  "MDRN": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/MDRN.svg"
   },
   "ME-USD": {
     "chip": true,
@@ -2363,6 +2531,12 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/nano.svg"
   },
+  "NARA": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/NARA.svg"
+  },
   "NEAR-USD": {
     "chip": false,
     "kind": "crypto",
@@ -2424,6 +2598,12 @@
     "kind": "commodity",
     "source": "Original circular mark drawn for Ticker (this repo)",
     "src": "img/commodities/gas.svg"
+  },
+  "NIAAU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/NIAAU.svg"
   },
   "NIGHT-USD": {
     "chip": false,
@@ -2570,6 +2750,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/op.png"
   },
+  "OPAY": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/OPAY.svg"
+  },
   "OPEN-USD": {
     "chip": true,
     "kind": "crypto",
@@ -2632,6 +2818,12 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/paxg.svg"
   },
+  "PAXGU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PAXGU.svg"
+  },
   "PEAQ-USD": {
     "chip": false,
     "kind": "crypto",
@@ -2682,6 +2874,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/PG.png",
     "src": "img/stocks/PG.png"
+  },
+  "PGA": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PGA.svg"
   },
   "PHA-USD": {
     "chip": true,
@@ -2755,6 +2953,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/portal.png"
   },
+  "PORTU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PORTU.svg"
+  },
   "POWR-USD": {
     "chip": false,
     "kind": "crypto",
@@ -2811,6 +3015,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/PSON.L.png",
     "src": "img/stocks/PSON.L.png"
+  },
+  "PTRT": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PTRT.svg"
   },
   "PUFFER-USD": {
     "chip": false,
@@ -2880,6 +3090,12 @@
     "kind": "crypto",
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/qtum.svg"
+  },
+  "RACV": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/RACV.svg"
   },
   "RAD-USD": {
     "chip": false,
@@ -3030,11 +3246,23 @@
     "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/RTO.png (stored locally, not hotlinked)",
     "src": "img/stocks/RTO.L.png"
   },
+  "RTSN": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for RTSN",
+    "src": "img/ipos/RTSN.png"
+  },
   "RUNE-USD": {
     "chip": false,
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/rune.png"
+  },
+  "RZRA": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/RZRA.svg"
   },
   "S-USD": {
     "chip": false,
@@ -3099,6 +3327,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/SCHD.png",
     "src": "img/stocks/SCHD.png"
+  },
+  "SCQCU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/SCQCU.svg"
   },
   "SEI-USD": {
     "chip": false,
@@ -3473,6 +3707,12 @@
     "source": "Financial Modeling Prep image-stock/SVT.L.png",
     "src": "img/stocks/SVT.L.png"
   },
+  "SWA": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/SWA.svg"
+  },
   "SXT-USD": {
     "chip": true,
     "kind": "crypto",
@@ -3515,6 +3755,18 @@
     "kind": "crypto",
     "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/tao.png"
+  },
+  "TCAA": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/TCAA.svg"
+  },
+  "TCXB": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/TCXB.svg"
   },
   "TEL-USD": {
     "chip": false,
@@ -3596,6 +3848,12 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/trx.svg"
   },
+  "TRXB": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for TRXB",
+    "src": "img/ipos/TRXB.png"
+  },
   "TSCO.L": {
     "chip": true,
     "kind": "stock",
@@ -3654,6 +3912,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/UBER.png",
     "src": "img/stocks/UBER.png"
+  },
+  "UCSBU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/UCSBU.svg"
   },
   "ULVR.L": {
     "chip": true,
@@ -3935,6 +4199,12 @@
     "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/vvv.png"
   },
+  "VVVV": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/VVVV.svg"
+  },
   "VWO": {
     "chip": true,
     "dark": true,
@@ -4070,6 +4340,12 @@
     "kind": "stock",
     "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/WPP.png (stored locally, not hotlinked)",
     "src": "img/stocks/WPP.L.png"
+  },
+  "WWB": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/WWB.svg"
   },
   "XAN-USD": {
     "chip": false,
@@ -4228,6 +4504,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/ygg.png"
   },
+  "ZACAU": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ZACAU.svg"
+  },
   "ZAMA-USD": {
     "chip": false,
     "kind": "crypto",
@@ -4323,5 +4605,377 @@
     "kind": "index",
     "source": "Original circular mark drawn for Ticker (this repo)",
     "src": "img/indices/nasdaq.svg"
+  },
+  "nasdaq:1016325-119601": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/SWA.svg"
+  },
+  "nasdaq:1112626-119575": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for LYCA",
+    "src": "img/ipos/LYCA.png"
+  },
+  "nasdaq:1175376-99111": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1175376-99111.svg"
+  },
+  "nasdaq:1203818-119737": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1203818-119737.svg"
+  },
+  "nasdaq:1268763-119729": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/LIS.svg"
+  },
+  "nasdaq:1273626-119431": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/IAM.svg"
+  },
+  "nasdaq:1278671-119418": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for RTSN",
+    "src": "img/ipos/RTSN.png"
+  },
+  "nasdaq:1314383-111989": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1314383-111989.svg"
+  },
+  "nasdaq:1320589-119617": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/BBTX.svg"
+  },
+  "nasdaq:1326992-116748": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1326992-116748.svg"
+  },
+  "nasdaq:1344257-114782": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for DAVI",
+    "src": "img/ipos/DAVI.png"
+  },
+  "nasdaq:1348215-116707": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1348215-116707.svg"
+  },
+  "nasdaq:1349773-115430": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1349773-115430.svg"
+  },
+  "nasdaq:1355802-115971": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1355802-115971.svg"
+  },
+  "nasdaq:1360501-116438": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PAXGU.svg"
+  },
+  "nasdaq:1390143-118358": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/NARA.svg"
+  },
+  "nasdaq:1393582-118650": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for CHWM",
+    "src": "img/ipos/CHWM.png"
+  },
+  "nasdaq:1397270-118941": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1397270-118941.svg"
+  },
+  "nasdaq:1397449-118968": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PORTU.svg"
+  },
+  "nasdaq:1399418-119140": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1399418-119140.svg"
+  },
+  "nasdaq:1400157-119190": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/AMRO.svg"
+  },
+  "nasdaq:1401052-119568": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/NIAAU.svg"
+  },
+  "nasdaq:1402228-119376": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/SCQCU.svg"
+  },
+  "nasdaq:1402904-119414": {
+    "chip": true,
+    "kind": "stock",
+    "source": "CompaniesMarketCap 256px logo for TRXB",
+    "src": "img/ipos/TRXB.png"
+  },
+  "nasdaq:1403442-119456": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/FLSC.svg"
+  },
+  "nasdaq:1403574-119467": {
+    "chip": true,
+    "kind": "stock",
+    "source": "Financial Modeling Prep image-stock/CTY.png",
+    "src": "img/ipos/CTY.png"
+  },
+  "nasdaq:1403753-119489": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/TCXB.svg"
+  },
+  "nasdaq:1404187-119517": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/BHAIU.svg"
+  },
+  "nasdaq:1404403-119532": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PGA.svg"
+  },
+  "nasdaq:1404603-119547": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ANACU.svg"
+  },
+  "nasdaq:1404860-119573": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/DODC.svg"
+  },
+  "nasdaq:1405102-119585": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/TCAA.svg"
+  },
+  "nasdaq:1405308-119590": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/CNTL.svg"
+  },
+  "nasdaq:1405668-119603": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/OPAY.svg"
+  },
+  "nasdaq:1405733-119610": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ASPE.svg"
+  },
+  "nasdaq:1405769-119616": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/PTRT.svg"
+  },
+  "nasdaq:1405820-119623": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/APTTU.svg"
+  },
+  "nasdaq:1405985-119627": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1405985-119627.svg"
+  },
+  "nasdaq:1406785-119677": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ISTL.svg"
+  },
+  "nasdaq:1406974-119688": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1406974-119688.svg"
+  },
+  "nasdaq:1407089-119692": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/RZRA.svg"
+  },
+  "nasdaq:1407948-119748": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/FMSN.svg"
+  },
+  "nasdaq:1408158-119762": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1408158-119762.svg"
+  },
+  "nasdaq:1408177-119763": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/KATX.svg"
+  },
+  "nasdaq:1408395-119777": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/UCSBU.svg"
+  },
+  "nasdaq:1408910-119818": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/CXIVU.svg"
+  },
+  "nasdaq:1409007-119836": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/KACQU.svg"
+  },
+  "nasdaq:1409091-119839": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1409091-119839.svg"
+  },
+  "nasdaq:1409284-119860": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/BENE.svg"
+  },
+  "nasdaq:1409331-119867": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/APCDU.svg"
+  },
+  "nasdaq:1409334-119869": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-1409334-119869.svg"
+  },
+  "nasdaq:1409369-119878": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ZACAU.svg"
+  },
+  "nasdaq:1409384-119879": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/RACV.svg"
+  },
+  "nasdaq:1409648-119907": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ABGC.svg"
+  },
+  "nasdaq:165535-119563": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/GBC.svg"
+  },
+  "nasdaq:566934-119549": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/LPCI.svg"
+  },
+  "nasdaq:626441-117018": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/nasdaq-626441-117018.svg"
+  },
+  "nasdaq:981457-119587": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/FFLY.svg"
+  },
+  "sa:priced:MDRN:2026-11-13": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/MDRN.svg"
+  },
+  "sa:priced:VVVV:2026-11-13": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/VVVV.svg"
+  },
+  "sa:priced:WWB:2026-11-13": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/WWB.svg"
+  },
+  "sa:upcoming:ANT:2026-11-19": {
+    "chip": false,
+    "kind": "stock",
+    "source": "Original Ticker IPO mark (generated; no official logo was available)",
+    "src": "img/ipos/ANT.svg"
   }
 }

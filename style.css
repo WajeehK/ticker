@@ -466,3 +466,15 @@ html[data-theme=dark] .news-item b{color:#fff}
 .reading.risk-high,.sent-part .risk-high{color:#FF5000}
 .reading.risk-x,.sent-part .risk-x{color:#ff2d2d}
 html[data-theme=light] .sent-card{background:#fff}
+
+/* IPOs */
+.ipo-page{padding:0 0 32px}
+.ipo-hero{display:flex;gap:14px;align-items:center;padding:8px 0 16px}
+.ipo-hero h3{margin:0;font-size:22px;letter-spacing:-.03em;font-weight:700}
+.ipo-hero .tk{margin:4px 0 0;font-size:13px;color:var(--mute);display:flex;gap:6px;flex-wrap:wrap}
+.ipo-hero .av{width:56px;height:56px;font-size:16px}
+.ipo-facts{display:grid;gap:0;margin:4px 0 12px;border-top:1px solid var(--line)}
+.ipo-facts > div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ipo-facts span{color:var(--mute)}
+.ipo-facts b{font-weight:600;text-align:right;letter-spacing:-.01em}
+.ipo-row .chg{font-size:12px}

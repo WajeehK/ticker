@@ -338,7 +338,28 @@ def main() -> int:
     fx: dict = {}
     t0 = time.time()
 
-    for i, sym in enumerate(UNIVERSE):
+    universe = list(UNIVERSE)
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from ipos import calendar_tickers
+        extra = calendar_tickers()
+        seen = set(universe)
+        added_syms = []
+        for s in extra:
+            if s and s not in seen:
+                seen.add(s)
+                universe.append(s)
+                added_syms.append(s)
+        if added_syms:
+            print(
+                f"IPO tickers added to universe: {len(added_syms)} "
+                f"({', '.join(added_syms[:16])}{'…' if len(added_syms) > 16 else ''})",
+                flush=True,
+            )
+    except Exception as e:
+        print(f"IPO calendar (pre-universe) skipped: {e}", flush=True)
+
+    for i, sym in enumerate(universe):
         try:
             daily = chart(sym, "5y", "1d")
             if not daily:
@@ -470,6 +491,19 @@ def main() -> int:
             write_sentiment(DATA, quotes, UA)
         except Exception as e:
             print("market sentiment skipped:", e)
+        try:
+            from ipos import write_ipos
+            added = write_ipos(DATA, quotes, UA)
+            if added:
+                quotes.update(added)
+                out["quotes"] = quotes
+                (DATA / "quotes.json").write_text(
+                    json.dumps(out, separators=(",", ":")), encoding="utf-8"
+                )
+                print(f"Merged {len(added)} IPO quotes into data/quotes.json", flush=True)
+        except Exception as e:
+            print("IPOs skipped:", e)
+            errors.append(f"ipos: {e}")
     except Exception as e:
         print(f"market extras failed: {e}", flush=True)
         errors.append(f"market extras: {e}")

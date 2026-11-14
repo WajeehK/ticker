@@ -70,3 +70,12 @@ Gold, silver, WTI, Brent, natural gas, copper, platinum and palladium last price
 
 ## News
 Market headlines must include a finance signal (shares, earnings, IPO, valuation, Fed, $1bn, etc.); a company name is not enough. Scandal, politics and outage-only stories are dropped. Sources prefer Reuters, CNBC, MarketWatch, FT Markets and Yahoo Finance / Google News market queries. Crypto wires are listed on the Crypto tab only. Identical titles are deduped. The refresh job tries to store `og:image` and extracted article text for an in-app reader; if a publisher blocks that, the reader offers the original link.
+
+
+## IPOs (`data/ipos.json`)
+
+Built by `pipeline/ipos.py` during the quotes refresh. The Action first requests the Nasdaq public IPO calendar (`https://api.nasdaq.com/api/ipo/calendar?date=YYYY-MM`) for the previous, current and next month, covering upcoming, priced, filed and withdrawn deals. The same browser-like user agent already used for Nasdaq analyst endpoints is required; a short timeout can stall. When a section is empty or the API fails, Ticker falls back to the public [StockAnalysis IPO pages](https://stockanalysis.com/ipos/calendar/) (calendar, recent, filings) and merges any deal that is not already on the Nasdaq list, labelled with its source.
+
+Each row keeps company, ticker, exchange, dates, price range or IPO price, shares offered and deal size exactly as published. Current price and the percentage move since IPO are added only when Yahoo Finance returns a quote for that ticker (recently priced names are added to the refresh universe dynamically). Missing quotes are left blank — figures are never invented. A generated-at / as-of timestamp is stored on the file.
+
+Logos prefer [Financial Modeling Prep](https://financialmodelingprep.com/image-stock/{SYMBOL}.png) image-stock, then a CompaniesMarketCap 256px PNG, stored locally under `img/ipos/` and indexed in `img/manifest.json`. If neither has a mark, Ticker draws an original circular badge from the ticker. UK / LSE notable IPOs are attempted from free sources and omitted when no structured public calendar is available.
