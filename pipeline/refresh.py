@@ -104,13 +104,13 @@ def get_json(url: str, params: dict, tries: int = 2) -> dict | None:
     return None
 
 
-def chart(sym: str, range_: str, interval: str) -> dict | None:
+def chart(sym: str, range_: str, interval: str, prepost: bool = False) -> dict | None:
     data = get_json(
         CHART.format(sym=urllib.parse.quote(sym, safe="")),
         {
             "range": range_,
             "interval": interval,
-            "includePrePost": "false",
+            "includePrePost": "true" if prepost else "false",
             "events": "div,split",
         },
     )
@@ -183,6 +183,42 @@ def dividends_from(result: dict, scale: float = 1.0) -> list[dict]:
             out.append({"t": dt, "amount": amt * scale})
     out.sort(key=lambda x: x["t"])
     return out[-12:]
+
+
+
+def period_windows(meta: dict) -> dict:
+    """Unix start/end for pre, regular and post, when Yahoo provides them."""
+    out = {}
+    ctp = meta.get("currentTradingPeriod") or {}
+    for name in ("pre", "regular", "post"):
+        rec = ctp.get(name) or {}
+        start, end = rec.get("start"), rec.get("end")
+        if start and end:
+            out[name] = [int(start), int(end)]
+    return out
+
+
+def last_extended(intra: list, meta: dict) -> tuple | None:
+    """Newest pre/post print after the official regular close.
+
+    Yahoo chart meta often leaves postMarketPrice empty even when
+    includePrePost bars continue through 8pm ET. Trading 212 and similar
+    brokers show that extended-hours last, not only regularMarketPrice.
+    """
+    reg_t = meta.get("regularMarketTime")
+    if not intra or not reg_t:
+        return None
+    later = [b for b in intra if b.get("t") and b["t"] > int(reg_t) and b.get("c") is not None]
+    if not later:
+        return None
+    b = later[-1]
+    t = int(b["t"])
+    windows = period_windows(meta)
+    session = "post"
+    pre = windows.get("pre")
+    if pre and pre[0] <= t < pre[1]:
+        session = "pre"
+    return float(b["c"]), t, session
 
 
 def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
@@ -276,20 +312,44 @@ def main() -> int:
                 continue
 
             intra = []
+            periods = period_windows(meta)
             try:
-                raw_i = chart(sym, "1d", "5m")
+                raw_i = chart(sym, "1d", "5m", prepost=True)
                 if raw_i:
                     intra = bars(raw_i, ohlc=False)
-                    # Prefer the 5m call's meta when it carries previousClose
                     m2 = raw_i.get("meta") or {}
-                    q2 = pack_quote(sym, {**meta, **{k: v for k, v in m2.items() if v is not None}}, closes)
+                    merged = {**meta, **{k: v for k, v in m2.items() if v is not None}}
+                    q2 = pack_quote(sym, merged, closes)
                     if q2:
-                        q2["spark"] = q["spark"] if len(q["spark"]) >= len(spark_from([b["c"] for b in intra])) else spark_from([b["c"] for b in intra])
-                        # Keep a short daily spark for multi-day context on the list
                         q2["spark"] = q["spark"]
                         q = q2
+                    periods = period_windows(merged) or periods
+                    ext = last_extended(intra, merged)
+                    if ext:
+                        ext_px, ext_t, sess = ext
+                        scale = 0.01 if q.get("unit") == "pence" else 1.0
+                        ext_px *= scale
+                        regular_close = q["price"]
+                        regular_time = q.get("asOf")
+                        q["regularClose"] = regular_close
+                        q["regularTime"] = regular_time
+                        q["regularChange"] = q.get("change")
+                        q["regularChangePct"] = q.get("changePct")
+                        q["price"] = ext_px
+                        q["asOf"] = ext_t
+                        q["session"] = sess
+                        # Change vs the official regular close (the after-hours move),
+                        # which is what brokers show once the extended session is the last print.
+                        if regular_close not in (None, 0):
+                            q["change"] = ext_px - regular_close
+                            q["changePct"] = q["change"] / regular_close * 100
+                    else:
+                        q["session"] = "regular"
             except Exception as e:
                 errors.append(f"{sym} intraday: {e}")
+                q.setdefault("session", "regular")
+            if "session" not in q:
+                q["session"] = "regular"
 
             quotes[sym] = q
             if q["kind"] == "fx":
@@ -319,9 +379,11 @@ def main() -> int:
                 "daily": daily_bars,
                 "intraday": intra,
                 "dividends": divs,
+                "periods": periods,
+                "session": q.get("session"),
             }
             hist_path.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
-            print(f"  {sym:12} {q['currency']} {q['price']}", flush=True)
+            print(f"  {sym:12} {q['currency']} {q['price']}  {q.get('session') or ''}", flush=True)
         except Exception as e:
             errors.append(f"{sym}: {e}")
             print(f"  {sym:12} FAIL {e}", flush=True)

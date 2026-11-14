@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't4';
+const BUILD = 't5';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -39,7 +39,7 @@ let holdings = [], alerts = [], snapshots = [];
 let ccy = 'GBP';
 let tab = 'home', detailId = null, compareId = null;
 let chartApi = null, volApi = null, pvApi = null;
-let chartKind = 'line', chartInd = 'off', chartRange = '1D';
+let chartKind = 'line', chartInd = 'off', chartRange = '1D', portRange = '1D';
 let watchFilter = 'all', watchSort = 'change';
 let ws = null, wsRetry = 0, wsTimer = 0, pollTimer = 0;
 let lastFlash = {}, lastHero = null;
@@ -256,6 +256,9 @@ async function loadStocks() {
         price: q.price, prev: q.prev, change: q.change, changePct: q.changePct,
         dayHigh: q.dayHigh, dayLow: q.dayLow, high52: q.high52, low52: q.low52,
         asOf: q.asOf, spark: q.spark || [], lastDiv: q.lastDiv || null,
+        session: q.session || 'regular',
+        regularClose: q.regularClose, regularTime: q.regularTime,
+        regularChange: q.regularChange, regularChangePct: q.regularChangePct,
         ok: true, source: 'yahoo', live: false
       });
     }
@@ -448,7 +451,7 @@ function rowHTML(id, opts) {
   const kind = kindOf(id, q);
   const tag = kind === 'crypto' ? 'Crypto' : kind === 'etf' ? 'ETF' : kind === 'index' ? 'Index' : (String(id).endsWith('.L') ? 'LSE' : '');
   const spark = opts.spark !== false ? sparkSVG(q.spark, up) : '';
-  const cls = (spark ? 'row with-spark' : 'row') + (lastFlash[id] ? ' flash' + (lastFlash[id]==='dn'?' dn':'') : '');
+  const cls = spark ? 'row with-spark' : 'row';
   const sub = opts.sub || ('<span>' + esc(sym) + '</span>' + (tag ? '<span class="tag">' + tag + '</span>' : '') + (q.live ? '<span class="tag">LIVE</span>' : ''));
   const rgt = opts.rgt || ('<div class="px" data-px="' + esc(id) + '">' + (q.ok && q.price != null ? pxText(id, q.price, {px:true}) : '—') + '</div>' +
       '<div class="chg ' + chgClass(q.changePct) + '" data-chg="' + esc(id) + '">' + (q.changePct != null ? pct(q.changePct) : '—') + '</div>');
@@ -549,6 +552,8 @@ function exchName(q, id) {
 function sessionTag(q) {
   if (!q) return '';
   if (q.kind === 'crypto') return q.live ? 'Live' : '';
+  if (q.session === 'post') return 'after hours';
+  if (q.session === 'pre') return 'pre-market';
   return 'at close';
 }
 function priceHeadline(id, q) {
@@ -570,38 +575,157 @@ function analysisRec(id) {
   return (analysis && analysis.bySymbol && analysis.bySymbol[id]) || null;
 }
 
+
+async function holdingHist(id) {
+  if (isCryptoId(id) || pairs[id]) {
+    try {
+      const bars = await cryptoBars(id, portRange || '1M');
+      return { currency: 'USD', daily: (bars || []).map(b => ({ t: b.time, c: b.value })), intraday: (portRange === '1D' ? (bars || []).map(b => ({ t: b.time, c: b.value })) : []) };
+    } catch (e) { return null; }
+  }
+  try {
+    const r = await fetch('data/hist/' + encodeURIComponent(id) + '.json?t=' + Math.floor(Date.now() / 60_000), { cache: 'no-cache' });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (e) { return null; }
+}
+function clipHist(d, range) {
+  const now = Math.floor(Date.now() / 1000);
+  const cut = { '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'MAX': 0 }[range] || 0;
+  if (range === '1D') {
+    const intra = d.intraday || d.intra || [];
+    const last = intra.length ? (intra[intra.length - 1].t || intra[intra.length - 1].time) : 0;
+    const start = (d.periods && d.periods.regular && d.periods.regular[0]) || (last ? last - 20 * 3600 : 0);
+    return intra.filter(b => (b.t || b.time) >= start).map(b => ({ t: b.t || b.time, v: b.c != null ? b.c : b.value })).filter(b => b.t && b.v != null);
+  }
+  const daily = d.daily || [];
+  return daily.filter(b => !cut || (b.t || b.time) >= cut).map(b => ({ t: b.t || b.time, v: b.c != null ? b.c : b.value })).filter(b => b.t && b.v != null);
+}
+async function portfolioSeries(range) {
+  if (!holdings.length) return [];
+  const parts = [];
+  for (const h of holdings) {
+    const d = await holdingHist(h.id);
+    if (!d) continue;
+    const q = quotes[h.id] || {};
+    const bars = clipHist(d, range);
+    if (bars.length) parts.push({ qty: h.qty, cur: d.currency || q.currency || 'USD', bars: bars });
+  }
+  if (!parts.length) return [];
+  const times = new Set();
+  parts.forEach(p => p.bars.forEach(b => times.add(b.t)));
+  const ts = [...times].sort((a, b) => a - b);
+  const cursors = parts.map(p => ({ qty: p.qty, cur: p.cur, bars: p.bars, i: 0, last: null }));
+  const out = [];
+  for (const t of ts) {
+    let sum = 0, ok = 0;
+    for (const p of cursors) {
+      while (p.i < p.bars.length && p.bars[p.i].t <= t) { p.last = p.bars[p.i].v; p.i++; }
+      if (p.last == null) continue;
+      const usd = toUSD(p.last * p.qty, p.cur);
+      const v = convert(usd, 'USD', ccy);
+      if (v != null && isFinite(v)) { sum += v; ok++; }
+    }
+    if (ok) out.push({ time: t, value: sum });
+  }
+  return out;
+}
+function rangePills(active, kind) {
+  return '<div class="rng" data-ranges="' + kind + '">' + ['1D','1W','1M','3M','1Y','MAX'].map(r =>
+    '<button type="button" data-prange="' + r + '" class="' + (r === active ? 'on' : '') + '">' + r + '</button>').join('') + '</div>';
+}
+function drawValueChart(host, pts) {
+  if (!host) return;
+  try { if (host._api) host._api.remove(); } catch (e) {}
+  host._api = null;
+  host.innerHTML = '';
+  if (!pts || pts.length < 2 || !window.LightweightCharts) {
+    host.innerHTML = '<div class="ph" style="height:200px;display:grid;place-items:center;color:var(--mute);font-size:13px">' + (pts && pts.length ? 'Not enough points for this range.' : 'Value history will appear once prices load.') + '</div>';
+    return;
+  }
+  const dark = document.documentElement.dataset.theme === 'dark';
+  const col = '#00B4E6';
+  const LW = window.LightweightCharts;
+  const chart = LW.createChart(host, {
+    autoSize: true, height: 200,
+    layout: { background: { color: 'transparent' }, textColor: dark ? '#8e8e93' : '#8e8e93', fontFamily: 'Inter, -apple-system, system-ui', fontSize: 11, attributionLogo: false },
+    grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+    rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.12, bottom: 0.06 } },
+    timeScale: { borderVisible: false, timeVisible: portRange === '1D', secondsVisible: false, rightOffset: 2, fixLeftEdge: true },
+    handleScroll: false, handleScale: false,
+    crosshair: { vertLine: { color: dark ? 'rgba(255,255,250,.18)' : 'rgba(16,16,14,.18)', width: 1, style: 3, labelBackgroundColor: dark ? '#1c1c20' : '#eceae4' }, horzLine: { visible: false } }
+  });
+  const series = chart.addSeries(LW.AreaSeries, {
+    lineColor: col, topColor: 'rgba(0,180,230,.28)', bottomColor: 'rgba(0,180,230,0)',
+    lineWidth: 2, priceLineVisible: true, lastValueVisible: true,
+    priceFormat: { type: 'price', precision: 2, minMove: 0.01 }
+  });
+  series.setData(pts);
+  chart.timeScale().fitContent();
+  host._api = chart;
+  pvApi = chart;
+}
+async function loadPortChart(hostId) {
+  const host = $(hostId);
+  if (!host) return;
+  host.innerHTML = '<div class="ph" style="height:200px;display:grid;place-items:center;color:var(--mute);font-size:13px">Loading…</div>';
+  try {
+    const pts = await portfolioSeries(portRange);
+    if (hostId !== '#' + host.id && hostId !== hostId) return;
+    drawValueChart(host, pts);
+  } catch (e) {
+    host.innerHTML = '<div class="ph" style="height:200px;display:grid;place-items:center;color:var(--mute);font-size:13px;padding:16px;text-align:center">Could not build this chart.</div>';
+  }
+}
+function fmtQty(n) {
+  if (n == null || !isFinite(n)) return '—';
+  if (Math.abs(n - Math.round(n)) < 1e-8) return String(Math.round(n));
+  return String(parseFloat(Number(n).toFixed(4)));
+}
+function holdingsListHTML(st) {
+  if (!st || !st.lines.length) return '';
+  return '<div class="list">' + st.lines.map(ln => {
+    const id = ln.h.id, q = ln.q || {};
+    const sub = '<span>' + esc(fmtQty(ln.h.qty)) + ' share' + (ln.h.qty === 1 ? '' : 's') + '</span>';
+    const rgt = '<div class="px">' + (ln.val != null ? money(ln.val, ln.native) : '—') + '</div>' +
+      '<div class="chg ' + chgClass(ln.pnl) + '">' + (ln.pnlPct != null ? pct(ln.pnlPct) : '—') + '</div>';
+    return rowHTML(id, { spark: false, sub: sub, rgt: rgt });
+  }).join('') + '</div>';
+}
+function heroHTML(st, valId) {
+  if (!st || !st.known) {
+    return '<div class="hero"><div class="lbl">Investing</div>' +
+      '<div class="val" style="font-size:32px">Nothing here yet</div>' +
+      '<p class="note">Add the shares and coins you hold when you are ready. Everything stays on this device.</p>' +
+      '<div style="margin-top:14px"><button class="btn" data-act="add-hold">Add a holding</button></div></div>';
+  }
+  const dayLine = '<div class="day ' + chgClass(st.day) + '">' +
+    (st.day >= 0 ? '▴ ' : '▾ ') + money(Math.abs(st.day), 'USD') +
+    (st.dayPct != null ? ' (' + Math.abs(st.dayPct).toFixed(2) + '%)' : '') +
+    ' <span class="sess">today</span></div>';
+  return '<div class="hero"><div class="lbl">Investing</div>' +
+    '<div class="val" id="' + valId + '">' + money(st.value, 'USD') + '</div>' + dayLine +
+    (st.missing ? '<p class="note"><b>' + st.missing + ' holding' + (st.missing > 1 ? 's' : '') + '</b> could not be valued.</p>' : '') +
+    '</div>';
+}
+
 function renderHome() {
   const el = $('#homeIn');
   const st = portfolioStats();
-  const movers = watchSyms().map(id => quotes[id]).filter(q => q && q.changePct != null).sort((a, b) => Math.abs(b.changePct) - Math.abs(a.changePct)).slice(0, 5);
-  let hero;
-  if (st && st.known) {
-    const tint = st.day > 0 ? 'tint-up' : st.day < 0 ? 'tint-dn' : '';
-    hero = '<div class="hero ' + tint + '"><div class="lbl">Portfolio · ' + esc(ccy) + '</div>' +
-      '<div class="val" id="heroVal">' + money(st.value, 'USD') + '</div><div class="row">' +
-      '<span class="chip ' + chgClass(st.day) + '">' + (st.day >= 0 ? '+' : '') + money(st.day, 'USD') + ' day' + (st.dayPct != null ? ' · ' + pct(st.dayPct) : '') + '</span>' +
-      (st.pnl != null ? '<span class="chip ' + chgClass(st.pnl) + '">P&amp;L ' + (st.pnl >= 0 ? '+' : '') + money(st.pnl, 'USD') + ' (' + pct(st.pnlPct) + ')</span>' : '') +
-      '</div><p class="note">' + (st.missing ? '<b>' + st.missing + ' holding' + (st.missing>1?'s':'') + '</b> could not be valued. ' : '') +
-      'Totals in ' + esc(ccy) + '. FX uses the latest GBPUSD rate' + (meta.fx.GBPUSD ? ' (' + meta.fx.GBPUSD.toFixed(4) + ')' : '') + '.</p></div>';
-  } else {
-    hero = '<div class="hero"><div class="lbl">Your portfolio</div>' +
-      '<div class="val" style="font-size:28px;letter-spacing:-.03em">Nothing here yet</div>' +
-      '<p class="note">Add the shares and coins you hold when you are ready. Everything stays on this device.</p>' +
-      '<div style="margin-top:12px"><button class="btn sm" data-act="add-hold">Add a holding</button></div></div>';
-  }
+  if (st) recordSnapshot(st);
   const newsBits = (news && news.market || []).slice(0, 3);
-  el.innerHTML = '<p class="eyebrow">Overview</p>' + hero +
-    '<div class="sec-h"><h2>Top movers</h2><a class="more" href="#/watch">Watchlist</a></div>' +
-    '<div class="glass list">' + (movers.length ? movers.map(q => rowHTML(q.id, { spark: true })).join('') : '<div class="empty"><p>Prices will show here once quotes load.</p></div>') + '</div>' +
+  const chart = (st && st.known)
+    ? '<div class="port-bleed"><div id="homeChart"></div>' + rangePills(portRange, 'home') + '</div>'
+    : '';
+  el.innerHTML = heroHTML(st, 'heroVal') + chart +
+    (st && st.lines.length ? '<div class="sec-h"><h2>Holdings</h2><a class="more" href="#/portfolio">Portfolio</a></div>' + holdingsListHTML(st) : '') +
     '<div class="sec-h"><h2>Watchlist</h2><a class="more" href="#/watch">See all</a></div>' +
-    '<div class="glass list">' + watchSyms().slice(0, 8).map(id => rowHTML(id)).join('') + '</div>' +
-    (newsBits.length ? '<div class="sec-h"><h2>News</h2><a class="more" href="#/markets">Markets</a></div><div class="glass">' + newsBits.map(newsItem).join('') + '</div>' : '') +
+    '<div class="list">' + (watchSyms().length ? watchSyms().slice(0, 8).map(id => rowHTML(id, { spark: true })).join('') : '<div class="empty"><p>Add tickers to your watchlist to see them here.</p></div>') + '</div>' +
+    (newsBits.length ? '<div class="sec-h"><h2>News</h2><a class="more" href="#/markets">Markets</a></div><div class="list">' + newsBits.map(newsItem).join('') + '</div>' : '') +
     creditHTML();
   if (st && st.known && lastHero != null && lastHero !== st.value) countUp($('#heroVal'), st.value, 'USD', lastHero);
-  if (st && st.known) lastHero = st.value;
+  if (st && st.known) { lastHero = st.value; loadPortChart('#homeChart'); }
   lastFlash = {};
-  document.body.classList.toggle('up-day', !!(st && st.day > 0));
-  document.body.classList.toggle('dn-day', !!(st && st.day < 0));
 }
 
 function renderMarkets() {
@@ -615,7 +739,7 @@ function renderMarkets() {
   const headlines = (news && news.market) || [];
   const idxCards = idxs.map(q => {
     const up = (q.changePct || 0) >= 0;
-    return '<a class="glass idx ' + (up?'tint-up':'tint-dn') + '" href="#/s/' + encodeURIComponent(q.id) + '">' +
+    return '<a class="idx" href="#/s/' + encodeURIComponent(q.id) + '">' +
       '<div class="k">' + avHTML(q.id, q.name, 'index') + ' ' + esc(q.shortName || q.name) + '</div>' +
       '<div class="v">' + (q.price != null ? pxText(q.id, q.price, {px:true}) : '—') + '</div>' +
       '<span class="chip ' + chgClass(q.changePct) + '">' + (q.changePct != null ? pct(q.changePct) : '—') + '</span>' +
@@ -624,7 +748,7 @@ function renderMarkets() {
   let fngH = '';
   if (fng && fng.value != null) {
     fngH = '<div class="sec-h"><h2>Fear &amp; greed</h2><small class="more">' + esc(fng.classification || '') + '</small></div>' +
-      '<div class="glass fng"><div class="lbl">Crypto · alternative.me</div>' +
+      '<div class="fng"><div class="lbl">Crypto · alternative.me</div>' +
       '<div class="score">' + esc(fng.value) + ' <span style="font-size:14px;color:var(--mute)">' + esc(fng.classification || '') + '</span></div>' +
       '<div class="fng-m"><i style="left:' + Math.max(0,Math.min(100,fng.value)) + '%"></i></div>' +
       '<p class="note">0 is extreme fear, 100 is extreme greed. ' + (fng.asOf ? 'As of ' + esc(ago(fng.asOf)) + '.' : '') + ' Snapshot from the latest refresh, not a live tick.</p></div>';
@@ -633,10 +757,10 @@ function renderMarkets() {
   }
   el.innerHTML = '<p class="eyebrow">Today</p><h2 style="font-size:28px;margin-bottom:12px">Markets</h2>' +
     '<div class="idx-grid">' + (idxCards || '<div class="empty"><p>Index quotes have not loaded yet.</p></div>') + '</div>' + fngH +
-    '<div class="sec-h"><h2>Crypto</h2></div><div class="glass list">' + (cryptos.slice(0, 6).map(q => rowHTML(q.id)).join('') || '<div class="empty"><p>No live crypto quotes yet.</p></div>') + '</div>' +
-    '<div class="sec-h"><h2>Top gainers</h2></div><div class="glass list">' + gainers.map(q => rowHTML(q.id)).join('') + '</div>' +
-    '<div class="sec-h"><h2>Top losers</h2></div><div class="glass list">' + losers.map(q => rowHTML(q.id)).join('') + '</div>' +
-    '<div class="sec-h"><h2>News</h2></div><div class="glass">' + (headlines.length ? headlines.slice(0, 16).map(newsItem).join('') : '<div class="empty"><p>No headlines in the latest refresh.</p></div>') + '</div>' +
+    '<div class="sec-h"><h2>Crypto</h2></div><div class="list">' + (cryptos.slice(0, 6).map(q => rowHTML(q.id, { spark: true })).join('') || '<div class="empty"><p>No live crypto quotes yet.</p></div>') + '</div>' +
+    '<div class="sec-h"><h2>Top gainers</h2></div><div class="list">' + gainers.map(q => rowHTML(q.id, { spark: true })).join('') + '</div>' +
+    '<div class="sec-h"><h2>Top losers</h2></div><div class="list">' + losers.map(q => rowHTML(q.id, { spark: true })).join('') + '</div>' +
+    '<div class="sec-h"><h2>News</h2></div><div class="list">' + (headlines.length ? headlines.slice(0, 16).map(newsItem).join('') : '<div class="empty"><p>No headlines in the latest refresh.</p></div>') + '</div>' +
     creditHTML();
 }
 
@@ -666,13 +790,13 @@ function renderWatch() {
     .map(pair => '<button class="' + (watchFilter===pair[0]?'on':'') + '" data-act="w-filter" data-id="' + pair[0] + '">' + pair[1] + '</button>').join('');
   el.innerHTML = '<p class="eyebrow">Markets</p><h2 style="font-size:28px;margin-bottom:10px">Watchlists</h2>' +
     '<div class="wl-tabs">' + tabs + '</div>' +
-    '<button class="glass search" data-act="search" style="width:100%;text-align:left;color:var(--mute)">' +
+    '<button class="search" data-act="search" style="width:100%;text-align:left;color:var(--mute)">' +
     '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search stocks, ETFs and crypto</span></button>' +
     '<div class="filters">' + filters +
     '<button data-act="w-sort" class="' + (watchSort==='change'?'on':'') + '">% change</button>' +
     '<button data-act="w-sort-name" class="' + (watchSort==='name'?'on':'') + '">Name</button></div>' +
-    (ids.length ? '<div class="glass list">' + ids.map(id => rowHTML(id)).join('') + '</div>'
-      : '<div class="glass empty"><b>Empty list</b><p>Add a ticker or coin to follow live prices.</p><button class="btn sm" data-act="search">Add something</button></div>') +
+    (ids.length ? '<div class="list">' + ids.map(id => rowHTML(id, { spark: true })).join('') + '</div>'
+      : '<div class="empty"><b>Empty list</b><p>Add a ticker or coin to follow live prices.</p><button class="btn sm" data-act="search">Add something</button></div>') +
     '<div style="margin-top:10px;display:flex;gap:8px"><button class="btn ghost sm" data-act="rename-wl">Rename</button>' +
     (watchlists.length>1?'<button class="btn danger sm" data-act="del-wl">Delete list</button>':'') + '</div>' + creditHTML();
   lastFlash = {};
@@ -683,29 +807,22 @@ function renderPort() {
   const st = portfolioStats();
   if (st) recordSnapshot(st);
   const body = !holdings.length
-    ? '<div class="glass empty"><b>No holdings yet</b><p>When you are ready, add a quantity and average buy price. Nothing is sent anywhere.</p>' +
+    ? '<div class="empty"><b>No holdings yet</b><p>When you are ready, add a quantity and average buy price. Nothing is sent anywhere.</p>' +
       '<button class="btn sm" data-act="add-hold">Add a holding</button>' +
       '<button class="btn ghost sm" data-act="import-csv" style="margin-top:8px">Import CSV</button></div>'
-    : analyticsHTML(st) +
+    : (st && st.known ? '<div class="port-bleed"><div id="pvChart"></div>' + rangePills(portRange, 'port') + '</div>' : '') +
+      (st && st.pnl != null ? '<div class="stats">' +
+        stat('Total return', null, null, (st.pnl >= 0 ? '+' : '') + money(st.pnl, 'USD') + (st.pnlPct != null ? ' · ' + pct(st.pnlPct) : '')) +
+        stat('Day change', null, null, (st.day != null ? ((st.day >= 0 ? '+' : '') + money(st.day, 'USD')) : '—') + (st.dayPct != null ? ' · ' + pct(st.dayPct) : '')) +
+        (st.best ? stat('Best', null, null, esc((st.best.q && st.best.q.symbol) || st.best.h.id) + ' ' + pct(st.best.pnlPct)) : '') +
+        (st.worst ? stat('Worst', null, null, esc((st.worst.q && st.worst.q.symbol) || st.worst.h.id) + ' ' + pct(st.worst.pnlPct)) : '') +
+        '</div>' : '') +
       '<div class="sec-h"><h2>Holdings</h2><button class="more" data-act="export-csv">Export CSV</button></div>' +
-      '<div class="glass list">' + st.lines.map(ln => {
-        const id = ln.h.id, q = ln.q || {};
-        const sub = '<span>' + esc(ln.h.qty) + ' × ' + (ln.h.avg != null ? money(ln.h.avg, q.currency || 'USD', {px:true, native:true}) : '—') + '</span>';
-        const rgt = '<div class="px" data-val="' + esc(id) + '">' + (ln.val != null ? money(ln.val, ln.native) : '—') + '</div>' +
-          '<div class="chg ' + chgClass(ln.pnl) + '" data-pnl="' + esc(id) + '">' + (ln.pnl != null ? ((ln.pnl>=0?'+':'') + money(ln.pnl, ln.native) + (ln.pnlPct!=null?' · '+pct(ln.pnlPct):'')) : '—') + '</div>';
-        return rowHTML(id, { spark: false, sub: sub, rgt: rgt });
-      }).join('') + '</div>' +
-      '<div style="margin-top:12px;display:flex;gap:8px"><button class="btn ghost full" data-act="add-hold">Add another</button><button class="btn ghost" data-act="import-csv">Import</button></div>';
-  let hero = '';
-  if (st && st.known) {
-    hero = '<div class="hero ' + (st.day>0?'tint-up':st.day<0?'tint-dn':'') + '"><div class="lbl">Portfolio · ' + esc(ccy) + '</div>' +
-      '<div class="val" id="portVal">' + money(st.value, 'USD') + '</div><div class="row">' +
-      '<span class="chip ' + chgClass(st.day) + '">' + (st.day >= 0 ? '+' : '') + money(st.day, 'USD') + ' day</span>' +
-      (st.pnl != null ? '<span class="chip ' + chgClass(st.pnl) + '">Total ' + (st.pnl >= 0 ? '+' : '') + money(st.pnl, 'USD') + ' (' + pct(st.pnlPct) + ')</span>' : '') +
-      '</div></div>';
-  }
-  el.innerHTML = '<p class="eyebrow">Holdings</p><h2 style="font-size:28px;margin-bottom:10px">Portfolio</h2>' + hero + body + creditHTML();
-  if (st && snapshots.length > 1) drawPvChart();
+      holdingsListHTML(st) +
+      analyticsHTML(st) +
+      '<div style="margin-top:16px;display:flex;gap:8px"><button class="btn ghost" style="flex:1" data-act="add-hold">Add another</button><button class="btn ghost" style="flex:1" data-act="import-csv">Import</button></div>';
+  el.innerHTML = heroHTML(st, 'portVal') + body + creditHTML();
+  if (st && st.known) loadPortChart('#pvChart');
 }
 
 function analyticsHTML(st) {
@@ -724,14 +841,8 @@ function analyticsHTML(st) {
   const best = st.best ? esc((st.best.q && st.best.q.symbol) || st.best.h.id) + ' ' + pct(st.best.pnlPct) : '—';
   const worst = st.worst ? esc((st.worst.q && st.worst.q.symbol) || st.worst.h.id) + ' ' + pct(st.worst.pnlPct) : '—';
   return '<div class="donuts">' +
-    '<div class="glass donut"><div class="t">By asset</div>' + (byAsset.length ? donutSVG(byAsset.slice(0, 8)) : '') + '</div>' +
-    '<div class="glass donut"><div class="t">By type</div>' + (byType.length ? donutSVG(byType) : '') + '</div></div>' +
-    '<div class="stats">' +
-    stat('Day change', null, null, (st.day!=null? ((st.day>=0?'+':'')+money(st.day,'USD')):'—') + (st.dayPct!=null?' · '+pct(st.dayPct):'')) +
-    stat('Total return', null, null, (st.pnl!=null? ((st.pnl>=0?'+':'')+money(st.pnl,'USD')):'—') + (st.pnlPct!=null?' · '+pct(st.pnlPct):'')) +
-    stat('Best', null, null, best) + stat('Worst', null, null, worst) + '</div>' +
-    '<div class="sec-h"><h2>Value over time</h2><small class="more">On-device snapshots</small></div>' +
-    '<div class="glass" style="padding:8px 8px 4px"><div id="pvChart">' + (snapshots.length<2?'<div class="ph" style="height:160px;display:grid;place-items:center;color:var(--mute);font-size:13px">Snapshots will build as you keep the app open.</div>':'') + '</div></div>';
+    '<div class="donut"><div class="t">By asset</div>' + (byAsset.length ? donutSVG(byAsset.slice(0, 8)) : '') + '</div>' +
+    '<div class="donut"><div class="t">By type</div>' + (byType.length ? donutSVG(byType) : '') + '</div></div>';
 }
 
 function drawPvChart() {
@@ -762,7 +873,7 @@ function renderAlerts() {
   const el = $('#alertsIn');
   const perm = typeof Notification !== 'undefined' ? Notification.permission : 'denied';
   const list = alerts.length
-    ? '<div class="glass list">' + alerts.map(a => {
+    ? '<div class="list">' + alerts.map(a => {
         const q = quotes[a.id] || {};
         const name = q.name || a.id;
         const cond = a.op === 'pct-up' ? 'rises ' + a.pct + '% from ' + pxText(a.id, a.ref, {px:true})
@@ -774,9 +885,9 @@ function renderAlerts() {
           '<div class="rgt"><div class="px" data-px="' + esc(a.id) + '">' + (q.price != null ? pxText(a.id, q.price, {px:true}) : '—') + '</div>' +
           '<button class="more" data-act="del-alert" data-key="' + esc(a.key) + '" style="margin-top:4px">Remove</button></div></div>';
       }).join('') + '</div>'
-    : '<div class="glass empty"><b>No alerts</b><p>Get a banner in the app, and a phone notification if you allow them, when a price crosses a level or moves by a percentage you set.</p></div>';
+    : '<div class="empty"><b>No alerts</b><p>Get a banner in the app, and a phone notification if you allow them, when a price crosses a level or moves by a percentage you set.</p></div>';
   el.innerHTML = '<p class="eyebrow">Notifications</p><h2 style="font-size:28px;margin-bottom:10px">Alerts</h2>' +
-    '<div class="glass cta"><p><b>' + (perm === 'granted' ? 'Browser notifications on' : 'In-app alerts are ready') + '</b> ' +
+    '<div class="cta"><p><b>' + (perm === 'granted' ? 'Browser notifications on' : 'In-app alerts are ready') + '</b> ' +
     (perm === 'granted' ? 'You will also get a system notification when a level is hit.' : 'Turn on browser notifications if you want a banner when Ticker is in the background.') + '</p>' +
     (perm !== 'granted' ? '<button class="btn sm" data-act="enable-note">' + (perm === 'denied' ? 'Notifications blocked' : 'Enable') + '</button>' : '') + '</div>' +
     '<div style="margin:12px 0"><button class="btn ghost full" data-act="add-alert">New price alert</button></div>' + list + creditHTML();
@@ -799,8 +910,6 @@ function updatePrices() {
       if (lastFlash[el.dataset.px]) {
         void el.offsetWidth;
         el.classList.add(lastFlash[el.dataset.px] === 'dn' ? 'tick-dn' : 'tick-up');
-        const row = el.closest('.row');
-        if (row) { row.classList.remove('flash', 'dn'); void row.offsetWidth; row.classList.add('flash'); if (lastFlash[el.dataset.px]==='dn') row.classList.add('dn'); }
       }
     }
   }
@@ -858,11 +967,14 @@ async function stockPack(id, range) {
   const daily = (d.daily || []).map(b => ({ time: b.t, value: b.c, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v })).filter(b => b.time && b.value != null);
   const now = Math.floor(Date.now() / 1000);
   const cut = { '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'MAX': 0 }[range] || 0;
+  const periods = d.periods || {};
+  const regularStart = periods.regular && periods.regular[0];
   let bars;
   if (range === '1D') {
     if (intra.length >= 2) {
       const last = intra[intra.length - 1].time;
-      bars = intra.filter(b => b.time >= last - 20 * 3600);
+      const start = regularStart || (last - 20 * 3600);
+      bars = intra.filter(b => b.time >= start);
     } else {
       bars = daily.filter(b => b.time >= now - 5 * 86400);
     }
@@ -1002,7 +1114,11 @@ async function loadDetailChart() {
       const bits = [];
       if (isCryptoId(detailId)) bits.push('Kraken public OHLC.');
       else bits.push('Yahoo Finance, delayed up to 15 minutes.');
+      const q0 = quotes[detailId] || {};
+      if (q0.session === 'post') bits.push('Last price is the extended-hours print; official regular close is listed under Key stats.');
+      else if (q0.session === 'pre') bits.push('Last price is a pre-market print; official regular close is listed under Key stats.');
       if (!compareId) bits.push('Chart in ' + cur + '.');
+      if (!compareId && !isCryptoId(detailId) && !isIndexId(detailId) && (q0.session === 'post' || q0.session === 'pre')) bits.push('The 1D chart includes the regular session and extended hours.');
       if (compareId) bits.push('Compared as % change from first bar.');
       if (chartKind === 'candles' && (!packA.ohlc || compareId)) bits.push(compareId ? 'Comparison uses lines.' : 'This range has close-only bars, so a line is shown.');
       note.textContent = bits.filter(Boolean).join(' ');
@@ -1031,7 +1147,7 @@ function investHTML(id, q) {
   const pnlShow = pnlN != null ? ((pnlN >= 0 ? '+' : '') + money(pnlN, native)) : '—';
   const avgNative = avgN != null ? fmtNum(avgN, native, { px: true, native: true }) : '—';
   const avgOther = (avgN != null && native !== ccy && fxRate(native, ccy)) ? ' (' + fmtNum(convert(avgN, native, ccy), ccy, { px: true }) + ')' : '';
-  const qtyStr = (qty != null && isFinite(qty)) ? String(qty) : '—';
+  const qtyStr = (qty != null && isFinite(qty)) ? fmtQty(qty) : '—';
   return '<div class="invest"><h2>Your investment</h2>' +
     '<div class="kv"><span class="k">Value</span><span class="v">' + valShow + '</span></div>' +
     '<div class="kv"><span class="k">Return</span><span class="v ' + chgClass(pnlN) + '">' + pnlShow + (pnlPct != null ? ' (' + Math.abs(pnlPct).toFixed(2) + '%)' : '') + '</span></div>' +
@@ -1187,9 +1303,10 @@ async function renderDetail(id, reuse) {
       stat('Day low', q.dayLow, q.currency, null, pts) +
       stat('52-week high', q.high52, q.currency, null, pts) +
       stat('52-week low', q.low52, q.currency, null, pts) +
+      ((q.session === 'post' || q.session === 'pre') && q.regularClose != null ? stat('At close', q.regularClose, q.currency, null, pts) : '') +
       ((rec && rec.sma50 != null) || q.sma50 != null ? stat('50-day average', rec && rec.sma50 != null ? rec.sma50 : q.sma50, q.currency, null, pts) : '') +
       ((rec && rec.sma200 != null) || q.sma200 != null ? stat('200-day average', rec && rec.sma200 != null ? rec.sma200 : q.sma200, q.currency, null, pts) : '') +
-      (q.asOf ? stat('As of', null, null, q.live ? 'Live' : when(q.asOf)) : '') +
+      (q.asOf ? stat('As of', null, null, q.live ? 'Live' : (when(q.asOf) + (q.session === 'post' ? ' · after hours' : q.session === 'pre' ? ' · pre-market' : ''))) : '') +
       '<div class="stats-span"><p class="note">' + esc(delay) + (kind === 'index' ? ' Levels are index points, not a currency, and are not converted when you switch GBP/USD.' : '') + '</p></div></div></div>';
     extras += '<div class="block"><h2>Upcoming events</h2>' + eventsHTML(rec, q) + '</div>';
   }
@@ -1747,6 +1864,14 @@ function setupPTR() {
 }
 
 function onClick(e) {
+  const pr = e.target.closest('button[data-prange]');
+  if (pr) {
+    portRange = pr.dataset.prange;
+    document.querySelectorAll('button[data-prange]').forEach(b => b.classList.toggle('on', b.dataset.prange === portRange));
+    if ($('#homeChart')) loadPortChart('#homeChart');
+    if ($('#pvChart')) loadPortChart('#pvChart');
+    return;
+  }
   const actEl = e.target.closest('[data-act]');
   if (!actEl) return;
   const act = actEl.dataset.act, id = actEl.dataset.id, key = actEl.dataset.key;
