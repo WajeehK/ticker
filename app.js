@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't7';
+const BUILD = 't8';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -54,6 +54,9 @@ let tab = 'home', detailId = null, compareId = null;
 let chartApi = null, volApi = null, pvApi = null;
 let chartKind = 'line', chartInd = 'off', chartRange = '1D', portRange = '1D';
 let watchFilter = 'all', watchSort = 'change', marketsPane = 'stocks';
+let marketsList = 'mcap', marketsShowAll = false;
+let cryptoMarkets = { coins: [], trending: [], newListings: [], asOf: null };
+let volumes = {};
 let ws = null, wsRetry = 0, wsTimer = 0, pollTimer = 0;
 let lastFlash = {}, lastHero = null, readerItem = null, fsChartApi = null, newsIndex = {};
 let ptr = null;
@@ -147,7 +150,7 @@ function pct(n) {
   if (n == null || !isFinite(n)) return '—';
   return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
 }
-function chgClass(n) { return n > 0 ? 'up' : n < 0 ? 'dn' : ''; }
+function chgClass(n) { return n > 0 ? 'up' : n < 0 ? 'dn' : 'flat'; }
 function themeColor() {
   const v = getComputedStyle(document.body).getPropertyValue('--accent').trim();
   return v || '#00C805';
@@ -198,7 +201,8 @@ function avHTML(id, name, kind, extra) {
   const L = logoRec(id);
   const k = kind || kindOf(id, quotes[id]);
   const chip = (L && L.chip !== false && k !== 'crypto') || (L && L.chip);
-  const cls = ['av', extra || '', k === 'crypto' ? 'crypto' : (k === 'etf' ? 'etf' : ''), chip ? 'chip' : ''].filter(Boolean).join(' ');
+  const kindCls = (k === 'crypto' || k === 'etf' || k === 'commodity' || k === 'index' || k === 'fx') ? k : '';
+  const cls = ['av', extra || '', kindCls, chip ? 'chip' : ''].filter(Boolean).join(' ');
   if (L && L.src) return '<div class="' + cls + '"><img src="' + esc(L.src) + '" alt="" onerror="window.__avErr&&__avErr(this)" data-ph="' + esc(initials(name, id)) + '"></div>';
   return '<div class="' + cls + ' ph">' + esc(initials(name, id)) + '</div>';
 }
@@ -278,6 +282,48 @@ async function loadLogos() {
     if (r.ok) logos = await r.json() || {};
   } catch (e) {}
 }
+async function loadVolumes() {
+  try {
+    const r = await fetch('data/volumes.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
+    if (r.ok) volumes = await r.json() || {};
+  } catch (e) {}
+  for (const [id, v] of Object.entries(volumes || {})) {
+    if (quotes[id] && quotes[id].volume == null) upsert(id, { volume: v });
+  }
+}
+function applyCryptoMarkets() {
+  for (const bag of ['coins', 'trending', 'newListings']) {
+    for (const c of (cryptoMarkets && cryptoMarkets[bag]) || []) {
+      if (!c || !c.ticker) continue;
+      const id = c.ticker;
+      const prev = quotes[id] || {};
+      const keep = !!(prev.live || (prev.source === 'kraken' && prev.ok && prev.price != null));
+      upsert(id, {
+        symbol: c.symbol || coin(id),
+        name: (prev.name && prev.name !== (c.symbol || coin(id))) ? prev.name : (c.name || prev.name || c.symbol),
+        kind: 'crypto', currency: 'USD',
+        price: keep ? prev.price : (c.price != null ? c.price : prev.price),
+        changePct: keep && prev.changePct != null ? prev.changePct : (c.changePct != null ? c.changePct : prev.changePct),
+        change: keep ? prev.change : prev.change,
+        marketCap: c.marketCap != null ? c.marketCap : prev.marketCap,
+        volume: c.volume != null ? c.volume : prev.volume,
+        spark: (prev.spark && prev.spark.length >= 8) ? prev.spark : (c.spark || prev.spark || []),
+        ok: keep || c.price != null,
+        source: keep ? (prev.source || 'kraken') : (prev.source || 'coingecko'),
+        live: !!prev.live,
+        kraken: !!c.kraken
+      });
+      if (c.symbol && c.name) COIN_NAMES[c.symbol] = COIN_NAMES[c.symbol] || c.name;
+    }
+  }
+}
+async function loadCryptoMarkets() {
+  try {
+    const r = await fetch('data/crypto_markets.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
+    if (r.ok) cryptoMarkets = Object.assign({ coins: [], trending: [], newListings: [] }, await r.json());
+  } catch (e) {}
+  applyCryptoMarkets();
+}
 async function loadNews() {
   try {
     const r = await fetch('data/news.json?t=' + Math.floor(Date.now() / 30_000), { cache: 'no-cache' });
@@ -320,6 +366,7 @@ async function loadStocks() {
         session: q.session || 'regular',
         regularClose: q.regularClose, regularTime: q.regularTime,
         regularChange: q.regularChange, regularChangePct: q.regularChangePct,
+        volume: q.volume, marketCap: q.marketCap,
         ok: true, source: 'yahoo', live: false
       });
     }
@@ -378,6 +425,11 @@ function neededCrypto() {
   for (const a of alerts) if (isCryptoId(a.id) || pairs[a.id]) ids.add(a.id);
   if (detailId && (isCryptoId(detailId) || pairs[detailId])) ids.add(detailId);
   if (compareId && (isCryptoId(compareId) || pairs[compareId])) ids.add(compareId);
+  for (const bag of ['coins', 'trending', 'newListings']) {
+    for (const c of (cryptoMarkets && cryptoMarkets[bag]) || []) {
+      if (c && c.kraken && c.ticker) ids.add(c.ticker);
+    }
+  }
   return [...ids].filter(id => pairs[id] || /USD$/.test(id));
 }
 
@@ -600,11 +652,12 @@ function isStubHeadline(n) {
   return t.includes('stock price, news, quote and history') || t.includes('equity price and quote');
 }
 function newsItem(n, i) {
-  const thumb = n.thumbnail ? '<img class="thumb" src="' + esc(n.thumbnail) + '" alt="">' : '';
+  const src = n.thumbnail || n._logo;
+  const thumb = src ? '<img class="thumb' + (n.thumbnail ? '' : ' logo-thumb') + '" src="' + esc(src) + '" alt="">' : '';
   const whenBit = n.published ? ago(n.published) : '';
   const meta = [n.source, whenBit].filter(Boolean).join(' · ');
   const key = n._key || n.url || String(i || '');
-  return '<button type="button" class="news-item' + (n.thumbnail ? '' : ' no-thumb') + '" data-act="read" data-key="' + esc(key) + '"><span><b>' + esc(n.title) + '</b><span class="meta">' + esc(meta) + '</span></span>' + thumb + '</button>';
+  return '<button type="button" class="news-item' + (src ? '' : ' no-thumb') + '" data-act="read" data-key="' + esc(key) + '"><span><b>' + esc(n.title) + '</b><span class="meta">' + esc(meta) + '</span></span>' + thumb + '</button>';
 }
 function newsDayBucket(iso) {
   if (!iso) return 'Earlier';
@@ -633,8 +686,9 @@ function isFinanceHeadline(n) {
   }
   return true;
 }
-function newsListHTML(items, emptyText) {
-  const rows = (items || []).filter(n => n && n.title && !isStubHeadline(n) && isFinanceHeadline(n));
+function newsListHTML(items, emptyText, opts) {
+  opts = opts || {};
+  const rows = (items || []).filter(n => n && n.title && !isStubHeadline(n) && (opts.finance === false || isFinanceHeadline(n)));
   const seen = new Set();
   const uniq = [];
   rows.forEach(n => {
@@ -642,6 +696,10 @@ function newsListHTML(items, emptyText) {
     if (!k || seen.has(k)) return;
     seen.add(k);
     n._key = n.url || k;
+    if (opts.logoId) {
+      const L = logoRec(opts.logoId);
+      if (L && L.src) n._logo = L.src;
+    }
     uniq.push(n);
   });
   if (!uniq.length) return '<div class="empty"><p>' + esc(emptyText || 'No headlines in the latest refresh.') + '</p></div>';
@@ -932,19 +990,102 @@ function renderHome() {
   lastFlash = {};
 }
 
-function renderMarkets() {
+
+function fmtCap(usd) {
+  if (usd == null || !isFinite(usd)) return '—';
+  let v = usd;
+  if (ccy === 'GBP') {
+    const x = typeof convert === 'function' ? convert(usd, 'USD', 'GBP') : null;
+    if (x != null && isFinite(x)) v = x;
+  }
+  const sign = ccy === 'GBP' ? '£' : '$';
+  const abs = Math.abs(v);
+  if (abs >= 1e12) return sign + (v / 1e12).toFixed(2) + 'T';
+  if (abs >= 1e9) return sign + (v / 1e9).toFixed(2) + 'B';
+  if (abs >= 1e6) return sign + (v / 1e6).toFixed(1) + 'M';
+  return sign + Math.round(v).toLocaleString('en-GB');
+}
+function volOf(id, q) {
+  q = q || quotes[id] || {};
+  return q.volume != null ? q.volume : (volumes[id] || 0);
+}
+function defaultMarketsList(pane) {
+  if (pane === 'crypto') return 'mcap';
+  if (pane === 'commodities') return 'all';
+  return 'volume';
+}
+function marketChipsFor(pane, extras) {
+  const chips = [];
+  if (pane === 'crypto') chips.push({ id: 'mcap', label: 'Market cap' });
+  else chips.push({ id: 'all', label: pane === 'commodities' ? 'All contracts' : 'All' });
+  chips.push({ id: 'gainers', label: 'Top gainers' }, { id: 'losers', label: 'Top losers' }, { id: 'volume', label: 'Most active' });
+  if (extras && extras.newListings) chips.push({ id: 'new', label: 'New listings' });
+  if (extras && extras.trending) chips.push({ id: 'trending', label: 'Trending' });
+  return chips;
+}
+function chipBarHTML(chips, current) {
+  return '<div class="filters m-chips">' + chips.map(c =>
+    '<button type="button" class="' + (current === c.id ? 'on' : '') + '" data-act="m-list" data-id="' + c.id + '">' + esc(c.label) + '</button>'
+  ).join('') + '</div>';
+}
+function sortMarketIds(ids, mode) {
+  const arr = ids.slice();
+  const chg = id => (quotes[id] && quotes[id].changePct) || 0;
+  const cap = id => (quotes[id] && quotes[id].marketCap) || 0;
+  const vol = id => volOf(id);
+  if (mode === 'gainers') arr.sort((a, b) => chg(b) - chg(a));
+  else if (mode === 'losers') arr.sort((a, b) => chg(a) - chg(b));
+  else if (mode === 'volume') arr.sort((a, b) => vol(b) - vol(a));
+  else if (mode === 'mcap') arr.sort((a, b) => cap(b) - cap(a));
+  // 'all' keeps the incoming order (universe / contract list).
+  return arr;
+}
+function marketListHTML(ids, rowOpts) {
+  rowOpts = rowOpts || { spark: true };
+  const show = marketsShowAll ? ids : ids.slice(0, 10);
+  const rows = show.map(id => {
+    const o = Object.assign({}, rowOpts);
+    if (typeof o.sub === 'function') o.sub = o.sub(id);
+    return rowHTML(id, o);
+  }).join('');
+  let btn = '';
+  if (ids.length > 10) {
+    btn = marketsShowAll
+      ? '<button type="button" class="see-all" data-act="m-more" data-id="less">Show less</button>'
+      : '<button type="button" class="see-all" data-act="m-more" data-id="more">See all ' + ids.length + '</button>';
+  }
+  return '<div class="list">' + (rows || '<div class="empty"><p>Nothing in this list yet.</p></div>') + '</div>' + btn;
+}
+function cryptoRowOpts() {
+  return {
+    spark: true,
+    sub: function(id) {
+      const q = quotes[id] || {};
+      const sym = q.symbol || coin(id);
+      return '<span>' + esc(sym) + '</span>' +
+        (q.marketCap ? '<span class="tag">' + fmtCap(q.marketCap) + '</span>' : '') +
+        (q.live ? '<span class="tag">LIVE</span>' : '');
+    }
+  };
+}
+
+function renderMarkets(opts) {
+  opts = opts || {};
   const el = $('#marketsIn');
   const pane = MARKET_PANES.includes(marketsPane) ? marketsPane : 'stocks';
   marketsPane = pane;
+  const allowed = pane === 'crypto'
+    ? ['mcap','gainers','losers','volume','new','trending']
+    : ['all','gainers','losers','volume'];
+  if (!allowed.includes(marketsList)) marketsList = defaultMarketsList(pane);
+
   const universe = Object.values(quotes).filter(q => q && q.ok && q.changePct != null && q.kind !== 'fx');
   const tabs = [['stocks','Stocks'],['crypto','Crypto'],['commodities','Commodities'],['etfs','ETFs']]
     .map(pair => '<button type="button" class="' + (pane===pair[0]?'on':'') + '" data-act="m-pane" data-id="' + pair[0] + '">' + pair[1] + '</button>').join('');
   let body = '';
   if (pane === 'stocks') {
     const idxs = INDICES.map(id => quotes[id]).filter(Boolean);
-    const eq = universe.filter(q => q.kind === 'equity' || q.kind === 'index');
-    const gainers = eq.filter(q => q.kind !== 'index').sort((a,b) => b.changePct - a.changePct).slice(0, 6);
-    const losers = eq.filter(q => q.kind !== 'index').sort((a,b) => a.changePct - b.changePct).slice(0, 6);
+    const eq = universe.filter(q => q.kind === 'equity').map(q => q.id);
     const idxCards = idxs.map(q => {
       const up = (q.changePct || 0) >= 0;
       return '<a class="idx" href="#/s/' + encodeURIComponent(q.id) + '">' +
@@ -955,47 +1096,59 @@ function renderMarkets() {
     }).join('');
     const headlines = (news && news.market) || [];
     rememberNews(headlines);
+    const chips = marketChipsFor('stocks');
+    const ids = sortMarketIds(eq, marketsList);
+    const label = (chips.find(c => c.id === marketsList) || {}).label || 'Stocks';
     body = '<div class="idx-grid">' + (idxCards || '<div class="empty"><p>Index quotes have not loaded yet.</p></div>') + '</div>' +
-      '<div class="sec-h"><h2>Top gainers</h2></div><div class="list">' + gainers.map(q => rowHTML(q.id, { spark: true })).join('') + '</div>' +
-      '<div class="sec-h"><h2>Top losers</h2></div><div class="list">' + losers.map(q => rowHTML(q.id, { spark: true })).join('') + '</div>' +
+      chipBarHTML(chips, marketsList) +
+      '<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids) +
       '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(headlines, 'No market headlines in the latest refresh.');
   } else if (pane === 'crypto') {
+    applyCryptoMarkets();
     const fng = news && news.fng;
-    const cryptos = universe.filter(q => q.kind === 'crypto').sort((a,b) => Math.abs(b.changePct) - Math.abs(a.changePct));
     let fngH = '';
     if (fng && fng.value != null) {
-      fngH = '<div class="sec-h"><h2>Fear &amp; greed</h2><small class="more">' + esc(fng.classification || '') + '</small></div>' +
-        '<div class="fng"><div class="lbl">Crypto · alternative.me</div>' +
-        '<div class="score">' + esc(fng.value) + ' <span style="font-size:14px;color:var(--mute)">' + esc(fng.classification || '') + '</span></div>' +
-        '<div class="fng-m"><i style="left:' + Math.max(0,Math.min(100,fng.value)) + '%"></i></div>' +
-        '<p class="note">0 is extreme fear, 100 is extreme greed. ' + (fng.asOf ? 'As of ' + esc(ago(fng.asOf)) + '.' : '') + ' Snapshot from the latest refresh, not a live tick.</p></div>';
+      fngH = '<div class="fng compact"><span class="score">' + esc(fng.value) + '</span>' +
+        '<span class="fng-meta"><b>Fear &amp; greed</b> · ' + esc(fng.classification || '') + '</span>' +
+        '<div class="fng-m"><i style="left:' + Math.max(0,Math.min(100,fng.value)) + '%"></i></div></div>';
     }
     const chead = (news && (news.crypto || [])) || [];
     rememberNews(chead);
-    body = fngH +
-      '<div class="sec-h"><h2>Crypto</h2></div><div class="list">' + (cryptos.slice(0, 12).map(q => rowHTML(q.id, { spark: true })).join('') || '<div class="empty"><p>No live crypto quotes yet.</p></div>') + '</div>' +
-      '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(chead, 'No crypto headlines in the latest refresh.');
+    const hasNew = !!(cryptoMarkets.newListings && cryptoMarkets.newListings.length);
+    const hasTr = !!(cryptoMarkets.trending && cryptoMarkets.trending.length);
+    const chips = marketChipsFor('crypto', { newListings: hasNew, trending: hasTr });
+    let ids;
+    if (marketsList === 'trending') ids = (cryptoMarkets.trending || []).map(c => c.ticker);
+    else if (marketsList === 'new') ids = (cryptoMarkets.newListings || []).map(c => c.ticker);
+    else ids = sortMarketIds((cryptoMarkets.coins || []).map(c => c.ticker), marketsList);
+    ids = ids.filter(Boolean);
+    const label = (chips.find(c => c.id === marketsList) || {}).label || 'Crypto';
+    body = fngH + chipBarHTML(chips, marketsList) +
+      '<div class="sec-h"><h2>' + esc(label) + '</h2><small class="more">' + (ids.length ? (ids.length + ' coins') : '') + '</small></div>' +
+      marketListHTML(ids, cryptoRowOpts()) +
+      '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(chead, 'No crypto headlines in the latest refresh.', { finance: false });
   } else if (pane === 'commodities') {
-    const list = COMMODITY_IDS.map(id => quotes[id]).filter(q => q && q.ok);
-    const gainers = list.slice().sort((a,b) => (b.changePct||0) - (a.changePct||0)).slice(0, 3);
-    const losers = list.slice().sort((a,b) => (a.changePct||0) - (b.changePct||0)).slice(0, 3);
+    const list = COMMODITY_IDS.filter(id => quotes[id] && quotes[id].ok);
+    const chips = marketChipsFor('commodities');
+    const ids = sortMarketIds(list, marketsList);
+    const label = (chips.find(c => c.id === marketsList) || {}).label || 'Contracts';
     body = '<p class="note">Futures last prices from Yahoo Finance, shown in US dollars with the contract unit.</p>' +
-      (gainers.length ? '<div class="sec-h"><h2>Movers</h2></div><div class="list">' + gainers.concat(losers.filter(q => !gainers.includes(q))).slice(0,5).map(q => rowHTML(q.id, { spark: true })).join('') + '</div>' : '') +
-      '<div class="sec-h"><h2>Contracts</h2></div><div class="list">' +
-      (list.length ? list.map(q => rowHTML(q.id, { spark: true })).join('') : '<div class="empty"><p>Commodity quotes have not loaded yet. They appear after the next refresh.</p></div>') +
-      '</div>';
+      chipBarHTML(chips, marketsList) +
+      '<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids);
   } else {
-    const etfs = universe.filter(q => q.kind === 'etf');
-    const gainers = etfs.slice().sort((a,b) => b.changePct - a.changePct).slice(0, 6);
-    const losers = etfs.slice().sort((a,b) => a.changePct - b.changePct).slice(0, 6);
-    body = '<div class="sec-h"><h2>Top gainers</h2></div><div class="list">' + (gainers.map(q => rowHTML(q.id, { spark: true })).join('') || '<div class="empty"><p>No ETF quotes yet.</p></div>') + '</div>' +
-      '<div class="sec-h"><h2>Top losers</h2></div><div class="list">' + losers.map(q => rowHTML(q.id, { spark: true })).join('') + '</div>' +
-      '<div class="sec-h"><h2>All ETFs</h2></div><div class="list">' + etfs.slice(0, 40).map(q => rowHTML(q.id, { spark: true })).join('') + '</div>';
+    const etfs = universe.filter(q => q.kind === 'etf').map(q => q.id);
+    const chips = marketChipsFor('etfs');
+    const ids = sortMarketIds(etfs, marketsList);
+    const label = (chips.find(c => c.id === marketsList) || {}).label || 'ETFs';
+    body = chipBarHTML(chips, marketsList) +
+      '<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids);
   }
   el.innerHTML = '<p class="eyebrow">Today</p><h2 style="font-size:28px;margin-bottom:8px">Markets</h2>' +
     '<div class="m-seg">' + tabs + '</div>' + body + creditHTML();
-  const view = document.querySelector('.view[data-tab="markets"]');
-  if (view) view.scrollTop = 0;
+  if (opts.scroll !== false) {
+    const view = document.querySelector('.view[data-tab="markets"]');
+    if (view) view.scrollTop = 0;
+  }
 }
 
 function renderWatch() {
@@ -1182,7 +1335,7 @@ function updatePrices() {
     const q = quotes[el.dataset.chg];
     if (!q) continue;
     el.textContent = q.changePct != null ? pct(q.changePct) : '—';
-    el.classList.remove('up', 'dn'); el.classList.add(chgClass(q.changePct));
+    el.classList.remove('up', 'dn', 'flat'); const cc = chgClass(q.changePct); if (cc) el.classList.add(cc);
   }
   if (holdings.length && (tab === 'home' || tab === 'port') && !detailId) {
     updatePortfolioLive();
@@ -1634,7 +1787,7 @@ async function renderDetail(id, reuse) {
   }
   rememberNews(newsBits);
   extras += '<div class="block"><h2>News</h2>' +
-    (newsBits.length ? newsListHTML(newsBits) : '<p class="note">No headlines in the latest refresh for this symbol.</p>') +
+    (newsBits.length ? newsListHTML(newsBits, 'No headlines in the latest refresh for this symbol.', { logoId: id, finance: kind !== 'crypto' }) : '<p class="note">No headlines in the latest refresh for this symbol.</p>') +
     ((news && news.delay) ? '<p class="note">' + esc(news.delay) + '</p>' : '') + '</div>';
   if (ihOk) extras += '<p class="fine-under" style="margin-top:20px"><a href="' + IH + '#t=' + encodeURIComponent(id) + '" target="_blank" rel="noopener">Open in Insider House</a></p>';
 
@@ -2000,7 +2153,7 @@ function applyHash() {
   if (h.startsWith('#/markets')) {
     i = 1;
     const part = h.split('/')[2];
-    if (MARKET_PANES.includes(part) && part !== marketsPane) { marketsPane = part; renderMarkets(); }
+    if (MARKET_PANES.includes(part) && part !== marketsPane) { marketsPane = part; marketsList = defaultMarketsList(part); marketsShowAll = false; renderMarkets(); }
   }
   else if (h.startsWith('#/watch')) i = 2;
   else if (h.startsWith('#/port')) i = 3;
@@ -2352,8 +2505,23 @@ function onClick(e) {
   const pane = e.target.closest('[data-act="m-pane"]');
   if (pane) {
     marketsPane = pane.dataset.id;
+    marketsList = defaultMarketsList(marketsPane);
+    marketsShowAll = false;
     history.replaceState(null, '', '#/markets/' + marketsPane);
     renderMarkets();
+    return;
+  }
+  const mlist = e.target.closest('[data-act="m-list"]');
+  if (mlist) {
+    marketsList = mlist.dataset.id;
+    marketsShowAll = false;
+    renderMarkets({ scroll: false });
+    return;
+  }
+  const mmore = e.target.closest('[data-act="m-more"]');
+  if (mmore) {
+    marketsShowAll = mmore.dataset.id === 'more';
+    renderMarkets({ scroll: false });
     return;
   }
   const fsBtn = e.target.closest('[data-act="chart-fs"]');
@@ -2430,7 +2598,7 @@ function onClick(e) {
 }
 
 async function refreshAll() {
-  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadPairs().then(loadCryptoOnce)]);
+  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadPairs().then(loadCryptoOnce)]); applyCryptoMarkets();
   renderAll();
   loadCryptoSparks().then(() => { if (tab === 'watch' || tab === 'markets') { renderWatch(); renderMarkets(); } if (tab === 'home') updatePortfolioLive(); });
   connectWS();

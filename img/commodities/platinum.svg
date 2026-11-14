@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="c"><rect width="256" height="256"/></clipPath>
+    <radialGradient id="bg" cx="50%" cy="32%" r="70%"><stop offset="0%" stop-color="#8A949E"/><stop offset="100%" stop-color="#2C343C"/></radialGradient>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="256" height="256" fill="#3E4650"/>
+    <rect width="256" height="256" fill="url(#bg)"/>
+    <g transform="translate(128,140)">
+      <path d="M-72 28 L-56 -36 L56 -36 L72 28 Z" fill="#9AA4B0"/>
+      <path d="M-56 -36 L-40 -64 L40 -64 L56 -36 Z" fill="#E6EBF0"/>
+      <path d="M40 -64 L56 -36 L72 28 L56 28 Z" fill="#6E7884"/>
+      <path d="M-72 28 L-56 -36 L-40 -64 L-56 28 Z" fill="#FFFFFF" opacity=".95"/>
+      <path d="M-28 -8 L-18 -28 L18 -28 L28 -8 Z" fill="#F7FAFC"/>
+      <path d="M-18 -28 L-10 -42 L10 -42 L18 -28 Z" fill="#FFFFFF"/>
+    </g>
+  </g>
+</svg>

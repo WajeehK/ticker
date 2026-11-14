@@ -25,16 +25,14 @@
   },
   "AAL.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/AAL.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/AAL.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/AAL.L.png"
   },
   "AAPL": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/AAPL.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/AAPL.png (stored locally, not hotlinked)",
     "src": "img/stocks/AAPL.png"
   },
   "AAVE-USD": {
@@ -58,9 +56,8 @@
   },
   "ABF.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/ABF.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/ABF.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/ABF.L.png"
   },
   "ABNB": {
@@ -151,9 +148,9 @@
     "src": "img/crypto/aixbt.png"
   },
   "AKE-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/ake.png"
   },
   "AKT-USD": {
@@ -284,7 +281,7 @@
   "ARB-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/arb.png"
   },
   "ARC-USD": {
@@ -308,9 +305,8 @@
   },
   "ARM": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/ARM.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/ARM.png (stored locally, not hotlinked)",
     "src": "img/stocks/ARM.png"
   },
   "ARPA-USD": {
@@ -327,9 +323,8 @@
   },
   "ASML": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/ASML.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/ASML.png (stored locally, not hotlinked)",
     "src": "img/stocks/ASML.png"
   },
   "ASSET-USD": {
@@ -341,7 +336,7 @@
   "ASTER-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/aster.png"
   },
   "ASTR-USD": {
@@ -388,9 +383,8 @@
   },
   "AUTO.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/AUTO.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/AUTO.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/AUTO.L.png"
   },
   "AV.L": {
@@ -440,9 +434,8 @@
   },
   "AZN.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/AZN.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/AZN.png (stored locally, not hotlinked)",
     "src": "img/stocks/AZN.L.png"
   },
   "AZTEC-USD": {
@@ -472,9 +465,8 @@
   },
   "BA.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/BA.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/BA.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/BA.L.png"
   },
   "BABA": {
@@ -536,9 +528,8 @@
   },
   "BATS.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/BATS.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/BTI.png (stored locally, not hotlinked)",
     "src": "img/stocks/BATS.L.png"
   },
   "BCH-USD": {
@@ -546,6 +537,12 @@
     "kind": "crypto",
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/bch.svg"
+  },
+  "BDX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/bdx.png"
   },
   "BEAM-USD": {
     "chip": false,
@@ -559,10 +556,16 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/bera.png"
   },
+  "BFUSD-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/bfusd.png"
+  },
   "BGB-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/bgb.png"
   },
   "BICO-USD": {
@@ -646,9 +649,8 @@
   },
   "BNZL.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/BNZL.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/BNZL.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/BNZL.L.png"
   },
   "BOB-USD": {
@@ -685,9 +687,8 @@
   },
   "BRK-B": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/BRK-B.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/BRK-B.png (stored locally, not hotlinked)",
     "src": "img/stocks/BRK-B.png"
   },
   "BT-A.L": {
@@ -722,6 +723,24 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/btt.svg"
   },
+  "BTW-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/btw.png"
+  },
+  "BUIDL-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/buidl.png"
+  },
+  "BZ=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/brent.svg"
+  },
   "C": {
     "chip": true,
     "dark": true,
@@ -738,7 +757,7 @@
   "CAKE-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/cake.png"
   },
   "CAP-USD": {
@@ -786,9 +805,8 @@
   },
   "CCH.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/CCH.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/CCH.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/CCH.L.png"
   },
   "CELO-USD": {
@@ -845,6 +863,12 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/chz.svg"
   },
+  "CL=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/wti.svg"
+  },
   "CLANKER-USD": {
     "chip": true,
     "kind": "crypto",
@@ -853,9 +877,8 @@
   },
   "CNA.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/CNA.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/CNA.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/CNA.L.png"
   },
   "COIN": {
@@ -912,9 +935,8 @@
   },
   "CRDA.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/CRDA.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/CRDA.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/CRDA.L.png"
   },
   "CRM": {
@@ -927,7 +949,7 @@
   "CRO-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/cro.png"
   },
   "CRV-USD": {
@@ -1038,9 +1060,8 @@
   },
   "DCC.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/DCC.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/DCC.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/DCC.L.png"
   },
   "DCR-USD": {
@@ -1051,9 +1072,8 @@
   },
   "DDOG": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/DDOG.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/DDOG.png (stored locally, not hotlinked)",
     "src": "img/stocks/DDOG.png"
   },
   "DEBIT-USD": {
@@ -1118,6 +1138,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/dog.png"
+  },
+  "DOGE-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/doge.png"
   },
   "DOGS-USD": {
     "chip": true,
@@ -1214,7 +1240,7 @@
   "ENA-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/ena.png"
   },
   "ENJ-USD": {
@@ -1231,9 +1257,8 @@
   },
   "ENT.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/ENT.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/ENT.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/ENT.L.png"
   },
   "ESP-USD": {
@@ -1255,9 +1280,9 @@
     "src": "img/crypto/eth.svg"
   },
   "ETHFI-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/ethfi.png"
   },
   "EUL-USD": {
@@ -1275,7 +1300,7 @@
   "EURC-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/eurc.png"
   },
   "EURCV-USD": {
@@ -1289,6 +1314,18 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/europ.png"
+  },
+  "EURSAFO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/eursafo.png"
+  },
+  "EURUSD=X": {
+    "chip": false,
+    "kind": "fx",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/fx/eurusd.svg"
   },
   "EV-USD": {
     "chip": false,
@@ -1304,9 +1341,8 @@
   },
   "EXPN.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/EXPN.L.png",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/EXPGY.png (stored locally, not hotlinked)",
     "src": "img/stocks/EXPN.L.png"
   },
   "FARTCOIN-USD": {
@@ -1338,6 +1374,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/fidd.png"
+  },
+  "FIGR_HELOC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/figr_heloc.png"
   },
   "FIL-USD": {
     "chip": false,
@@ -1431,6 +1473,18 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/gbp.svg"
   },
+  "GBPUSD=X": {
+    "chip": false,
+    "kind": "fx",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/fx/gbpusd.svg"
+  },
+  "GC=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/gold.svg"
+  },
   "GE": {
     "chip": true,
     "dark": false,
@@ -1443,6 +1497,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/genius.png"
+  },
+  "GHO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/gho.png"
   },
   "GIGA-USD": {
     "chip": false,
@@ -1514,6 +1574,12 @@
     "source": "Financial Modeling Prep image-stock/GOOGL.png",
     "src": "img/stocks/GOOGL.png"
   },
+  "GRAM-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/gram.png"
+  },
   "GRASS-USD": {
     "chip": true,
     "kind": "crypto",
@@ -1534,9 +1600,8 @@
   },
   "GS": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/GS.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/GS.png (stored locally, not hotlinked)",
     "src": "img/stocks/GS.png"
   },
   "GSK.L": {
@@ -1545,6 +1610,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/GSK.L.png",
     "src": "img/stocks/GSK.L.png"
+  },
+  "GT-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/gt.png"
   },
   "GTC-USD": {
     "chip": false,
@@ -1559,9 +1630,9 @@
     "src": "img/crypto/gwei.png"
   },
   "HBAR-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/hbar.png"
   },
   "HD": {
@@ -1571,11 +1642,16 @@
     "source": "Financial Modeling Prep image-stock/HD.png",
     "src": "img/stocks/HD.png"
   },
+  "HG=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/copper.svg"
+  },
   "HIK.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/HIK.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/HIK.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/HIK.L.png"
   },
   "HLMA.L": {
@@ -1629,6 +1705,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/hsk.png"
   },
+  "HTX-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/htx.png"
+  },
   "HYG": {
     "chip": true,
     "dark": true,
@@ -1637,9 +1719,9 @@
     "src": "img/stocks/HYG.png"
   },
   "HYPE-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/hype.png"
   },
   "IAG.L": {
@@ -1691,16 +1773,14 @@
   },
   "IHG.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/IHG.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/IHG.png (stored locally, not hotlinked)",
     "src": "img/stocks/IHG.L.png"
   },
   "III.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/III.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/III.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/III.L.png"
   },
   "IMB.L": {
@@ -1718,9 +1798,8 @@
   },
   "INF.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/INF.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/INF.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/INF.L.png"
   },
   "INIT-USD": {
@@ -1732,14 +1811,13 @@
   "INJ-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/inj.png"
   },
   "INTC": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/INTC.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/INTC.png (stored locally, not hotlinked)",
     "src": "img/stocks/INTC.png"
   },
   "INTU": {
@@ -1751,16 +1829,14 @@
   },
   "ISF.L": {
     "chip": true,
-    "dark": false,
-    "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/ISF.L.png",
+    "kind": "etf",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/ISF.png (stored locally, not hotlinked)",
     "src": "img/stocks/ISF.L.png"
   },
   "IUSA.L": {
     "chip": true,
-    "dark": false,
-    "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/IUSA.L.png",
+    "kind": "etf",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/IVV.png (stored locally, not hotlinked)",
     "src": "img/stocks/IUSA.L.png"
   },
   "IVV": {
@@ -1776,6 +1852,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/IWM.png",
     "src": "img/stocks/IWM.png"
+  },
+  "JAAA-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/jaaa.png"
   },
   "JASMY-USD": {
     "chip": false,
@@ -1813,7 +1895,7 @@
   "JST-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/jst.png"
   },
   "JTO-USD": {
@@ -1823,9 +1905,9 @@
     "src": "img/crypto/jto.png"
   },
   "JUP-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/jup.png"
   },
   "KAITO-USD": {
@@ -1837,7 +1919,7 @@
   "KAS-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/kas.png"
   },
   "KAT-USD": {
@@ -1849,8 +1931,14 @@
   "KAVA-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/kava.png"
+  },
+  "KCS-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/kcs.png"
   },
   "KEEP-USD": {
     "chip": false,
@@ -1898,7 +1986,7 @@
   "KNTQ-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/kntq.png"
   },
   "KO": {
@@ -1922,9 +2010,8 @@
   },
   "LAND.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/LAND.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/LAND.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/LAND.L.png"
   },
   "LAVA-USD": {
@@ -1951,6 +2038,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/ldo.png"
   },
+  "LEO-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/leo.png"
+  },
   "LINEA-USD": {
     "chip": false,
     "kind": "crypto",
@@ -1970,9 +2063,9 @@
     "src": "img/crypto/lion.png"
   },
   "LIT-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/lit.png"
   },
   "LLOY.L": {
@@ -2016,9 +2109,8 @@
   },
   "LSEG.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/LSEG.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/LSEG.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/LSEG.L.png"
   },
   "LSK-USD": {
@@ -2038,6 +2130,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/luna.png"
+  },
+  "M-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/m.png"
   },
   "MA": {
     "chip": true,
@@ -2140,9 +2238,8 @@
   },
   "MKS.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/MKS.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/MKS.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/MKS.L.png"
   },
   "MLN-USD": {
@@ -2161,7 +2258,7 @@
   "MNT-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/mnt.png"
   },
   "MOCA-USD": {
@@ -2191,7 +2288,7 @@
   "MORPHO-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/morpho.png"
   },
   "MOVR-USD": {
@@ -2269,7 +2366,7 @@
   "NEAR-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/near.png"
   },
   "NEIRO-USD": {
@@ -2292,9 +2389,8 @@
   },
   "NET": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/NET.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/NET.png (stored locally, not hotlinked)",
     "src": "img/stocks/NET.png"
   },
   "NEX-USD": {
@@ -2323,10 +2419,16 @@
     "source": "Financial Modeling Prep image-stock/NG.L.png",
     "src": "img/stocks/NG.L.png"
   },
+  "NG=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/gas.svg"
+  },
   "NIGHT-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/night.png"
   },
   "NIL-USD": {
@@ -2416,9 +2518,8 @@
   },
   "OCDO.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/OCDO.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/OCDO.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/OCDO.L.png"
   },
   "OCEAN-USD": {
@@ -2434,9 +2535,9 @@
     "src": "img/crypto/ogn.png"
   },
   "OKB-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/okb.png"
   },
   "OMG-USD": {
@@ -2452,9 +2553,9 @@
     "src": "img/crypto/omi.png"
   },
   "ONDO-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/ondo.png"
   },
   "ONE-USD": {
@@ -2501,9 +2602,9 @@
     "src": "img/crypto/osmo.png"
   },
   "OUSD-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/ousd.png"
   },
   "OXT-USD": {
@@ -2511,6 +2612,12 @@
     "kind": "crypto",
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/oxt.svg"
+  },
+  "PA=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/palladium.svg"
   },
   "PANW": {
     "chip": true,
@@ -2532,9 +2639,9 @@
     "src": "img/crypto/peaq.png"
   },
   "PEARL-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pearl.png"
   },
   "PENDLE-USD": {
@@ -2544,9 +2651,9 @@
     "src": "img/crypto/pendle.png"
   },
   "PENGU-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pengu.png"
   },
   "PEP": {
@@ -2559,7 +2666,7 @@
   "PEPE-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pepe.png"
   },
   "PFE": {
@@ -2585,7 +2692,7 @@
   "PI-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pi.png"
   },
   "PIEVERSE-USD": {
@@ -2594,11 +2701,16 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/pieverse.png"
   },
+  "PL=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/platinum.svg"
+  },
   "PLTR": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/PLTR.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/PLTR.png (stored locally, not hotlinked)",
     "src": "img/stocks/PLTR.png"
   },
   "PLUME-USD": {
@@ -2614,9 +2726,9 @@
     "src": "img/crypto/pnut.png"
   },
   "POL-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pol.png"
   },
   "POLIS-USD": {
@@ -2626,9 +2738,9 @@
     "src": "img/crypto/polis.svg"
   },
   "PONS-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pons.png"
   },
   "POPCAT-USD": {
@@ -2682,9 +2794,8 @@
   },
   "PSH.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/PSH.L.png",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/PSH.png (stored locally, not hotlinked)",
     "src": "img/stocks/PSH.L.png"
   },
   "PSN.L": {
@@ -2708,9 +2819,9 @@
     "src": "img/crypto/puffer.png"
   },
   "PUMP-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pump.png"
   },
   "PYPL": {
@@ -2727,9 +2838,9 @@
     "src": "img/crypto/pyth.png"
   },
   "PYUSD-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/pyusd.png"
   },
   "Q-USD": {
@@ -2776,6 +2887,12 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/rad.png"
   },
+  "RAIN-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/rain.png"
+  },
   "RAY-USD": {
     "chip": false,
     "kind": "crypto",
@@ -2816,7 +2933,7 @@
   "RENDER-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/render.png"
   },
   "REQ-USD": {
@@ -2867,7 +2984,7 @@
   "RLUSD-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/rlusd.png"
   },
   "ROBO-USD": {
@@ -2909,9 +3026,8 @@
   },
   "RTO.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/RTO.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/RTO.png (stored locally, not hotlinked)",
     "src": "img/stocks/RTO.L.png"
   },
   "RUNE-USD": {
@@ -3011,9 +3127,8 @@
   },
   "SGLN.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/SGLN.L.png",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/IAU.png (stored locally, not hotlinked)",
     "src": "img/stocks/SGLN.L.png"
   },
   "SGRO.L": {
@@ -3033,7 +3148,7 @@
   "SHIB-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/shib.png"
   },
   "SHOP": {
@@ -3048,6 +3163,12 @@
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/shx.png"
+  },
+  "SI=F": {
+    "chip": false,
+    "kind": "commodity",
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/commodities/silver.svg"
   },
   "SIGN-USD": {
     "chip": false,
@@ -3269,9 +3390,8 @@
   },
   "SSE.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/SSE.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/SSE.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/SSE.L.png"
   },
   "SSV-USD": {
@@ -3288,9 +3408,8 @@
   },
   "STAN.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/STAN.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/STAN.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/STAN.L.png"
   },
   "STBL-USD": {
@@ -3326,7 +3445,7 @@
   "SUI-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/sui.png"
   },
   "SUN-USD": {
@@ -3392,9 +3511,9 @@
     "src": "img/crypto/take.png"
   },
   "TAO-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/tao.png"
   },
   "TEL-USD": {
@@ -3479,9 +3598,8 @@
   },
   "TSCO.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/TSCO.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/TSCO.L.png (stored locally, not hotlinked)",
     "src": "img/stocks/TSCO.L.png"
   },
   "TSLA": {
@@ -3523,6 +3641,12 @@
     "kind": "stock",
     "source": "Financial Modeling Prep image-stock/TXN.png",
     "src": "img/stocks/TXN.png"
+  },
+  "U-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/u.png"
   },
   "UBER": {
     "chip": true,
@@ -3578,7 +3702,7 @@
   "USAR": {
     "chip": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/USAR.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/USAR.png (stored locally, not hotlinked)",
     "src": "img/stocks/USAR.png"
   },
   "USAT-USD": {
@@ -3587,10 +3711,16 @@
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/usat.png"
   },
+  "USD0-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/usd0.png"
+  },
   "USD1-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/usd1.png"
   },
   "USDC-USD": {
@@ -3602,25 +3732,31 @@
   "USDD-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/usdd.png"
   },
   "USDE-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/usde.png"
+  },
+  "USDF-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/usdf.png"
   },
   "USDG-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/usdg.png"
   },
   "USDGO-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/usdgo.png"
   },
   "USDPT-USD": {
@@ -3632,7 +3768,7 @@
   "USDS-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/usds.png"
   },
   "USDSM-USD": {
@@ -3653,17 +3789,35 @@
     "source": "spothq/cryptocurrency-icons (CC0)",
     "src": "img/crypto/usdt.svg"
   },
+  "USDY-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/usdy.png"
+  },
   "USELESS-USD": {
     "chip": true,
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/useless.png"
   },
+  "USTB-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/ustb.png"
+  },
   "USUAL-USD": {
     "chip": true,
     "kind": "crypto",
     "source": "CoinGecko coin image (downloaded, not hotlinked)",
     "src": "img/crypto/usual.png"
+  },
+  "USYC-USD": {
+    "chip": false,
+    "kind": "crypto",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
+    "src": "img/crypto/usyc.png"
   },
   "UU.L": {
     "chip": true,
@@ -3726,9 +3880,8 @@
   },
   "VOD.L": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/VOD.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/VOD.png (stored locally, not hotlinked)",
     "src": "img/stocks/VOD.L.png"
   },
   "VOO": {
@@ -3759,9 +3912,8 @@
   },
   "VUAG.L": {
     "chip": true,
-    "dark": true,
-    "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/VUAG.L.png",
+    "kind": "etf",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/VOO.png (stored locally, not hotlinked)",
     "src": "img/stocks/VUAG.L.png"
   },
   "VUKE.L": {
@@ -3773,15 +3925,14 @@
   },
   "VUSA.L": {
     "chip": true,
-    "dark": true,
-    "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/VUSA.L.png",
+    "kind": "etf",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/VOO.png (stored locally, not hotlinked)",
     "src": "img/stocks/VUSA.L.png"
   },
   "VVV-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/vvv.png"
   },
   "VWO": {
@@ -3793,16 +3944,14 @@
   },
   "VWRL.L": {
     "chip": true,
-    "dark": true,
-    "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/VWRL.L.png",
+    "kind": "etf",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/VT.png (stored locally, not hotlinked)",
     "src": "img/stocks/VWRL.L.png"
   },
   "VWRP.L": {
     "chip": true,
-    "dark": true,
-    "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/VWRP.L.png",
+    "kind": "etf",
+    "source": "Downloaded https://financialmodelingprep.com/image-stock/VT.png (stored locally, not hotlinked)",
     "src": "img/stocks/VWRP.L.png"
   },
   "VZ": {
@@ -3825,9 +3974,9 @@
     "src": "img/crypto/wal.png"
   },
   "WBT-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/wbt.png"
   },
   "WBTC-USD": {
@@ -3857,9 +4006,8 @@
   },
   "WFC": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/WFC.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/WFC.png (stored locally, not hotlinked)",
     "src": "img/stocks/WFC.png"
   },
   "WIF-USD": {
@@ -3881,15 +4029,15 @@
     "src": "img/crypto/wings.svg"
   },
   "WLD-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/wld.png"
   },
   "WLFI-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/wlfi.png"
   },
   "WMT": {
@@ -3919,9 +4067,8 @@
   },
   "WPP.L": {
     "chip": true,
-    "dark": true,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/WPP.L.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/WPP.png (stored locally, not hotlinked)",
     "src": "img/stocks/WPP.L.png"
   },
   "XAN-USD": {
@@ -3933,7 +4080,7 @@
   "XAUT-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/xaut.png"
   },
   "XCN-USD": {
@@ -3945,7 +4092,7 @@
   "XDC-USD": {
     "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/xdc.png"
   },
   "XDP-USD": {
@@ -4059,9 +4206,8 @@
   },
   "XYZ": {
     "chip": true,
-    "dark": false,
     "kind": "stock",
-    "source": "Financial Modeling Prep image-stock/XYZ.png",
+    "source": "Downloaded https://companiesmarketcap.com/img/company-logos/256/XYZ.png (stored locally, not hotlinked)",
     "src": "img/stocks/XYZ.png"
   },
   "YB-USD": {
@@ -4143,9 +4289,9 @@
     "src": "img/crypto/zora.png"
   },
   "ZRO-USD": {
-    "chip": true,
+    "chip": false,
     "kind": "crypto",
-    "source": "CoinGecko coin image (downloaded, not hotlinked)",
+    "source": "CoinGecko coin image, large (downloaded, not hotlinked)",
     "src": "img/crypto/zro.png"
   },
   "ZRX-USD": {
@@ -4155,27 +4301,27 @@
     "src": "img/crypto/zrx.svg"
   },
   "^DJI": {
-    "chip": true,
+    "chip": false,
     "kind": "index",
-    "source": "Generated typographic mark (no official bitmap found)",
-    "src": "img/stocks/_DJI.png"
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/indices/dow.svg"
   },
   "^FTSE": {
-    "chip": true,
+    "chip": false,
     "kind": "index",
-    "source": "Generated typographic mark (no official bitmap found)",
-    "src": "img/stocks/_FTSE.png"
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/indices/ftse.svg"
   },
   "^GSPC": {
-    "chip": true,
+    "chip": false,
     "kind": "index",
-    "source": "Generated typographic mark (no official bitmap found)",
-    "src": "img/stocks/_GSPC.png"
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/indices/sp500.svg"
   },
   "^IXIC": {
-    "chip": true,
+    "chip": false,
     "kind": "index",
-    "source": "Generated typographic mark (no official bitmap found)",
-    "src": "img/stocks/_IXIC.png"
+    "source": "Original circular mark drawn for Ticker (this repo)",
+    "src": "img/indices/nasdaq.svg"
   }
 }

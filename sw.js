@@ -1,11 +1,11 @@
-/* Ticker service worker (build t7).
+/* Ticker service worker (build t8).
    App shell: cache-first, refreshed per build. Quote/history JSON: network-first. */
-const SHELL = 'ticker-shell-t7';
+const SHELL = 'ticker-shell-t8';
 const DATA = 'ticker-data';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest',
-  './style.css?v=t7', './app.js?v=t7',
-  './vendor/lightweight-charts.js?v=t7',
+  './style.css?v=t8', './app.js?v=t8',
+  './vendor/lightweight-charts.js?v=t8',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/apple-touch-icon.png', './icons/favicon.svg', './icons/favicon-32.png'
 ];

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="c"><rect width="256" height="256"/></clipPath>
+    <radialGradient id="bg" cx="50%" cy="35%" r="70%"><stop offset="0%" stop-color="#C46A2E"/><stop offset="100%" stop-color="#5A280E"/></radialGradient>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="256" height="256" fill="#6A3110"/>
+    <rect width="256" height="256" fill="url(#bg)"/>
+    <g transform="translate(128,132)" fill="none" stroke-linecap="round">
+      <path d="M-64 -8 C-64 -40 64 -40 64 -8 C64 16 -64 16 -64 -8 C-64 -40 64 -40 64 -8" stroke="#8C4A22" stroke-width="22"/>
+      <path d="M-64 10 C-64 -22 64 -22 64 10 C64 34 -64 34 -64 10 C-64 -22 64 -22 64 10" stroke="#B35C28" stroke-width="22"/>
+      <path d="M-64 28 C-64 -4 64 -4 64 28 C64 52 -64 52 -64 28 C-64 -4 64 -4 64 28" stroke="#D4783C" stroke-width="22"/>
+      <path d="M-64 46 C-64 14 64 14 64 46" stroke="#E8A868" stroke-width="22"/>
+      <path d="M-64 -8 C-64 -40 64 -40 64 -8 C64 16 -64 16 -64 -8 C-64 -40 64 -40 64 -8" stroke="#F0B078" stroke-width="8"/>
+    </g>
+  </g>
+</svg>

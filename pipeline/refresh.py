@@ -295,6 +295,8 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
         "spark": spark,
         "ok": True,
         "unit": "pence" if scale != 1.0 else None,
+        "volume": meta.get("regularMarketVolume"),
+        "marketCap": meta.get("marketCap"),
     }
     cm = COMMODITY_META.get(symbol)
     if cm:
@@ -442,6 +444,11 @@ def main() -> int:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         from market_extras import write_market
         write_market(DATA, quotes, UA)
+        try:
+            from crypto_markets import fetch as fetch_crypto_markets
+            fetch_crypto_markets()
+        except Exception as e:
+            print("crypto markets skipped:", e)
     except Exception as e:
         print(f"market extras failed: {e}", flush=True)
         errors.append(f"market extras: {e}")

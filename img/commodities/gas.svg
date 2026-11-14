@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="c"><rect width="256" height="256"/></clipPath>
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%"><stop offset="0%" stop-color="#1E3A5F"/><stop offset="100%" stop-color="#0B1726"/></radialGradient><radialGradient id="fl" cx="50%" cy="80%" r="70%"><stop offset="0%" stop-color="#FFB000"/><stop offset="55%" stop-color="#FF6A00"/><stop offset="100%" stop-color="#C02400"/></radialGradient><radialGradient id="in" cx="50%" cy="80%" r="70%"><stop offset="0%" stop-color="#FFE27A"/><stop offset="100%" stop-color="#FF8A00"/></radialGradient>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="256" height="256" fill="#14233A"/>
+    <rect width="256" height="256" fill="url(#bg)"/>
+    <g transform="translate(128,150)">
+      <path d="M0 -96 C-8 -70 -40 -48 -40 -10 C-40 28 -22 52 0 52 C22 52 40 28 40 -10 C40 -48 8 -70 0 -96Z" fill="#FF8A00"/>
+      <path d="M0 -96 C-8 -70 -40 -48 -40 -10 C-40 28 -22 52 0 52 C22 52 40 28 40 -10 C40 -48 8 -70 0 -96Z" fill="url(#fl)"/>
+      <path d="M0 -70 C-4 -54 -22 -40 -22 -12 C-22 16 -10 32 0 32 C10 32 22 16 22 -12 C22 -40 4 -54 0 -70Z" fill="url(#in)"/>
+      <path d="M0 -48 C-2 -38 -10 -30 -10 -14 C-10 2 -4 12 0 12 C4 12 10 2 10 -14 C10 -30 2 -38 0 -48Z" fill="#FFF4C2"/>
+    </g>
+  </g>
+</svg>

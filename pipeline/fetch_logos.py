@@ -302,7 +302,12 @@ def main() -> int:
     symbols = load_symbols()
     print(f"Stocks/ETFs/indices: {len(symbols)}")
     fetch_stocks(symbols, manifest)
-    ensure_indices(manifest)
+    try:
+        from make_asset_marks import apply as apply_marks
+        apply_marks(manifest)
+    except Exception as e:
+        print("asset marks skipped:", e)
+        ensure_indices(manifest)
     (IMG / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True))
     crypto_n = sum(1 for v in manifest.values() if v.get("kind") == "crypto")
     stock_n = sum(1 for v in manifest.values() if v.get("kind") in ("stock", "index"))

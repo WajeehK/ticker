@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="c"><rect width="256" height="256"/></clipPath>
+    <radialGradient id="bg" cx="50%" cy="35%" r="70%"><stop offset="0%" stop-color="#02608F"/><stop offset="100%" stop-color="#00283F"/></radialGradient>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="256" height="256" fill="#003A5D"/>
+    <rect width="256" height="256" fill="url(#bg)"/>
+    <path d="M48 176 C48 96 88 52 128 52 C168 52 208 96 208 176" fill="none" stroke="#7FE3FF" stroke-width="18" stroke-linecap="round"/>
+    <path d="M76 176 C76 114 100 80 128 80 C156 80 180 114 180 176" fill="none" stroke="#E6FBFF" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="128" cy="176" r="8" fill="#7FE3FF"/>
+
+  </g>
+</svg>

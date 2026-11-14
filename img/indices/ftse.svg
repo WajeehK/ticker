@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <clipPath id="c"><rect width="256" height="256"/></clipPath>
+    
+  </defs>
+  <g clip-path="url(#c)">
+<g transform="translate(0,0)">
+      <rect width="256" height="256" fill="#012169"/>
+      <g transform="translate(128.0,128.0) scale(1.0,1.0)">
+        <path d="M-128 -128 L128 128" stroke="#FFF" stroke-width="40"/>
+        <path d="M128 -128 L-128 128" stroke="#FFF" stroke-width="40"/>
+        <path d="M-128 -128 L128 128" stroke="#C8102E" stroke-width="16"/>
+        <path d="M128 -128 L-128 128" stroke="#C8102E" stroke-width="16"/>
+        <!-- St George's cross -->
+        <rect x="-128" y="-24" width="256" height="48" fill="#FFF"/>
+        <rect x="-24" y="-128" width="48" height="256" fill="#FFF"/>
+        <rect x="-128" y="-14" width="256" height="28" fill="#C8102E"/>
+        <rect x="-14" y="-128" width="28" height="256" fill="#C8102E"/>
+      </g>
+    </g>
+  </g>
+</svg>

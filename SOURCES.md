@@ -29,17 +29,23 @@ Built by `pipeline/fetch_logos.py`. A manifest at `img/manifest.json` maps each 
 | Crypto colour icons | [spothq/cryptocurrency-icons](https://github.com/spothq/cryptocurrency-icons) colour SVG set | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (the repo also notes MIT) | `img/crypto/{code}.svg` |
 | Crypto icons not in that set | CoinGecko `coins/markets` image URLs, **downloaded at build time** | CoinGecko brand assets; stored locally, not hotlinked | `img/crypto/{code}.png` |
 | Stock and ETF logos | [Financial Modeling Prep](https://financialmodelingprep.com/image-stock/{SYMBOL}.png) image-stock PNGs, **downloaded at build time** | FMP image endpoint; stored locally, not hotlinked | `img/stocks/{SYMBOL}.png` (caret in index symbols becomes `_`) |
-| Index marks with no bitmap | Generated typographic mark in the fetch script | Original to this repo | `img/stocks/_IXIC.png`, `_DJI.png`, `_FTSE.png`. S&P 500 uses the SPY logo from FMP as a stand-in. |
+| Index badges | Original circular marks drawn for Ticker (`pipeline/make_asset_marks.py`): S&P 500 gold rising bars and star ring, Nasdaq teal arch, Dow pyramid over flag stripes, FTSE Union Jack | Original to this repo (flag geometries are public-domain); not official exchange wordmarks | `img/indices/sp500.svg`, `nasdaq.svg`, `dow.svg`, `ftse.svg` |
+| Commodity icons | Original circular illustrations (gold/silver bars, oil barrels, gas flame, copper coil, platinum/palladium ingots) | Original to this repo | `img/commodities/{gold,silver,wti,brent,gas,copper,platinum,palladium}.svg` |
+| FX pair badges | Split circular Union Jack / EU / US flag badges | Original to this repo; flag geometries are public-domain | `img/fx/gbpusd.svg`, `eurusd.svg` |
 
 ETF marks are whatever FMP serves for that ticker — often the issuer wordmark (Vanguard, iShares, SPDR).
 
 Stocks and ETFs always sit on a light chip (`--chip`, off-white) so a dark mark (Apple, Vanguard, HSBC) stays visible on the dark theme. Crypto colour icons already have a filled disc, so they are not chipped. If a file is missing or the image fails to load, the row falls back to a coloured monogram.
 
-Coverage at last fetch: 456 Kraken USD assets (97 from spothq, 359 from CoinGecko) and 205 stock/ETF/index marks (202 from FMP, 3 typographic). Coins outside those sets use a monogram.
+Coverage is rebuilt by `pipeline/fetch_logos.py`, `pipeline/make_asset_marks.py`, `pipeline/crypto_markets.py` and `pipeline/upgrade_logos.py`. Stocks and ETFs prefer a 256px locally stored mark (CompaniesMarketCap or Financial Modeling Prep). Undersized or ultra-wide FMP wordmarks are replaced or padded to a 256×256 square. Crypto icons use the CC0 SVG set where available, otherwise a CoinGecko **large** PNG (≈250px), stored locally. Commodities, major indices and the two FX pairs use the original SVG marks above — they are not monograms. The Markets crypto tab is driven by `data/crypto_markets.json` (CoinGecko top 100 by market cap, 7-day sparkline, volume, trending; Kraken USD pairs are flagged for live ticks).
 
 ## Charts
 
 [TradingView Lightweight Charts](https://github.com/tradingview/lightweight-charts) v5.3.0, Apache-2.0, vendored at `vendor/lightweight-charts.js`. No call is made to TradingView’s servers.
+
+## Crypto market list (`data/crypto_markets.json`)
+
+Built by `pipeline/crypto_markets.py` during the quotes refresh. Snapshot of the CoinGecko `/coins/markets` top 100 (USD), `/search/trending`, and recently-added when that category is available, plus 7-day sparklines, market cap and 24h volume. The app overlays live Kraken WebSocket prices on coins that have a Kraken USD pair. CoinGecko is not called from the browser at runtime.
 
 ## App typography and icons
 
