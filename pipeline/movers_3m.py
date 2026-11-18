@@ -66,6 +66,10 @@ def compute(data_dir: Path | None = None, quotes: dict | None = None) -> dict:
         ret = (last - start) / start * 100.0
         if ret < MIN_RET:
             continue
+        spark = [round(c, 4) for _, c in closes[target_i:]]
+        if len(spark) > 42:
+            step = max(1, len(spark) // 36)
+            spark = spark[::step][:36]
         items.append({
             "id": sid,
             "name": q.get("name") or q.get("shortName") or sid,
@@ -75,6 +79,7 @@ def compute(data_dir: Path | None = None, quotes: dict | None = None) -> dict:
             "ret": round(ret, 2),
             "startT": start_t,
             "lastT": last_t,
+            "spark": spark,
         })
     items.sort(key=lambda r: r["ret"], reverse=True)
     out = {

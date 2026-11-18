@@ -135,6 +135,22 @@ def _parse_rss(raw: bytes, source: str, limit: int = 15) -> list[dict]:
         rec = {"title": title, "url": link, "source": publisher, "published": iso}
         if thumb:
             rec["thumbnail"] = thumb
+        raw_desc = it.findtext("description") or it.findtext("{http://purl.org/rss/1.0/modules/content/}encoded") or ""
+        if raw_desc:
+            import re as _re2
+            from html import unescape as _unesc
+            href = _re2.search(r'href=["\'](https?://(?!news\.google\.com)[^"\']+)', raw_desc)
+            if href:
+                rec["canonical"] = _unesc(href.group(1))
+            txt = _unesc(_re2.sub(r"<[^>]+>", " ", raw_desc))
+            txt = " ".join(txt.split())
+            # drop a leading copy of the title
+            title_l = title.lower().strip()
+            if title_l and txt.lower().startswith(title_l):
+                txt = txt[len(title):].strip(" -–—")
+            if txt and len(txt) > 40:
+                rec["summary"] = txt[:800]
+                rec["excerpt"] = txt[:400]
         items.append(rec)
         if len(items) >= limit:
             break

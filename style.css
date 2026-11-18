@@ -113,6 +113,11 @@ svg{display:block}
 .av.chip img{border-radius:0;object-fit:contain}
 .av.crypto{background:#fff;border-color:transparent;padding:5px}
 .av.crypto img{border-radius:0;object-fit:contain}
+.av.dark,.av.chip.dark,.av.crypto.dark{background:#111;border-color:transparent}
+html[data-theme=light] .av.dark,html[data-theme=light] .av.chip.dark{background:#1a1a1a}
+.chart-err{display:grid;place-items:center;gap:10px;height:100%;min-height:160px;padding:20px;text-align:center;color:var(--mute);font-size:14px}
+.chart-err p{margin:0;max-width:280px}
+
 .av.commodity,.av.fx,.av.index{padding:4px;background:#111;border-color:transparent}
 .av.commodity img,.av.fx img,.av.index img{border-radius:0;object-fit:contain}
 .av.lg{width:48px;height:48px;font-size:14px;padding:7px}

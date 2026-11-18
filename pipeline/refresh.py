@@ -499,6 +499,12 @@ def main() -> int:
         from market_extras import write_market
         write_market(DATA, quotes, UA)
         try:
+            from fetch_news_text import prefetch_news_text
+            prefetch_news_text(DATA)
+        except Exception as e:
+            errors.append(f"news_text: {e}")
+            print("news_text skipped:", e, flush=True)
+        try:
             from crypto_markets import fetch as fetch_crypto_markets
             fetch_crypto_markets()
         except Exception as e:
