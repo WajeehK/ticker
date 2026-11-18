@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't14';
+const BUILD = 't15';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -1960,22 +1960,33 @@ function stat(k, n, ccy0, text, asPoints) {
 
 async function cryptoBars(id, range) {
   const alt = (pairs[id] && pairs[id].alt) || (coin(id) === 'BTC' ? 'XBTUSD' : coin(id) + 'USD');
-  const map = { '1D': [60, 1440], '1W': [60, 10080], '1M': [240, 1860], '3M': [1440, 200], 'YTD': [1440, 400], '1Y': [1440, 400], 'MAX': [1440, 720] };
-  const [iv, count] = map[range] || map['1M'];
+  // Kraken public OHLC interval (minutes) and the time span to keep.
+  // 1D and 1W used to share 60-minute bars and looked identical.
+  const map = {
+    '1D':  [5,    24 * 3600],
+    '1W':  [60,    7 * 86400],
+    '1M':  [240,  32 * 86400],
+    '3M':  [1440, 95 * 86400],
+    'YTD': [1440, 0],
+    '1Y':  [1440, 370 * 86400],
+    'MAX': [1440, 0]
+  };
+  const [iv, span] = map[range] || map['1M'];
   const r = await fetchWithTimeout(KREST + '/OHLC?pair=' + encodeURIComponent(alt) + '&interval=' + iv, { cache: 'no-cache' }, 10000);
   if (!r.ok) throw new Error('HTTP ' + r.status);
   const d = await r.json();
   if (d.error && d.error.length) throw new Error(d.error.join(', '));
   const key = Object.keys(d.result || {}).find(k => k !== 'last');
   const raw = (key && d.result[key]) || [];
-  let rows = raw.slice(-count).map(row => ({
+  let rows = raw.map(row => ({
     time: row[0], o: parseFloat(row[1]), h: parseFloat(row[2]), l: parseFloat(row[3]), c: parseFloat(row[4]),
     value: parseFloat(row[4]), v: parseFloat(row[6])
   })).filter(b => isFinite(b.value) && isFinite(b.time));
-  if (range === 'YTD') {
-    const cut = rangeCut('YTD');
-    rows = rows.filter(b => b.time >= cut);
-  }
+  const now = Math.floor(Date.now() / 1000);
+  let cut = 0;
+  if (range === 'YTD') cut = rangeCut('YTD');
+  else if (span) cut = now - span;
+  if (cut) rows = rows.filter(b => b.time >= cut);
   return rows;
 }
 
@@ -2509,38 +2520,75 @@ function localizeMoneyText(text, native) {
     return fmtNum(v, ccy, { px: true });
   });
 }
+function aiCatHTML(c) {
+  const when = c.dateLabel || (c.date ? c.date : '');
+  const href = c.url ? '<a href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + esc(c.title || '') + '</a>' : esc(c.title || '');
+  const meta = [when, c.source, c.kind].filter(Boolean).join(' · ');
+  return '<li><div class="ai-cat">' + href + (meta ? '<span>' + esc(meta) + '</span>' : '') + '</div></li>';
+}
+function aiCaseItemHTML(row) {
+  const src = row.source && row.url
+    ? ' <a class="ai-src" href="' + esc(row.url) + '" target="_blank" rel="noopener noreferrer">' + esc(row.source) + '</a>'
+    : (row.source ? ' <span class="ai-src">' + esc(row.source) + '</span>' : '');
+  return '<li>' + esc(row.text || row.title || '') + src + '</li>';
+}
+function aiDisclaimer(rec) {
+  const when = rec && rec.asOf ? ago(rec.asOf) : (aiAnalysis && aiAnalysis.generated_at ? ago(aiAnalysis.generated_at) : '');
+  return '<p class="ai-lbl">' + esc((rec && rec.label) || 'AI-generated, not financial advice') + (when ? ' · updated ' + esc(when) : '') + '</p>';
+}
+function aiFullBodyHTML(rec) {
+  let html = '<div class="ai-card">';
+  if (rec.bull && rec.bull.length) html += '<div class="ai-case bull"><h3>Bull case</h3><ul>' + rec.bull.map(aiCaseItemHTML).join('') + '</ul></div>';
+  if (rec.bear && rec.bear.length) html += '<div class="ai-case bear"><h3>Bear case</h3><ul>' + rec.bear.map(aiCaseItemHTML).join('') + '</ul></div>';
+  if (rec.catalysts && rec.catalysts.length) html += '<div class="ai-cats"><h3>Catalysts</h3><ul>' + rec.catalysts.map(aiCatHTML).join('') + '</ul></div>';
+  html += aiDisclaimer(rec) + '</div>';
+  return html;
+}
 function aiAnalysisHTML(id, kind) {
   if (kind === 'crypto' || kind === 'fx') return '';
   const rec = aiRec(id);
   if (!rec || (!(rec.bull && rec.bull.length) && !(rec.bear && rec.bear.length) && !(rec.catalysts && rec.catalysts.length))) {
     return '<div class="block ai-block"><h2>AI analysis</h2><p class="note">No sourced analysis for this ticker yet. It will appear after the next refresh. AI-generated, not financial advice.</p></div>';
   }
-  const item = (row, cls) => {
-    const src = row.source && row.url
-      ? ' <a class="ai-src" href="' + esc(row.url) + '" target="_blank" rel="noopener noreferrer">' + esc(row.source) + '</a>'
-      : (row.source ? ' <span class="ai-src">' + esc(row.source) + '</span>' : '');
-    return '<li class="' + (cls || '') + '">' + esc(row.text || row.title || '') + src + '</li>';
-  };
-  let html = '<div class="block ai-block"><h2>AI analysis</h2><div class="ai-card">';
-  if (rec.bull && rec.bull.length) {
-    html += '<div class="ai-case bull"><h3>Bull case</h3><ul>' + rec.bull.map(r => item(r)).join('') + '</ul></div>';
-  }
-  if (rec.bear && rec.bear.length) {
-    html += '<div class="ai-case bear"><h3>Bear case</h3><ul>' + rec.bear.map(r => item(r)).join('') + '</ul></div>';
-  }
-  if (rec.catalysts && rec.catalysts.length) {
-    html += '<div class="ai-cats"><h3>Catalysts</h3><ul>' + rec.catalysts.map(c => {
-      const when = c.dateLabel || (c.date ? c.date : '');
-      const kind = c.kind ? c.kind : '';
-      const href = c.url ? '<a href="' + esc(c.url) + '" target="_blank" rel="noopener noreferrer">' + esc(c.title) + '</a>' : esc(c.title || '');
-      const meta = [when, c.source, kind].filter(Boolean).join(' · ');
-      return '<li><div class="ai-cat">' + href + (meta ? '<span>' + esc(meta) + '</span>' : '') + '</div></li>';
-    }).join('') + '</ul></div>';
-  }
-  const when = rec.asOf ? ago(rec.asOf) : (aiAnalysis && aiAnalysis.generated_at ? ago(aiAnalysis.generated_at) : '');
-  html += '<p class="ai-lbl">' + esc(rec.label || 'AI-generated, not financial advice') + (when ? ' · updated ' + esc(when) : '') + '</p>';
+  const outlook = (rec.bull && rec.bull[0] && rec.bull[0].text) || (rec.bear && rec.bear[0] && rec.bear[0].text) || '';
+  const cats = (rec.catalysts || []).slice(0, 2);
+  let html = '<div class="block ai-block"><h2>AI analysis</h2><div class="ai-card ai-preview">';
+  if (outlook) html += '<p class="ai-outlook">' + esc(outlook) + '</p>';
+  if (cats.length) html += '<div class="ai-cats"><h3>Catalysts</h3><ul>' + cats.map(aiCatHTML).join('') + '</ul></div>';
+  html += '<button type="button" class="see-all" data-act="open-ai" data-id="' + esc(id) + '">See full analysis</button>';
+  html += aiDisclaimer(rec);
   html += '</div></div>';
   return html;
+}
+let aiPageId = null;
+function openAiPage(id, opts) {
+  opts = opts || {};
+  const rec = aiRec(id);
+  const el = $('#aiPage');
+  if (!el) return;
+  if (readerItem) closeReader(true);
+  if (listState) closeListPage(true);
+  aiPageId = id;
+  const q = quotes[id] || {};
+  const name = q.name || q.shortName || id;
+  const body = rec
+    ? aiFullBodyHTML(rec)
+    : '<p class="note">No sourced analysis for this ticker yet. AI-generated, not financial advice.</p>';
+  el.innerHTML = '<div class="d-bar"><button class="ib" data-act="close-ai" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>AI analysis</h2><span style="width:36px"></span></div>' +
+    '<div class="d-in ai-page"><p class="ai-page-sub">' + esc(name) + ' · ' + esc(q.symbol || id) + '</p>' + body + '</div>';
+  el.hidden = false;
+  document.body.classList.add('hide-dock');
+  if (!opts.fromHash) history.pushState({ ai: id }, '', '#/ai/' + encodeURIComponent(id));
+}
+function closeAiPage(fromPop) {
+  const el = $('#aiPage');
+  if (el) { el.hidden = true; el.innerHTML = ''; }
+  aiPageId = null;
+  document.body.classList.remove('hide-dock');
+  if (!fromPop && location.hash.indexOf('#/ai/') === 0) {
+    if (history.length > 1) history.back();
+    else history.replaceState(null, '', '#/s/' + encodeURIComponent(detailId || ''));
+  }
 }
 function outlookHTML(rec, kind) {
   if (kind === 'crypto') {
@@ -2975,6 +3023,7 @@ function applyHash() {
   if (consumeImport()) {
     if (readerItem) closeReader(true);
     if (listState) closeListPage(true);
+    if (aiPageId) closeAiPage(true);
     if (detailId) closeDetail(false);
     tab = 'port'; go(TABS.indexOf('port'), { nohash: true, instant: true }); renderAll(); return;
   }
@@ -2985,13 +3034,24 @@ function applyHash() {
     const vs = m[2] ? decodeURIComponent(m[2]) : null;
     if (readerItem) closeReader(true);
     if (listState) closeListPage(true);
+    if (aiPageId) closeAiPage(true);
     closeIpoSheets();
     if (detailId !== id || compareId !== vs) { detailId = id; compareId = vs; renderDetail(id); }
+    return;
+  }
+  if (h.startsWith('#/ai/')) {
+    const id = decodeURIComponent((h.split('/')[2] || '').trim());
+    if (readerItem) closeReader(true);
+    if (listState) closeListPage(true);
+    closeIpoSheets();
+    if (id && detailId !== id) { detailId = id; compareId = null; renderDetail(id); }
+    if (id) openAiPage(id, { fromHash: true });
     return;
   }
   if (h === '#/ipos' || h.startsWith('#/ipos/')) {
     if (detailId) closeDetail(false);
     if (readerItem) closeReader(true);
+    if (aiPageId) closeAiPage(true);
     go(1, { nohash: true });
     marketsPane = 'stocks';
     marketsList = 'ipos';
@@ -3022,6 +3082,7 @@ function applyHash() {
   }
   if (listState) closeListPage(true);
   if (readerItem) closeReader(true);
+  if (aiPageId) closeAiPage(true);
   if (detailId) closeDetail(false);
   closeIpoSheets();
   let i = 0;
@@ -3436,6 +3497,10 @@ function onClick(e) {
   }
   const closeList = e.target.closest('[data-act="close-list"]');
   if (closeList) { closeListPage(); return; }
+  const openAi = e.target.closest('[data-act="open-ai"]');
+  if (openAi) { openAiPage(openAi.dataset.id || detailId); return; }
+  const closeAi = e.target.closest('[data-act="close-ai"]');
+  if (closeAi) { closeAiPage(); return; }
   const lsort = e.target.closest('[data-act="list-sort"]');
   if (lsort && listState) { listState.sort = lsort.dataset.id; listState.shown = 40; renderListPage(); return; }
   const lmore = e.target.closest('[data-act="list-more"]');

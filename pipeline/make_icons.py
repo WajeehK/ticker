@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Ticker PWA icons: a bold original green skull on pure black."""
+"""Generate Ticker PWA icons: a bold T monogram fused with a rising line, #00C805 on black."""
 from __future__ import annotations
 
 import shutil
@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageFilter
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1] / "icons"
 ROOT.mkdir(parents=True, exist_ok=True)
@@ -15,33 +15,8 @@ ROOT.mkdir(parents=True, exist_ok=True)
 BG = (0, 0, 0, 255)
 GREEN = (0, 200, 5, 255)
 
-# Sharp, angular skull with a chiseled bevel. Same mark as icons/icon.svg.
-SKULL_PATH = """
-M256 68
-L 322 80 L 376 122 L 414 184 L 426 250
-L 416 304 L 436 352 L 422 408 L 372 454
-L 308 478 L 256 484 L 204 478 L 140 454
-L 90 408 L 76 352 L 96 304 L 86 250
-L 98 184 L 136 122 L 190 80 Z
-M 148 196 L 230 184 L 238 198 L 228 256 L 196 276 L 142 250 L 138 218 Z
-M 364 196 L 282 184 L 274 198 L 284 256 L 316 276 L 370 250 L 374 218 Z
-M 256 246 L 224 320 L 256 306 L 288 320 Z
-M 166 346 L 346 346 L 356 362 L 342 420 L 298 440 L 256 446 L 214 440 L 170 420 L 156 362 Z
-M 176 352 L 196 352 L 196 402 L 176 400 Z
-M 204 352 L 224 352 L 224 410 L 204 408 Z
-M 232 352 L 252 352 L 252 416 L 232 414 Z
-M 260 352 L 280 352 L 280 416 L 260 414 Z
-M 288 352 L 308 352 L 308 410 L 288 408 Z
-M 316 352 L 336 352 L 336 402 L 316 400 Z
-"""
-
-BROW = """
-    <path d="M140 172 L226 192 L236 206"/>
-    <path d="M372 172 L286 192 L276 206"/>
-    <path d="M142 252 L118 310 L132 348"/>
-    <path d="M370 252 L394 310 L380 348"/>
-"""
-
+# Geometric T (filled) plus a rising ticker line. Thick enough to stay crisp at 48px
+# (a 64-unit stroke on a 512 canvas is 6px at 48px).
 def svg_markup(size: int = 512, scale: float = 1.0) -> str:
     transform = ""
     if scale != 1.0:
@@ -49,23 +24,21 @@ def svg_markup(size: int = 512, scale: float = 1.0) -> str:
         transform = f' transform="translate({c} {c}) scale({scale}) translate({-c} {-c})"'
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="{size}" height="{size}">
   <rect width="512" height="512" fill="#000"/>
-  <g{transform}>
-    <path fill="#007204" fill-rule="evenodd" transform="translate(5 7)" d="{SKULL_PATH}"/>
-    <path fill="#00C805" fill-rule="evenodd" d="{SKULL_PATH}"/>
-    <g fill="none" stroke="#003901" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.65">
-{BROW}
-    </g>
+  <g{transform} fill="#00C805" fill-rule="evenodd">
+    <path d="M108 124h228v72H260v212h-72V196H108z"/>
+    <path d="M86 412 L 230 292 L 424 146" fill="none" stroke="#00C805" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>
 """
 
 
 def favicon_svg() -> str:
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    # Same mark, 32 viewBox, no bevel. Scale 512→32 = 0.0625.
+    return """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <rect width="32" height="32" fill="#000"/>
-  <g transform="scale(0.0625)" fill-rule="evenodd">
-    <path fill="#007204" transform="translate(5 7)" d="{SKULL_PATH}"/>
-    <path fill="#00C805" d="{SKULL_PATH}"/>
+  <g transform="scale(0.0625)" fill="#00C805" fill-rule="evenodd">
+    <path d="M108 124h228v72H260v212h-72V196H108z"/>
+    <path d="M86 412 L 230 292 L 424 146" fill="none" stroke="#00C805" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>
 """
