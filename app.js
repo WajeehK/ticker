@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't15';
+const BUILD = 't17';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -1798,11 +1798,16 @@ function renderPort() {
       holdingsListHTML(st) +
       safeHTML(() => analyticsHTML(st)) +
       safeHTML(calendarHTML) +
+      safeHTML(dividendTrackerHTML) +
+      safeHTML(pnlHeatHTML) +
+      safeHTML(benchmarkHTML) +
+      safeHTML(isaHTML) +
+      safeHTML(riskHTML) +
       safeHTML(sectorHeatHTML) +
       '<div style="margin-top:16px;display:flex;gap:8px"><button class="btn ghost" style="flex:1" data-act="add-hold">Add another</button><button class="btn ghost" style="flex:1" data-act="import-csv">Import</button></div>';
   el.innerHTML = heroHTML(st, 'portVal') + body + creditHTML();
   if (st) applyDayTheme(st.day == null || st.day >= 0);
-  if (st && st.known) { loadPortChart('#pvChart'); fillPerformanceGrid(st); }
+  if (st && st.known) { loadPortChart('#pvChart'); fillPerformanceGrid(st); fillDividendTracker(); fillPnLHeat(); fillBenchmark(); fillRisk(); }
 }
 
 function analyticsHTML(st) {
@@ -2902,35 +2907,6 @@ function exportCSV() {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
-function openImport() {
-  openModal('<div class="sheet"><div class="grab"></div><header><h3>Import holdings</h3><button class="x" data-act="close">Close</button></header>' +
-    '<p class="hint">CSV with columns symbol, quantity, avg_price. Existing rows for the same symbol are replaced. Nothing is uploaded.</p>' +
-    '<div class="field"><label for="csv">CSV</label><textarea id="csv" rows="8" placeholder="symbol,quantity,avg_price&#10;AAPL,10,180&#10;BTC-USD,0.05,60000"></textarea></div>' +
-    '<div class="btns"><button class="btn" data-act="do-import">Import</button></div></div>');
-}
-function doImport() {
-  const raw = ($('#csv') && $('#csv').value) || '';
-  const rows = raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-  if (!rows.length) { toast('Paste a CSV first.'); return; }
-  const start = rows[0].toLowerCase().includes('symbol') ? 1 : 0;
-  const next = holdings.slice();
-  let n = 0;
-  for (const line of rows.slice(start)) {
-    const parts = line.split(',').map(s => s.trim());
-    if (parts.length < 2) continue;
-    const id = parts[0];
-    const qty = parseFloat(parts[1]);
-    const avg = parts[2] === '' || parts[2] == null ? null : parseFloat(parts[2]);
-    if (!id || !isFinite(qty) || qty <= 0) continue;
-    const rec = { id: id, qty: qty, avg: (avg != null && isFinite(avg)) ? avg : null };
-    const i = next.findIndex(h => h.id === id);
-    if (i >= 0) next[i] = rec; else next.push(rec);
-    n++;
-  }
-  if (!n) { toast('No valid rows found.'); return; }
-  holdings = next; persistHoldings(); closeModal(); renderAll(); toast('Imported ' + n + ' holding' + (n>1?'s':''));
-}
-
 function addWatchlist() {
   const name = prompt('Name this list', 'List ' + (watchlists.length + 1));
   if (!name) return;
@@ -3610,6 +3586,8 @@ function onClick(e) {
   }
   if (act === 'export-csv') { exportCSV(); return; }
   if (act === 'import-csv') { openImport(); return; }
+  if (act === 'edit-isa') { openIsaEditor(); return; }
+  if (act === 'save-isa') { saveIsaEditor(); return; }
   if (act === 'do-import') { doImport(); return; }
   if (act === 'add-wl') { addWatchlist(); return; }
   if (act === 'rename-wl') { renameWatchlist(); return; }
@@ -4051,6 +4029,462 @@ async function ensureQuote(id) {
   if (q && q.price != null) return q;
   quoteFails[id] = (quoteFails[id] || 0) + 1;
   return quotes[id] || null;
+}
+
+
+/* ---- t17+ portfolio tools (dividends, P/L calendar, benchmark, ISA, T212) ---- */
+function isaTaxYear(d) {
+  d = d || new Date();
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(d);
+  const y = +parts.find(p => p.type === 'year').value;
+  const m = +parts.find(p => p.type === 'month').value;
+  const day = +parts.find(p => p.type === 'day').value;
+  const startYear = (m > 4 || (m === 4 && day >= 6)) ? y : y - 1;
+  return { startYear: startYear, label: startYear + '/' + String(startYear + 1).slice(-2) };
+}
+function loadIsa() {
+  const yr = isaTaxYear();
+  const rec = store.get('isa', null) || {};
+  if (rec.year !== yr.label) {
+    return { year: yr.label, limit: rec.limit != null ? rec.limit : 20000, used: 0 };
+  }
+  return { year: yr.label, limit: rec.limit != null ? rec.limit : 20000, used: rec.used != null ? rec.used : 0 };
+}
+function saveIsa(rec) { store.set('isa', rec); }
+
+function isaHTML() {
+  const rec = loadIsa();
+  const used = Number(rec.used) || 0;
+  const limit = Number(rec.limit) || 20000;
+  const left = Math.max(0, limit - used);
+  const pctV = limit ? Math.min(100, used / limit * 100) : 0;
+  return '<div class="sec-h"><h2>ISA allowance</h2></div><div class="ai-card isa-card">' +
+    '<p class="ai-outlook">UK stocks and shares ISA for tax year ' + esc(rec.year) + '. The annual limit starts at £20,000 and is editable. This stays on this device.</p>' +
+    '<div class="isa-bar"><span style="width:' + pctV.toFixed(1) + '%"></span></div>' +
+    '<div class="stats">' +
+      stat('Used', used, 'GBP') +
+      stat('Remaining', left, 'GBP') +
+      stat('Limit', limit, 'GBP') +
+    '</div>' +
+    '<button type="button" class="btn ghost sm" data-act="edit-isa">Edit allowance</button>' +
+    '</div>';
+}
+function openIsaEditor() {
+  const rec = loadIsa();
+  openModal('<div class="sheet"><div class="grab"></div><header><h3>ISA allowance</h3><button class="x" data-act="close">Close</button></header>' +
+    '<p class="hint">UK tax year ' + esc(rec.year) + ' (6 April to 5 April). Figures stay on this device and are not uploaded.</p>' +
+    '<div class="field"><label for="isaUsed">Used so far (£)</label><input id="isaUsed" type="number" inputmode="decimal" step="any" min="0" value="' + esc(rec.used) + '"></div>' +
+    '<div class="field"><label for="isaLimit">Annual limit (£)</label><input id="isaLimit" type="number" inputmode="decimal" step="any" min="0" value="' + esc(rec.limit) + '"></div>' +
+    '<div class="btns"><button class="btn" data-act="save-isa">Save</button></div></div>');
+}
+function saveIsaEditor() {
+  const used = parseFloat($('#isaUsed') && $('#isaUsed').value);
+  const limit = parseFloat($('#isaLimit') && $('#isaLimit').value);
+  if (!isFinite(used) || used < 0 || !isFinite(limit) || limit < 0) { toast('Enter valid pound amounts.'); return; }
+  const rec = loadIsa();
+  rec.used = used; rec.limit = limit;
+  saveIsa(rec); closeModal(); renderPort(); toast('ISA allowance saved on this device');
+}
+
+function parseCsvRow(line) {
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { if (q && line[i + 1] === '"') { cur += '"'; i++; } else q = !q; continue; }
+    if (ch === ',' && !q) { out.push(cur.trim()); cur = ''; continue; }
+    cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function mapImportedTicker(raw) {
+  if (!raw) return '';
+  let id = String(raw).trim().toUpperCase().replace(/\s+/g, '');
+  if (!id) return '';
+  if (quotes[id] || instrumentRec(id) || isCryptoId(id)) return id;
+  if (quotes[id + '.L'] || instrumentRec(id + '.L')) return id + '.L';
+  if (id.endsWith('.US') && (quotes[id.slice(0, -3)] || instrumentRec(id.slice(0, -3)))) return id.slice(0, -3);
+  if (id === 'BRK.B' || id === 'BRK/B') return 'BRK-B';
+  if (id === 'BRK.A' || id === 'BRK/A') return 'BRK-A';
+  return id;
+}
+function parseT212Csv(text) {
+  const lines = String(text || '').split(/\r?\n/).map(s => s.trimEnd()).filter(l => l.trim());
+  if (!lines.length) return { ok: false, error: 'Paste a CSV first.' };
+  const header = parseCsvRow(lines[0]).map(s => s.toLowerCase().trim());
+  const col = name => {
+    const i = header.indexOf(name.toLowerCase());
+    return i >= 0 ? i : -1;
+  };
+  const isT212 = col('action') >= 0 && (col('ticker') >= 0 || col('no. of shares') >= 0);
+  const lots = {};
+  const deposits = [];
+  if (!isT212) {
+    const start = header.some(h => h.includes('symbol') || h === 'ticker') ? 1 : 0;
+    const si = header.findIndex(h => h === 'symbol' || h === 'ticker');
+    const qi = header.findIndex(h => h === 'quantity' || h === 'qty' || h === 'shares' || h === 'no. of shares');
+    const ai = header.findIndex(h => h === 'avg_price' || h === 'avg' || h === 'price' || h === 'average price' || h === 'price / share');
+    let n = 0;
+    const holdingsOut = [];
+    for (const line of lines.slice(start)) {
+      const parts = parseCsvRow(line);
+      const id = mapImportedTicker(si >= 0 ? parts[si] : parts[0]);
+      const qty = parseFloat(qi >= 0 ? parts[qi] : parts[1]);
+      const avgRaw = ai >= 0 ? parts[ai] : parts[2];
+      const avg = avgRaw === '' || avgRaw == null ? null : parseFloat(avgRaw);
+      if (!id || !isFinite(qty) || qty <= 0) continue;
+      holdingsOut.push({ id: id, qty: qty, avg: (avg != null && isFinite(avg) && avg >= 0) ? avg : null });
+      n++;
+    }
+    return { ok: n > 0, kind: 'simple', holdings: holdingsOut, deposits: [], error: n ? null : 'No valid symbol, quantity rows found.' };
+  }
+  const iAction = col('action'), iTicker = col('ticker'), iShares = col('no. of shares'), iPrice = col('price / share'), iTotal = col('total'), iCcy = col('currency (total)') >= 0 ? col('currency (total)') : col('currency (price / share)'), iTime = col('time');
+  for (const line of lines.slice(1)) {
+    const parts = parseCsvRow(line);
+    const action = (parts[iAction] || '').toLowerCase();
+    if (!action) continue;
+    if (action === 'deposit' || action.indexOf('deposit') === 0) {
+      const amt = parseFloat(parts[iTotal >= 0 ? iTotal : parts.length - 2]);
+      const ccy0 = (iCcy >= 0 ? parts[iCcy] : 'GBP') || 'GBP';
+      const when = iTime >= 0 ? parts[iTime] : '';
+      if (isFinite(amt) && amt > 0) deposits.push({ amount: amt, currency: ccy0, time: when });
+      continue;
+    }
+    if (action.indexOf('withdrawal') === 0) continue;
+    const buy = /\bbuy\b/.test(action);
+    const sell = /\bsell\b/.test(action);
+    if (!buy && !sell) continue;
+    const id = mapImportedTicker(iTicker >= 0 ? parts[iTicker] : '');
+    const qty = Math.abs(parseFloat(iShares >= 0 ? parts[iShares] : ''));
+    const px = parseFloat(iPrice >= 0 ? parts[iPrice] : '');
+    if (!id || !isFinite(qty) || qty <= 0) continue;
+    if (!lots[id]) lots[id] = { qty: 0, cost: 0 };
+    const lot = lots[id];
+    if (buy) {
+      const pxUse = isFinite(px) ? px : 0;
+      lot.cost += pxUse * qty;
+      lot.qty += qty;
+    } else if (sell) {
+      const q = Math.min(qty, lot.qty);
+      if (lot.qty > 0 && q > 0) {
+        lot.cost *= (lot.qty - q) / lot.qty;
+        lot.qty -= q;
+      }
+    }
+  }
+  const holdingsOut = Object.entries(lots).filter(([, l]) => l.qty > 1e-10).map(([id, l]) => ({
+    id: id, qty: l.qty, avg: l.qty ? (l.cost / l.qty) : null
+  }));
+  return { ok: holdingsOut.length > 0 || deposits.length > 0, kind: 't212', holdings: holdingsOut, deposits: deposits, error: (holdingsOut.length || deposits.length) ? null : 'No Trading 212 buys, sells or deposits were found.' };
+}
+
+function openImport() {
+  openModal('<div class="sheet"><div class="grab"></div><header><h3>Import holdings</h3><button class="x" data-act="close">Close</button></header>' +
+    '<p class="hint">Paste a simple CSV (symbol, quantity, avg_price) or a Trading 212 transaction export. Parsed in this browser only — nothing is uploaded.</p>' +
+    '<div class="field"><label for="csvFile">CSV file</label><input id="csvFile" type="file" accept=".csv,text/csv,text/plain"></div>' +
+    '<div class="field"><label for="csv">Or paste CSV</label><textarea id="csv" rows="8" placeholder="symbol,quantity,avg_price&#10;AAPL,10,180"></textarea></div>' +
+    '<label class="chk"><input type="checkbox" id="isaFromCsv"> Add T212 deposits to this device’s ISA used amount (only if this export is from an ISA)</label>' +
+    '<div class="btns"><button class="btn" data-act="do-import">Import</button></div></div>');
+  const file = $('#csvFile');
+  if (file) file.addEventListener('change', ev => {
+    const f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { const ta = $('#csv'); if (ta) ta.value = String(r.result || ''); };
+    r.readAsText(f);
+  });
+}
+function doImport() {
+  const raw = ($('#csv') && $('#csv').value) || '';
+  const parsed = parseT212Csv(raw);
+  if (!parsed.ok) { toast(parsed.error || 'No valid rows found.'); return; }
+  const next = holdings.slice();
+  let n = 0;
+  for (const rec of parsed.holdings) {
+    const i = next.findIndex(h => h.id === rec.id);
+    if (i >= 0) next[i] = rec; else next.push(rec);
+    n++;
+  }
+  if (n) { holdings = next; persistHoldings(); }
+  const addIsa = $('#isaFromCsv') && $('#isaFromCsv').checked;
+  let depN = 0, depSum = 0;
+  if (addIsa && parsed.deposits && parsed.deposits.length) {
+    const rec = loadIsa();
+    for (const d of parsed.deposits) {
+      let amt = d.amount;
+      if ((d.currency || 'GBP') !== 'GBP') {
+        const v = convert(amt, d.currency, 'GBP');
+        if (v == null || !isFinite(v)) continue;
+        amt = v;
+      }
+      rec.used = (Number(rec.used) || 0) + amt;
+      depSum += amt;
+      depN++;
+    }
+    saveIsa(rec);
+  }
+  closeModal(); renderAll();
+  const bits = [];
+  if (n) bits.push(n + ' holding' + (n > 1 ? 's' : ''));
+  if (depN) bits.push(depN + ' ISA deposit' + (depN > 1 ? 's' : '') + ' (' + money(depSum, 'GBP') + ')');
+  toast('Imported ' + bits.join(' and ') + '. Saved on this device only.');
+}
+
+function dividendTrackerHTML() {
+  if (!holdings.length) return '';
+  return '<div class="sec-h"><h2>Dividends</h2></div><div class="ai-card" id="divTrack"><p class="note">Working out dividend income from saved history…</p></div>';
+}
+async function fillDividendTracker() {
+  const host = $('#divTrack');
+  if (!host || !holdings.length) return;
+  const now = Date.now() / 1000;
+  const yearAgo = now - 365 * 86400;
+  let ttmUSD = 0, rows = [];
+  let costUSD = 0, ttmOnCostUSD = 0;
+  for (const h of holdings) {
+    if (isCryptoId(h.id)) continue;
+    let d = null;
+    try { d = await loadHist(h.id); } catch (e) { d = null; }
+    const q = quotes[h.id] || {};
+    const cur = (d && d.currency) || q.currency || 'USD';
+    const divs = (d && d.dividends) || [];
+    let ttm = 0;
+    const last = divs.length ? divs[divs.length - 1] : (q.lastDiv || null);
+    for (const dv of divs) {
+      const ts = dv.t || dv.date || dv.time;
+      const amt = dv.amount;
+      if (amt == null || ts == null) continue;
+      const t = ts > 1e12 ? ts / 1000 : ts;
+      if (t >= yearAgo && t <= now) ttm += amt;
+    }
+    const ttmCash = ttm * h.qty;
+    const usd = toUSD(ttmCash, cur);
+    if (usd != null) ttmUSD += usd;
+    if (h.avg != null && h.qty) {
+      const c = toUSD(h.avg * h.qty, cur);
+      if (c != null) { costUSD += c; ttmOnCostUSD += usd || 0; }
+    }
+    if (ttm > 0 || last) {
+      const lastT = last && (last.t || last.date);
+      rows.push({
+        id: h.id, name: q.name || h.id, ttm: ttmCash, cur: cur,
+        yoc: (h.avg && ttm) ? (ttm / h.avg * 100) : null,
+        last: last, lastT: lastT
+      });
+    }
+  }
+  const yoc = costUSD ? (ttmOnCostUSD / costUSD * 100) : null;
+  if (!rows.length && !ttmUSD) {
+    host.innerHTML = '<p class="note">No dividend history was found for these holdings in the Yahoo data on this device. Upcoming payout dates are only shown when a future ex-dividend date is in our sources — none are listed right now.</p>';
+    return;
+  }
+  host.innerHTML = '<div class="stats">' +
+    stat('Income, last 12 months', ttmUSD, 'USD') +
+    (yoc != null ? stat('Yield on cost', null, null, pct(yoc)) : '') +
+    stat('Upcoming', null, null, 'None listed in our sources') +
+    '</div>' +
+    (rows.length ? '<div class="list compact">' + rows.map(r => {
+      const lastWhen = r.lastT ? new Date((r.lastT > 1e12 ? r.lastT : r.lastT * 1000)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/London' }) : '';
+      return '<a class="row" href="#/s/' + encodeURIComponent(r.id) + '">' + avHTML(r.id, r.name) +
+        '<div class="mid"><div class="nm">' + esc(r.name) + '</div><div class="tk"><span>' + esc(r.id) + (lastWhen ? ' · last ' + lastWhen : '') + '</span></div></div>' +
+        '<div class="rgt"><div class="px">' + money(toUSD(r.ttm, r.cur), 'USD') + '</div>' +
+        (r.yoc != null ? '<div class="chg ' + chgClass(r.yoc) + '">' + pct(r.yoc) + ' on cost</div>' : '') + '</div></a>';
+    }).join('') + '</div>' : '') +
+    '<p class="note">Last 12 months of Yahoo dividend history, using your current share count. Purchase dates are not stored, so this is not a personal tax record. Yield on cost is trailing 12-month dividends per share divided by your average buy price. Not financial advice.</p>';
+}
+
+function pnlHeatHTML() {
+  if (!holdings.length) return '';
+  return '<div class="sec-h"><h2>P/L calendar</h2></div><div id="pnlHeat"><p class="note">Building a daily gain and loss calendar from your holdings…</p></div>';
+}
+function londonYmd(ts) {
+  const d = new Date((ts > 1e12 ? ts : ts * 1000));
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(d);
+  const g = t => parts.find(p => p.type === t).value;
+  return g('year') + '-' + g('month') + '-' + g('day');
+}
+async function fillPnLHeat() {
+  const host = $('#pnlHeat');
+  if (!host || !holdings.length) return;
+  let pts;
+  try { pts = await portfolioSeries('3M'); } catch (e) { pts = []; }
+  if (!pts || pts.length < 2) {
+    host.innerHTML = '<p class="note">Not enough daily history to draw a P/L calendar yet.</p>';
+    return;
+  }
+  const byDay = {};
+  for (let i = 1; i < pts.length; i++) {
+    const key = londonYmd(pts[i].time);
+    const chg = pts[i].value - pts[i - 1].value;
+    byDay[key] = (byDay[key] || 0) + chg;
+  }
+  const days = Object.keys(byDay).sort();
+  if (!days.length) { host.innerHTML = '<p class="note">No daily changes in this window.</p>'; return; }
+  // months covering the window
+  const months = [];
+  const start = days[0].slice(0, 7);
+  const end = days[days.length - 1].slice(0, 7);
+  let y = +start.slice(0, 4), m = +start.slice(5, 7);
+  const ey = +end.slice(0, 4), em = +end.slice(5, 7);
+  while (y < ey || (y === ey && m <= em)) {
+    months.push({ y: y, m: m });
+    m++; if (m > 12) { m = 1; y++; }
+  }
+  const wd = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const maxAbs = Math.max(...Object.values(byDay).map(v => Math.abs(v)), 1);
+  const html = months.map(({ y, m }) => {
+    const first = new Date(Date.UTC(y, m - 1, 1));
+    // weekday Mon=0 in UK
+    const js = first.getUTCDay(); // Sun=0
+    const lead = (js + 6) % 7;
+    const dim = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const title = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    let cells = '';
+    for (let i = 0; i < lead; i++) cells += '<span class="pnl-empty"></span>';
+    for (let d = 1; d <= dim; d++) {
+      const key = y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+      const v = byDay[key];
+      if (v == null) { cells += '<span class="pnl-empty" title="' + key + '"></span>'; continue; }
+      const cls = v > 0 ? 'up' : (v < 0 ? 'dn' : 'flat');
+      const a = Math.min(1, 0.25 + Math.abs(v) / maxAbs * 0.75);
+      cells += '<span class="pnl-day ' + cls + '" style="--a:' + a.toFixed(2) + '" title="' + key + ' · ' + (v >= 0 ? '+' : '') + money(v, ccy) + '"></span>';
+    }
+    return '<div class="pnl-month"><div class="k">' + esc(title) + '</div><div class="pnl-wd">' + wd.map(x => '<span>' + x + '</span>').join('') + '</div><div class="pnl-grid">' + cells + '</div></div>';
+  }).join('');
+  host.innerHTML = '<div class="pnl-cal">' + html + '</div><p class="note">Daily change in estimated portfolio value from Yahoo and Kraken history, in ' + esc(ccy) + ', last about 3 months. Weekends with no session are blank. Not a brokerage statement.</p>';
+}
+
+function benchmarkHTML() {
+  if (!holdings.length) return '';
+  return '<div class="sec-h"><h2>Benchmark</h2></div><div id="benchBox"><p class="note">Comparing your portfolio with the S&amp;P 500 and FTSE 100…</p></div>';
+}
+async function fillBenchmark() {
+  const host = $('#benchBox');
+  if (!host || !holdings.length) return;
+  const range = portRange || '3M';
+  const ret = pts => {
+    if (!pts || pts.length < 2) return null;
+    const a = pts[0].value, b = pts[pts.length - 1].value;
+    if (a == null || !a) return null;
+    return (b - a) / a * 100;
+  };
+  let port = [], sp = [], ft = [];
+  try { port = await portfolioSeries(range); } catch (e) {}
+  try {
+    const d = await loadHist('^GSPC');
+    sp = clipHist(d, range).map(b => ({ time: b.t || b.time, value: b.v != null ? b.v : b.value }));
+  } catch (e) {}
+  try {
+    const d = await loadHist('^FTSE');
+    ft = clipHist(d, range).map(b => ({ time: b.t || b.time, value: b.v != null ? b.v : b.value }));
+  } catch (e) {}
+  const rows = [
+    ['Portfolio', ret(port), 'Your holdings, valued in ' + ccy],
+    ['S&P 500', ret(sp), 'Index points, ^GSPC'],
+    ['FTSE 100', ret(ft), 'Index points, ^FTSE']
+  ];
+  if (rows.every(r => r[1] == null)) {
+    host.innerHTML = '<p class="note">Not enough overlapping history to compare this period.</p>';
+    return;
+  }
+  host.innerHTML = '<p class="note">Same window as the portfolio chart (' + esc(range === 'MAX' ? 'All' : range) + '). Indices are shown as percentage change in index points, not as currency-converted funds.</p>' +
+    '<div class="stats">' + rows.map(r => stat(r[0], null, null, r[1] == null ? '—' : pct(r[1]))).join('') + '</div>' +
+    '<div id="benchChart" class="bench-chart"></div>';
+  const el = $('#benchChart');
+  if (!el || !window.LightweightCharts) return;
+  const dark = document.documentElement.dataset.theme === 'dark';
+  const LW = window.LightweightCharts;
+  try {
+    const chart = LW.createChart(el, {
+      autoSize: true, height: 180,
+      layout: { background: { color: 'transparent' }, textColor: '#8e8e93', fontFamily: 'Inter Tight, Inter, system-ui', fontSize: 11, attributionLogo: false },
+      grid: { vertLines: { visible: false }, horzLines: { color: dark ? 'rgba(255,255,255,.06)' : 'rgba(16,16,14,.06)' } },
+      rightPriceScale: { borderVisible: false }, timeScale: { borderVisible: false, timeVisible: false },
+      handleScroll: false, handleScale: false
+    });
+    const cols = ['#00C805', dark ? '#e5e5ea' : '#1c1c1e', dark ? '#64d2ff' : '#0a84ff'];
+    [port, sp, ft].forEach((pts, i) => {
+      const pctPts = toPct((pts || []).map(p => ({ time: p.time || p.t, value: p.value })));
+      if (pctPts.length < 2) return;
+      const s = chart.addSeries(LW.LineSeries, { color: cols[i], lineWidth: i ? 1.6 : 2.4, priceLineVisible: false, lastValueVisible: false });
+      s.setData(pctPts);
+    });
+    chart.timeScale().fitContent();
+  } catch (e) {}
+}
+
+function listingCountry(id, q) {
+  q = q || {};
+  if (isCryptoId(id, q) || q.kind === 'crypto') return 'Crypto';
+  if (q.kind === 'commodity' || String(id).indexOf('=F') >= 0) return 'Commodities';
+  if (String(id).endsWith('.L') || /LSE|LON|LONDON/i.test(q.exchange || '')) return 'United Kingdom';
+  return 'United States';
+}
+function riskHTML() {
+  if (!holdings.length) return '';
+  return '<div class="sec-h"><h2>Diversification &amp; risk</h2></div><div id="riskBox"><p class="note">Working out sector, country and beta from listed holdings…</p></div>';
+}
+async function fillRisk() {
+  const host = $('#riskBox');
+  if (!host || !holdings.length) return;
+  const st = portfolioStats();
+  if (!st || !st.lines) { host.innerHTML = ''; return; }
+  const sec = {}, cty = {};
+  let total = 0;
+  for (const l of st.lines) {
+    if (l.valUSD == null) continue;
+    total += l.valUSD;
+    const inst = instrumentRec(l.h.id);
+    const sector = (inst && inst.sector) || (isCryptoId(l.h.id) ? 'Crypto' : (kindOf(l.h.id, l.q) === 'etf' ? 'ETF' : 'Unknown sector'));
+    const country = listingCountry(l.h.id, l.q);
+    sec[sector] = (sec[sector] || 0) + l.valUSD;
+    cty[country] = (cty[country] || 0) + l.valUSD;
+  }
+  const bar = (map, title, note) => {
+    const rows = Object.entries(map).sort((a, b) => b[1] - a[1]);
+    if (!rows.length || !total) return '';
+    return '<h3 class="risk-h">' + title + '</h3>' +
+      rows.map(r => {
+        const p = r[1] / total * 100;
+        return '<div class="risk-row"><div class="k">' + esc(r[0]) + ' · ' + p.toFixed(1) + '%</div><div class="bar"><span style="width:' + p.toFixed(1) + '%;background:var(--accent)"></span></div></div>';
+      }).join('') + (note ? '<p class="note">' + note + '</p>' : '');
+  };
+  let betaStr = '—';
+  let betaNote = 'Beta versus the S&amp;P 500 uses overlapping daily returns from the last year. Need at least 20 days.';
+  try {
+    const port = await portfolioSeries('1Y');
+    const d = await loadHist('^GSPC');
+    const sp = clipHist(d, '1Y').map(b => ({ time: b.t || b.time, value: b.v != null ? b.v : b.value }));
+    const mapP = {}, mapS = {};
+    port.forEach(p => { mapP[londonYmd(p.time)] = p.value; });
+    sp.forEach(p => { mapS[londonYmd(p.time)] = p.value; });
+    const keys = Object.keys(mapP).filter(k => mapS[k] != null).sort();
+    const rp = [], rs = [];
+    for (let i = 1; i < keys.length; i++) {
+      const p0 = mapP[keys[i - 1]], p1 = mapP[keys[i]], s0 = mapS[keys[i - 1]], s1 = mapS[keys[i]];
+      if (!p0 || !s0) continue;
+      rp.push((p1 - p0) / p0);
+      rs.push((s1 - s0) / s0);
+    }
+    if (rp.length >= 20) {
+      const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+      const mp = mean(rp), ms = mean(rs);
+      let cov = 0, varS = 0;
+      for (let i = 0; i < rp.length; i++) {
+        cov += (rp[i] - mp) * (rs[i] - ms);
+        varS += (rs[i] - ms) * (rs[i] - ms);
+      }
+      if (varS) {
+        const beta = cov / varS;
+        betaStr = beta.toFixed(2);
+        betaNote = 'Portfolio beta versus the S&amp;P 500 (^GSPC) over ' + rp.length + ' overlapping daily returns in the last year. A figure near 1 moves with the index. Not a forecast.';
+      }
+    }
+  } catch (e) {}
+  host.innerHTML = '<div class="stats">' + stat('Beta vs S&P 500', null, null, betaStr) + '</div>' +
+    '<p class="note">' + betaNote + '</p>' +
+    bar(sec, 'Sector exposure', 'Sectors come from the instrument file. ETFs and names without a sector are labelled as such.') +
+    bar(cty, 'Country exposure', 'This is the listing venue (UK = London, United States = US-listed, plus crypto and commodities), not where the company earns revenue.');
 }
 
 
