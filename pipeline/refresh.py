@@ -228,6 +228,16 @@ def last_extended(intra: list, meta: dict) -> tuple | None:
     reg_t = meta.get("regularMarketTime")
     if not intra or not reg_t:
         return None
+    windows = period_windows(meta)
+    reg = windows.get("regular")
+    now = time.time()
+    # During the live regular session the regular price is the real last trade.
+    if reg and reg[0] <= now < reg[1]:
+        return None
+    # Only count bars inside today's pre or post window, never stale ones.
+    def _in_ext(t):
+        return any(w and w[0] <= t < w[1] for w in (windows.get("pre"), windows.get("post")))
+    intra = [b for b in intra if b.get("t") and (not windows or _in_ext(int(b["t"])))]
     later = [b for b in intra if b.get("t") and b["t"] > int(reg_t) and b.get("c") is not None]
     if not later:
         return None
