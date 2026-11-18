@@ -500,3 +500,18 @@ html[data-theme=light] .alloc-bar{background:rgba(0,0,0,.08)}
 
 .risk-row{margin:8px 0}
 .risk-row .k{font-size:13px;color:var(--ink2);margin-bottom:4px}
+
+.tool-row{display:flex;gap:8px;margin:8px 0 16px;flex-wrap:wrap}
+.tool-chip{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:99px;background:var(--bg2);color:var(--ink);font-size:13px;font-weight:700;text-decoration:none}
+.scr-filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.scr-filters label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;color:var(--mute);letter-spacing:.04em;text-transform:uppercase}
+.scr-filters select,.scr-filters input{height:36px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--ink);padding:0 10px;font:inherit;font-size:14px;font-weight:600}
+#fsChart{flex:1;min-height:0}
+#fsPane{height:120px;flex:0 0 120px;border-top:1px solid var(--line)}
+#fsPane[hidden]{display:none!important}
+.fs-chart{display:flex;flex-direction:column;flex:1;min-height:0}
+.list.compact .row{padding:6px 0;min-height:44px}
+.list.compact .row .nm{font-size:15px}
+.list.compact .av,.list.compact .spark{display:none}
+.brief-block{margin:0 0 20px}
+.brief-block h3{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
