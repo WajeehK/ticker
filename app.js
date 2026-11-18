@@ -2903,6 +2903,7 @@ dock.addEventListener('keydown', e => {
 });
 
 pager.addEventListener('pointerdown', e => {
+  return; // page swipe disabled: only the tab bar changes page
   if (detailId || !$('#modal').hidden || e.button > 0) return;
   if (document.body.classList.contains('hide-dock')) return;
   if (e.target.closest('#chart,#vol,.rng,.tools,input,select,textarea,button,.sheet')) return;
