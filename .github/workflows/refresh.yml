@@ -16,7 +16,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -24,17 +24,29 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Fetch Yahoo quotes and history
-        run: python pipeline/refresh.py
-
-      - name: Commit if changed
+      - name: Fetch Yahoo quotes and history, then extras
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python pipeline/refresh.py --phase quotes
+          git add data/quotes.json data/hist img/ipos img/manifest.json
+          if git diff --staged --quiet; then
+            echo "no quote change"
+          else
+            git commit -m "chore: refresh market quotes"
+            git push
+          fi
+          python pipeline/refresh.py --phase extras || true
           git add data img/ipos img/manifest.json
-          if git diff --staged --quiet; then echo "no change"; exit 0; fi
-          git commit -m "chore: refresh market quotes"
-          git push
+          if git diff --staged --quiet; then
+            echo "no extras change"
+          else
+            git commit -m "chore: refresh market extras"
+            git push
+          fi
 
       - name: Keep the schedule enabled
         if: always()

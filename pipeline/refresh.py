@@ -8,6 +8,7 @@ numbers: a symbol that fails is omitted or marked ok=false.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import ssl
 import sys
@@ -340,7 +341,7 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
     return rec
 
 
-def main() -> int:
+def run_quotes(stop_after_quotes: bool = False) -> int:
     DATA.mkdir(parents=True, exist_ok=True)
     HIST.mkdir(parents=True, exist_ok=True)
     quotes: dict = {}
@@ -504,16 +505,16 @@ def main() -> int:
     )
     if errors:
         print("Errors:", *errors, sep="\n  ", flush=True)
+    if stop_after_quotes:
+        return 0
+    return run_extras(quotes, errors, out)
+
+
+def run_extras(quotes: dict, errors: list, out: dict | None = None) -> int:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
     try:
-        sys.path.insert(0, str(Path(__file__).resolve().parent))
         from market_extras import write_market
         write_market(DATA, quotes, UA)
-        try:
-            from fetch_news_text import prefetch_news_text
-            prefetch_news_text(DATA)
-        except Exception as e:
-            errors.append(f"news_text: {e}")
-            print("news_text skipped:", e, flush=True)
         try:
             from crypto_markets import fetch as fetch_crypto_markets
             fetch_crypto_markets()
@@ -529,6 +530,11 @@ def main() -> int:
             added = write_ipos(DATA, quotes, UA)
             if added:
                 quotes.update(added)
+                if out is None:
+                    try:
+                        out = json.loads((DATA / "quotes.json").read_text(encoding="utf-8"))
+                    except Exception:
+                        out = {"source": "Yahoo Finance", "quotes": {}}
                 out["quotes"] = quotes
                 (DATA / "quotes.json").write_text(
                     json.dumps(out, separators=(",", ":")), encoding="utf-8"
@@ -553,7 +559,46 @@ def main() -> int:
     except Exception as e:
         print(f"3m movers failed: {e}", flush=True)
         errors.append(f"movers_3m: {e}")
+    try:
+        from ai_analysis import write_ai_analysis
+        write_ai_analysis(DATA, quotes)
+    except Exception as e:
+        print(f"ai analysis failed: {e}", flush=True)
+        errors.append(f"ai_analysis: {e}")
     return 0
+
+
+def parse_args(argv=None):
+    ap = argparse.ArgumentParser(description="Refresh Ticker market data")
+    ap.add_argument(
+        "--phase",
+        choices=("quotes", "extras", "all"),
+        default="all",
+        help="quotes: prices and history only; extras: derived files; all: both",
+    )
+    return ap.parse_args(argv)
+
+
+def load_existing_quotes():
+    path = DATA / "quotes.json"
+    if not path.exists():
+        return {}, []
+    try:
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        return blob.get("quotes") or {}, list(blob.get("errors") or [])
+    except Exception:
+        return {}, []
+
+
+def main(argv=None) -> int:
+    args = parse_args(argv)
+    if args.phase == "extras":
+        quotes, errors = load_existing_quotes()
+        if not quotes:
+            print("ERROR: extras phase needs data/quotes.json", flush=True)
+            return 1
+        return run_extras(quotes, errors)
+    return run_quotes(stop_after_quotes=(args.phase == "quotes"))
 
 
 if __name__ == "__main__":

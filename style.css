@@ -464,3 +464,17 @@ html[data-theme=light] .alloc-bar{background:rgba(0,0,0,.08)}
 .d-tabs button{flex:1;height:40px;font-size:14px;font-weight:700;color:var(--mute);position:relative}
 .d-tabs button.on{color:var(--ink)}
 .d-tabs button.on::after{content:"";position:absolute;left:20%;right:20%;bottom:-1px;height:2px;background:var(--ink);border-radius:2px}
+
+.ai-card{background:var(--bg2);border-radius:18px;padding:16px 16px 12px}
+.ai-case{margin:0 0 14px}
+.ai-case h3,.ai-cats h3{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px;color:var(--mute)}
+.ai-case.bull h3{color:var(--up)}
+.ai-case.bear h3{color:var(--dn)}
+.ai-card ul{margin:0;padding:0;list-style:none}
+.ai-card li{font-size:15px;line-height:1.45;color:var(--ink2);padding:8px 0;border-bottom:1px solid var(--line)}
+.ai-card li:last-child{border-bottom:0}
+.ai-src{display:inline;margin-left:6px;font-size:12px;font-weight:600;color:var(--up);text-decoration:none}
+.ai-cat{display:flex;flex-direction:column;gap:3px}
+.ai-cat a{color:var(--ink);font-weight:600;text-decoration:none}
+.ai-cat span{font-size:12px;color:var(--mute)}
+.ai-lbl{display:block;margin:12px 0 0;font-size:12px;color:var(--mute);line-height:1.4}
