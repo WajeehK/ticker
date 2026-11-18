@@ -359,9 +359,23 @@ def main() -> int:
     except Exception as e:
         print(f"IPO calendar (pre-universe) skipped: {e}", flush=True)
 
-    for i, sym in enumerate(universe):
+    core = set(universe)
+    try:
+        from instruments import liquid_ids, write_instruments
         try:
-            daily = chart(sym, "5y", "1d")
+            write_instruments(DATA)
+        except Exception as e:
+            print("instruments refresh skipped:", e, flush=True)
+        extra = [s for s in liquid_ids(DATA) if s and s not in core]
+        universe.extend(extra)
+        print(f"Liquid instrument extras added: {len(extra)}", flush=True)
+    except Exception as e:
+        print(f"instruments universe skipped: {e}", flush=True)
+
+    for i, sym in enumerate(universe):
+        lite = sym not in core
+        try:
+            daily = chart(sym, "1y" if lite else "5y", "1d")
             if not daily:
                 errors.append(f"{sym}: no daily data")
                 time.sleep(0.15)
@@ -378,6 +392,8 @@ def main() -> int:
             intra = []
             periods = period_windows(meta)
             try:
+                if lite:
+                    raise RuntimeError("skip-intraday")
                 raw_i = chart(sym, "1d", "5m", prepost=True)
                 if raw_i:
                     intra = bars(raw_i, ohlc=False)
@@ -410,7 +426,8 @@ def main() -> int:
                     else:
                         q["session"] = "regular"
             except Exception as e:
-                errors.append(f"{sym} intraday: {e}")
+                if str(e) != "skip-intraday":
+                    errors.append(f"{sym} intraday: {e}")
                 q.setdefault("session", "regular")
             if "session" not in q:
                 q["session"] = "regular"
@@ -514,6 +531,12 @@ def main() -> int:
     except Exception as e:
         print(f"analysis failed: {e}", flush=True)
         errors.append(f"analysis: {e}")
+    try:
+        from movers_3m import compute as compute_movers
+        compute_movers(DATA, quotes)
+    except Exception as e:
+        print(f"3m movers failed: {e}", flush=True)
+        errors.append(f"movers_3m: {e}")
     return 0
 
 

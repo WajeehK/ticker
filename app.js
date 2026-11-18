@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't10';
+const BUILD = 't11';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -44,6 +44,14 @@ const store = {
 };
 const vib = n => { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.hasBeenActive) try { navigator.vibrate(n); } catch {} };
 
+function safeHTML(fn) { try { return fn() || ''; } catch (err) { console.warn('section failed', err); return ''; } }
+async function fetchWithTimeout(url, opts, ms) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), ms || 8000);
+  try { return await fetch(url, Object.assign({}, opts || {}, { signal: ctl.signal })); }
+  finally { clearTimeout(t); }
+}
+
 let quotes = {}, logos = {}, news = null, analysis = null;
 let meta = { generated_at: null, delay: '', source: '', fx: {}, stockOk: false, stockErr: null };
 let pairs = {};
@@ -62,6 +70,11 @@ let ipos = { upcoming: [], priced: [], filed: [], withdrawn: [], counts: {}, asO
 let ws = null, wsRetry = 0, wsTimer = 0, pollTimer = 0;
 let lastFlash = {}, lastHero = null, readerItem = null, fsChartApi = null, newsIndex = {};
 let ptr = null;
+let instruments = { items: [], byId: {}, asOf: null };
+let movers3m = { items: [], asOf: null };
+let listState = null;
+let quoteFails = {};
+const TAB_TITLE = { home: 'Home', markets: 'Markets', watch: 'Watchlist', port: 'Portfolio', alerts: 'Alerts' };
 
 function isCommodityId(id, q) {
   q = q || (id && quotes[id]) || {};
@@ -403,7 +416,7 @@ async function loadPairs() {
   const cache = store.get('pairs', null);
   if (cache && Date.now() - cached < 12 * 3600 * 1000) { pairs = cache; stampPairs(); return; }
   try {
-    const r = await fetch(KREST + '/AssetPairs');
+    const r = await fetchWithTimeout(KREST + '/AssetPairs', { cache: 'no-cache' }, 8000);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     if (d.error && d.error.length) throw new Error(d.error.join(', '));
@@ -460,7 +473,7 @@ async function loadCryptoOnce() {
   const alts = ids.map(id => (pairs[id] && pairs[id].alt) || (coin(id) === 'BTC' ? 'XBTUSD' : coin(id) + 'USD'));
   if (!alts.length) return;
   try {
-    const r = await fetch(KREST + '/Ticker?pair=' + encodeURIComponent(alts.join(',')));
+    const r = await fetchWithTimeout(KREST + '/Ticker?pair=' + encodeURIComponent(alts.join(',')), { cache: 'no-cache' }, 8000);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     if (d.error && d.error.length) throw new Error(d.error.join(', '));
@@ -673,13 +686,23 @@ function isStubHeadline(n) {
   const t = String((n && n.title) || '').toLowerCase();
   return t.includes('stock price, news, quote and history') || t.includes('equity price and quote');
 }
+function newsSid(n) {
+  if (n && n._sid) return n._sid;
+  const raw = String((n && (n.url || n.title)) || Math.random());
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) h = ((h << 5) - h + raw.charCodeAt(i)) | 0;
+  const k = 'n' + (h >>> 0).toString(36);
+  if (n) n._sid = k;
+  return k;
+}
 function newsItem(n, i) {
   const src = n.thumbnail || n._logo;
   const thumb = src ? '<img class="thumb' + (n.thumbnail ? '' : ' logo-thumb') + '" src="' + esc(src) + '" alt="">' : '';
   const whenBit = n.published ? ago(n.published) : '';
-  const meta = [n.source, whenBit].filter(Boolean).join(' · ');
-  const key = n._key || n.url || String(i || '');
-  return '<button type="button" class="news-item' + (src ? '' : ' no-thumb') + '" data-act="read" data-key="' + esc(key) + '"><span><b>' + esc(n.title) + '</b><span class="meta">' + esc(meta) + '</span></span>' + thumb + '</button>';
+  const metaLine = [n.source, whenBit].filter(Boolean).join(' · ');
+  const key = newsSid(n);
+  n._key = key;
+  return '<button type="button" class="news-item' + (src ? '' : ' no-thumb') + '" data-act="read" data-key="' + esc(key) + '"><span><b>' + esc(n.title) + '</b><span class="meta">' + esc(metaLine) + '</span></span>' + thumb + '</button>';
 }
 function newsDayBucket(iso) {
   if (!iso) return 'Earlier';
@@ -717,13 +740,14 @@ function newsListHTML(items, emptyText, opts) {
     const k = String(n.title || '').toLowerCase().replace(/[\s]+/g, ' ').replace(/\s+[-–—]\s+[^-–—]{2,40}$/, '').trim();
     if (!k || seen.has(k)) return;
     seen.add(k);
-    n._key = n.url || k;
+    n._key = newsSid(n);
     if (opts.logoId) {
       const L = logoRec(opts.logoId);
       if (L && L.src) n._logo = L.src;
     }
     uniq.push(n);
   });
+  rememberNews(uniq);
   if (!uniq.length) return '<div class="empty"><p>' + esc(emptyText || 'No headlines in the latest refresh.') + '</p></div>';
   const groups = { Today: [], Yesterday: [], Earlier: [] };
   uniq.forEach(n => { groups[newsDayBucket(n.published)].push(n); });
@@ -734,7 +758,7 @@ function newsListHTML(items, emptyText, opts) {
 function newsStore() { return newsIndex || (newsIndex = {}); }
 function rememberNews(items) {
   (items || []).forEach(n => {
-    const k = n._key || n.url;
+    const k = newsSid(n);
     if (k) newsStore()[k] = n;
   });
 }
@@ -755,13 +779,12 @@ function sessionTag(q) {
 }
 function priceHeadline(id, q) {
   q = q || {};
-  const native = q.currency || 'USD';
-  const px = q.price != null
-    ? (isIndexId(id, q) ? fmtPoints(q.price) : fmtNum(q.price, native, { px: true }))
-    : '—';
+  const px = q.price != null ? pxText(id, q.price, { px: true }) : '—';
   let chg = '—';
   if (q.change != null) {
-    const bit = isIndexId(id, q) ? fmtPoints(Math.abs(q.change)) : fmtNum(Math.abs(q.change), native, { px: true });
+    const bit = (isIndexId(id, q) || isYieldId(id, q))
+      ? (isYieldId(id, q) ? fmtPoints(Math.abs(q.change)) + '%' : fmtPoints(Math.abs(q.change)))
+      : (isCommodityId(id, q) ? fmtNum(Math.abs(q.change), 'USD', { px: true }) : pxText(id, Math.abs(q.change), { px: true }));
     chg = (q.change < 0 ? '▾ ' : '▴ ') + bit + ' (' + (q.changePct != null ? Math.abs(q.changePct).toFixed(2) + '%' : '—') + ')';
   } else if (q.changePct != null) {
     chg = (q.changePct < 0 ? '▾ ' : '▴ ') + Math.abs(q.changePct).toFixed(2) + '%';
@@ -786,9 +809,17 @@ async function holdingHist(id) {
     return await r.json();
   } catch (e) { return null; }
 }
+function rangeCut(range) {
+  const now = Math.floor(Date.now() / 1000);
+  if (range === 'YTD') {
+    const year = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric' }).format(new Date());
+    return Math.floor(Date.parse(year + '-01-01T00:00:00Z') / 1000);
+  }
+  return { '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'YTD': 0, 'MAX': 0 }[range] || 0;
+}
 function clipHist(d, range) {
   const now = Math.floor(Date.now() / 1000);
-  const cut = { '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'MAX': 0 }[range] || 0;
+  const cut = rangeCut(range);
   if (range === '1D') {
     const intra = d.intraday || d.intra || [];
     const last = intra.length ? (intra[intra.length - 1].t || intra[intra.length - 1].time) : 0;
@@ -828,8 +859,8 @@ async function portfolioSeries(range) {
   return out;
 }
 function rangePills(active, kind) {
-  return '<div class="rng" data-ranges="' + kind + '">' + ['1D','1W','1M','3M','1Y','MAX'].map(r =>
-    '<button type="button" data-prange="' + r + '" class="' + (r === active ? 'on' : '') + '">' + r + '</button>').join('') + '</div>';
+  return '<div class="rng" data-ranges="' + kind + '">' + ['1D','1W','1M','YTD','1Y','MAX'].map(r =>
+    '<button type="button" data-prange="' + r + '" class="' + (r === active ? 'on' : '') + '">' + (r === 'MAX' ? 'All' : r) + '</button>').join('') + '</div>';
 }
 function ensureTip(host) {
   const wrap = (host && host.parentElement) || host;
@@ -969,17 +1000,22 @@ function holdingsListHTML(st) {
   }).join('') + '</div>';
 }
 function heroHTML(st, valId) {
-  if (!st || !st.known) {
-    return '<div class="hero"><div class="lbl">Investing</div>' +
-      '<div class="val" style="font-size:32px">Nothing here yet</div>' +
+  if (!holdings.length) {
+    return '<div class="hero"><div class="lbl">Total Balance</div>' +
+      '<div class="val">' + fmtNum(0, ccy) + '</div>' +
       '<p class="note">Add the shares and coins you hold when you are ready. Everything stays on this device.</p>' +
       '<div style="margin-top:14px"><button class="btn" data-act="add-hold">Add a holding</button></div></div>';
   }
+  if (!st || !st.known) {
+    return '<div class="hero"><div class="lbl">Total Balance</div>' +
+      '<div class="val" id="' + valId + '">…</div>' +
+      '<p class="note">Valuing your holdings…</p></div>';
+  }
   const dayLine = '<div class="day ' + chgClass(st.day) + '" data-day="1">' +
-    (st.day >= 0 ? '▴ ' : '▾ ') + money(Math.abs(st.day), 'USD') +
-    (st.dayPct != null ? ' (' + Math.abs(st.dayPct).toFixed(2) + '%)' : '') +
-    ' <span class="sess">today</span></div>';
-  return '<div class="hero"><div class="lbl">Investing</div>' +
+    (st.day >= 0 ? '+' : '−') + money(Math.abs(st.day), 'USD') +
+    (st.dayPct != null ? ' (' + (st.dayPct >= 0 ? '+' : '') + st.dayPct.toFixed(2) + '%)' : '') +
+    '</div>';
+  return '<div class="hero"><div class="lbl">Total Balance</div>' +
     '<div class="val" id="' + valId + '">' + money(st.value, 'USD') + '</div>' + dayLine +
     (st.missing ? '<p class="note"><b>' + st.missing + ' holding' + (st.missing > 1 ? 's' : '') + '</b> could not be valued.</p>' : '') +
     '</div>';
@@ -1002,7 +1038,9 @@ function renderHome() {
       '</div>'
     : '';
   el.innerHTML = heroHTML(st, 'heroVal') + chart +
-    (st && st.lines.length ? '<div class="sec-h"><h2>Holdings</h2><a class="more" href="#/portfolio">Portfolio</a></div>' + holdingsListHTML(st) : '') +
+    (st && st.lines.length ? allocHTML(st) + largestHTML(st) +
+      '<div class="sec-h"><h2>Holdings</h2><a class="more" href="#/portfolio">Portfolio</a></div>' + holdingsListHTML(st) : '') +
+    up3mSectionHTML('home') +
     '<div class="sec-h"><h2>Watchlist</h2><a class="more" href="#/watch">See all</a></div>' +
     '<div class="list">' + (watchSyms().length ? watchSyms().slice(0, 8).map(id => rowHTML(id, { spark: true })).join('') : '<div class="empty"><p>Add tickers to your watchlist to see them here.</p></div>') + '</div>' +
     (newsBits.length ? '<div class="sec-h"><h2>News</h2><a class="more" href="#/markets">Markets</a></div>' + newsListHTML(newsBits) : '') +
@@ -1063,9 +1101,9 @@ function sortMarketIds(ids, mode) {
   // 'all' keeps the incoming order (universe / contract list).
   return arr;
 }
-function marketListHTML(ids, rowOpts) {
+function marketListHTML(ids, rowOpts, listId) {
   rowOpts = rowOpts || { spark: true };
-  const show = marketsShowAll ? ids : ids.slice(0, 10);
+  const show = ids.slice(0, 10);
   const rows = show.map(id => {
     const o = Object.assign({}, rowOpts);
     if (typeof o.sub === 'function') o.sub = o.sub(id);
@@ -1073,9 +1111,9 @@ function marketListHTML(ids, rowOpts) {
   }).join('');
   let btn = '';
   if (ids.length > 10) {
-    btn = marketsShowAll
-      ? '<button type="button" class="see-all" data-act="m-more" data-id="less">Show less</button>'
-      : '<button type="button" class="see-all" data-act="m-more" data-id="more">See all ' + ids.length + '</button>';
+    const pane = (listId && listId.pane) || marketsPane;
+    const list = (listId && listId.list) || marketsList;
+    btn = '<button type="button" class="see-all" data-act="open-list" data-pane="' + esc(pane) + '" data-list="' + esc(list) + '">See all ' + ids.length + '</button>';
   }
   return '<div class="list">' + (rows || '<div class="empty"><p>Nothing in this list yet.</p></div>') + '</div>' + btn;
 }
@@ -1481,6 +1519,8 @@ function renderMarkets(opts) {
       ? iposPreviewHTML()
       : ('<div class="sec-h"><h2>' + esc(label) + '</h2></div>' + marketListHTML(ids));
     body = sentimentCardsHTML() + '<div class="idx-grid">' + (idxCards || '<div class="empty"><p>Index quotes have not loaded yet.</p></div>') + '</div>' +
+      moverStripHTML(eq, 'stocks') +
+      up3mSectionHTML('stocks') +
       chipBarHTML(chips, marketsList) + mid +
       '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(headlines, 'No market headlines in the latest refresh.');
   } else if (pane === 'crypto') {
@@ -1503,7 +1543,9 @@ function renderMarkets(opts) {
     else ids = sortMarketIds((cryptoMarkets.coins || []).map(c => c.ticker), marketsList);
     ids = ids.filter(Boolean);
     const label = (chips.find(c => c.id === marketsList) || {}).label || 'Crypto';
-    body = fngH + chipBarHTML(chips, marketsList) +
+    const cryptoIds = (cryptoMarkets.coins || []).map(c => c.ticker).filter(Boolean);
+    body = fngH + moverStripHTML(cryptoIds, 'crypto') +
+      chipBarHTML(chips, marketsList) +
       '<div class="sec-h"><h2>' + esc(label) + '</h2><small class="more">' + (ids.length ? (ids.length + ' coins') : '') + '</small></div>' +
       marketListHTML(ids, cryptoRowOpts()) +
       '<div class="sec-h"><h2>News</h2></div>' + newsListHTML(chead, 'No crypto headlines in the latest refresh.', { finance: false });
@@ -1586,13 +1628,17 @@ function renderPort() {
         (st.best ? stat('Best', null, null, esc((st.best.q && st.best.q.symbol) || st.best.h.id) + ' ' + pct(st.best.pnlPct)) : '') +
         (st.worst ? stat('Worst', null, null, esc((st.worst.q && st.worst.q.symbol) || st.worst.h.id) + ' ' + pct(st.worst.pnlPct)) : '') +
         '</div>' : '') +
+      (safeHTML(() => allocHTML(st))) + (safeHTML(() => largestHTML(st))) +
+      (st && st.known ? perfGridPlaceholder() : '') +
       '<div class="sec-h"><h2>Holdings</h2><button class="more" data-act="export-csv">Export CSV</button></div>' +
       holdingsListHTML(st) +
-      analyticsHTML(st) +
+      safeHTML(() => analyticsHTML(st)) +
+      safeHTML(calendarHTML) +
+      safeHTML(sectorHeatHTML) +
       '<div style="margin-top:16px;display:flex;gap:8px"><button class="btn ghost" style="flex:1" data-act="add-hold">Add another</button><button class="btn ghost" style="flex:1" data-act="import-csv">Import</button></div>';
   el.innerHTML = heroHTML(st, 'portVal') + body + creditHTML();
   if (st) applyDayTheme(st.day == null || st.day >= 0);
-  if (st && st.known) loadPortChart('#pvChart');
+  if (st && st.known) { loadPortChart('#pvChart'); fillPerformanceGrid(st); }
 }
 
 function analyticsHTML(st) {
@@ -1663,9 +1709,16 @@ function renderAlerts() {
     '<div style="margin:12px 0"><button class="btn ghost full" data-act="add-alert">New price alert</button></div>' + list + creditHTML();
 }
 
+function paintTitle() {
+  const el = document.querySelector('.wm');
+  if (el) el.textContent = TAB_TITLE[tab] || 'Ticker';
+}
 function renderAll() {
-  renderHome(); renderMarkets(); renderWatch(); renderPort(); renderAlerts();
-  if (detailId) renderDetail(detailId, true);
+  paintTitle();
+  for (const fn of [renderHome, renderMarkets, renderWatch, renderPort, renderAlerts]) {
+    try { fn(); } catch (err) { console.warn('render failed', fn.name, err); }
+  }
+  if (detailId) { try { renderDetail(detailId, true); } catch (err) { console.warn('renderDetail failed', err); } }
   setLive(); paintCcy();
 }
 
@@ -1737,24 +1790,29 @@ function updatePrices() {
 }
 
 function stat(k, n, ccy0, text, asPoints) {
-  const val = text != null ? text : (asPoints ? fmtPoints(n) : fmtNum(n, ccy0 || 'USD', {px:true}));
+  const val = text != null ? text : (asPoints ? fmtPoints(n) : money(n, ccy0 || 'USD', {px:true}));
   return '<div class="stat"><div class="k">' + esc(k) + '</div><div class="v">' + val + '</div></div>';
 }
 
 async function cryptoBars(id, range) {
   const alt = (pairs[id] && pairs[id].alt) || (coin(id) === 'BTC' ? 'XBTUSD' : coin(id) + 'USD');
-  const map = { '1D': [60, 1440], '1W': [60, 10080], '1M': [240, 1860], '3M': [1440, 200], '1Y': [1440, 400], 'MAX': [1440, 720] };
+  const map = { '1D': [60, 1440], '1W': [60, 10080], '1M': [240, 1860], '3M': [1440, 200], 'YTD': [1440, 400], '1Y': [1440, 400], 'MAX': [1440, 720] };
   const [iv, count] = map[range] || map['1M'];
-  const r = await fetch(KREST + '/OHLC?pair=' + encodeURIComponent(alt) + '&interval=' + iv);
+  const r = await fetchWithTimeout(KREST + '/OHLC?pair=' + encodeURIComponent(alt) + '&interval=' + iv, { cache: 'no-cache' }, 10000);
   if (!r.ok) throw new Error('HTTP ' + r.status);
   const d = await r.json();
   if (d.error && d.error.length) throw new Error(d.error.join(', '));
   const key = Object.keys(d.result || {}).find(k => k !== 'last');
-  const rows = (key && d.result[key]) || [];
-  return rows.slice(-count).map(row => ({
+  const raw = (key && d.result[key]) || [];
+  let rows = raw.slice(-count).map(row => ({
     time: row[0], o: parseFloat(row[1]), h: parseFloat(row[2]), l: parseFloat(row[3]), c: parseFloat(row[4]),
     value: parseFloat(row[4]), v: parseFloat(row[6])
   })).filter(b => isFinite(b.value) && isFinite(b.time));
+  if (range === 'YTD') {
+    const cut = rangeCut('YTD');
+    rows = rows.filter(b => b.time >= cut);
+  }
+  return rows;
 }
 
 async function stockPack(id, range) {
@@ -1765,7 +1823,7 @@ async function stockPack(id, range) {
   const intra = (d.intraday || d.intra || []).map(b => ({ time: b.t, value: b.c, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v })).filter(b => b.time && b.value != null);
   const daily = (d.daily || []).map(b => ({ time: b.t, value: b.c, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v })).filter(b => b.time && b.value != null);
   const now = Math.floor(Date.now() / 1000);
-  const cut = { '1W': now - 7 * 86400, '1M': now - 32 * 86400, '3M': now - 95 * 86400, '1Y': now - 370 * 86400, 'MAX': 0 }[range] || 0;
+  const cut = rangeCut(range);
   const periods = d.periods || {};
   const regularStart = periods.regular && periods.regular[0];
   let bars;
@@ -1933,20 +1991,39 @@ function drawChart(host, packA, packB, range, kind, ind, opts) {
     const id = opts.id || detailId;
     const q = quotes[id] || {};
     if (isIndexId(id, q) || isCommodityId(id, q)) return pxText(id, v, { px: true });
-    return fmtNum(v, q.currency || packA.currency || 'USD', { px: true });
+    return fmtNum(v, packA.currency || q.currency || ccy || 'USD', { px: true });
   };
   bindCrosshair(chart, series, host, fmtVal);
   if (opts.api === 'fs') fsChartApi = chart;
   else chartApi = chart;
 }
 
+function scalePack(pack, from, to) {
+  if (!pack) return pack;
+  from = from === 'GBp' ? 'GBP' : from;
+  to = to === 'GBp' ? 'GBP' : to;
+  if (!from || !to || from === to) return Object.assign({}, pack, { currency: to || from });
+  const r = fxRate(from, to);
+  if (r == null || r === 1) return Object.assign({}, pack, { currency: from });
+  const scale = bars => (bars || []).map(b => {
+    const o = Object.assign({}, b);
+    ['o','h','l','c','value'].forEach(k => { if (o[k] != null && isFinite(o[k])) o[k] = o[k] * r; });
+    return o;
+  });
+  return Object.assign({}, pack, { bars: scale(pack.bars), currency: to });
+}
+function displayCcyFor(id) {
+  const q = quotes[id] || {};
+  if (isIndexId(id, q) || isCommodityId(id, q) || isYieldId(id, q)) return q.currency || 'USD';
+  return ccy;
+}
 async function loadDetailChart() {
   if (!detailId) return;
   const host = $('#chart'); if (!host) return;
   host.innerHTML = '<div class="ph"></div>';
   const note = $('#delayNote');
   try {
-    const packA = isCryptoId(detailId) || pairs[detailId]
+    let packA = isCryptoId(detailId) || pairs[detailId]
       ? { bars: await cryptoBars(detailId, chartRange), delay: 'Kraken public OHLC', source: 'Kraken', label: coin(detailId), ohlc: true }
       : Object.assign(await stockPack(detailId, chartRange), { label: detailId });
     let packB = null;
@@ -1956,9 +2033,16 @@ async function loadDetailChart() {
         : Object.assign(await stockPack(compareId, chartRange), { label: compareId });
     }
     const fromA = packA.currency || ((isCryptoId(detailId) || pairs[detailId]) ? 'USD' : ((quotes[detailId] && quotes[detailId].currency) || 'USD'));
-    /* Asset chart stays in the native quote currency, matching the large last price. */
+    const toA = displayCcyFor(detailId);
+    if (!isIndexId(detailId) && !isCommodityId(detailId) && !isYieldId(detailId)) {
+      packA = scalePack(packA, fromA, toA);
+      if (packB) {
+        const fromB = packB.currency || ((isCryptoId(compareId) || pairs[compareId]) ? 'USD' : ((quotes[compareId] && quotes[compareId].currency) || 'USD'));
+        packB = scalePack(packB, fromB, toA);
+      }
+    }
     if (note) {
-      const cur = isCryptoId(detailId) ? 'USD' : (isIndexId(detailId) ? 'index points' : (fromA === 'GBp' ? 'GBP' : fromA));
+      const cur = isIndexId(detailId) ? 'index points' : (isCommodityId(detailId) ? 'USD' : (packA.currency || toA));
       const bits = [];
       if (isCryptoId(detailId)) bits.push('Kraken public OHLC.');
       else bits.push('Yahoo Finance, delayed up to 15 minutes.');
@@ -1974,9 +2058,12 @@ async function loadDetailChart() {
     const q0 = quotes[detailId] || {};
     const buy = holdingAvg(detailId);
     const prev = q0.prev != null ? q0.prev : q0.regularClose;
+    const chartCcy = packA.currency || toA;
+    const native = q0.currency || fromA || 'USD';
+    const conv = v => (v == null || isIndexId(detailId) || isCommodityId(detailId)) ? v : convert(v, native, chartCcy);
     drawChart(host, packA, packB, chartRange, chartKind, chartInd, {
-      id: detailId, buyPrice: buy, buyCurrency: q0.currency || packA.currency || 'USD',
-      prevClose: (!compareId ? prev : null), showAxes: false
+      id: detailId, buyPrice: conv(buy), buyCurrency: chartCcy,
+      prevClose: (!compareId ? conv(prev) : null), showAxes: false
     });
   } catch (e) {
     host.innerHTML = '<div class="ph" style="display:grid;place-items:center;padding:20px;color:var(--mute);text-align:center">Could not load this chart. ' + esc(e.message || e) + '</div>';
@@ -2164,6 +2251,14 @@ async function renderDetail(id, reuse) {
       (q.asOf ? stat('As of', null, null, q.live ? 'Live' : (when(q.asOf) + (q.session === 'post' ? ' · after hours' : q.session === 'pre' ? ' · pre-market' : ''))) : '') +
       '<div class="stats-span"><p class="note">' + esc(delay) + (kind === 'index' ? ' Levels are index points, not a currency, and are not converted when you switch GBP/USD.' : '') + '</p></div></div></div>';
     extras += '<div class="block"><h2>Upcoming events</h2>' + eventsHTML(rec, q) + '</div>';
+    const inst = instrumentRec(id);
+    if (kind === 'etf' || (inst && inst.kind === 'etf')) {
+      extras += '<div class="block"><h2>ETF details</h2><div class="stats">' +
+        (inst && inst.issuer ? stat('Issuer', null, null, inst.issuer) : '') +
+        (inst && inst.expenseRatio != null ? stat('Expense ratio', null, null, inst.expenseRatio.toFixed(2) + '%') : '') +
+        (inst && inst.isin ? stat('ISIN', null, null, inst.isin) : '') +
+        '<div class="stats-span"><p class="note">Expense ratios are typical published figures and can change. Not financial advice.</p></div></div></div>';
+    }
   }
   rememberNews(newsBits);
   extras += '<div class="block"><h2>News</h2>' +
@@ -2191,8 +2286,8 @@ async function renderDetail(id, reuse) {
       '<div class="d-chg ' + chgClass(q.changePct) + '" id="dChg">' + hl.chg + (sess ? ' <span class="sess">' + esc(sess) + '</span>' : '') + '</div>' +
       '<div class="chart-bleed"><div id="chart"><div class="ph">Loading chart…</div></div><div id="vol" hidden></div>' +
       '<button type="button" class="chart-fs-btn" data-act="chart-fs" data-src="detail" aria-label="Full-screen chart"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button></div>' +
-      '<div class="rng" id="ranges">' + ['1D','1W','1M','3M','1Y','MAX'].map(r =>
-        '<button type="button" data-range="' + r + '" class="' + (r===range?'on':'') + '">' + (r==='MAX'?'MAX':r) + '</button>').join('') + '</div>' +
+      '<div class="rng" id="ranges">' + ['1D','1W','1M','YTD','1Y','MAX'].map(r =>
+        '<button type="button" data-range="' + r + '" class="' + (r===range?'on':'') + '">' + (r==='MAX'?'All':r) + '</button>').join('') + '</div>' +
       '<div class="tools">' +
         '<button type="button" data-kind="line" class="' + (chartKind!=='candles'?'on':'') + '">Line</button>' +
         '<button type="button" data-kind="candles" class="' + (chartKind==='candles'?'on':'') + '">Candles</button>' +
@@ -2250,6 +2345,11 @@ function searchPool() {
     seen.add(p.id);
     rows.push({ id: p.id, name: p.name, symbol: p.code, kind: 'crypto' });
   }
+  for (const it of (instruments.items || [])) {
+    if (!it || !it.id || seen.has(it.id) || it.kind === 'fx') continue;
+    seen.add(it.id);
+    rows.push({ id: it.id, name: it.name, symbol: it.symbol || it.id, kind: it.kind, t212: true });
+  }
   return rows;
 }
 function searchHits(q) {
@@ -2267,7 +2367,7 @@ function openSearch(mode) {
   const title = mode === 'compare' ? 'Compare with' : mode === 'hold' ? 'Add a holding' : mode === 'alert' ? 'Alert on' : 'Search';
   openModal('<div class="sheet"><div class="grab"></div><header><h3>' + title + '</h3><button class="x" data-act="close">Close</button></header>' +
     '<div class="field"><label for="q">Search</label><input id="q" type="search" placeholder="AAPL, VUSA.L, bitcoin…" autocomplete="off" enterkeyhint="search"></div>' +
-    '<p class="hint">Stocks and ETFs come from the Yahoo universe Ticker already tracks. Any Kraken USD crypto pair works live. Custom tickers outside this list cannot be quoted from this static site.</p>' +
+    '<p class="hint">Search covers the S&amp;P 500, Nasdaq-100, FTSE 100 and popular ETFs, plus live Kraken crypto. Quotes for the liquid set are refreshed automatically; others are fetched when you open them.</p>' +
     '<div id="hits" class="list"></div></div>');
   const box = $('#q'), hits = $('#hits');
   const paint = () => {
@@ -2473,6 +2573,9 @@ function openAsset(id, vs) {
   if (location.hash !== hash) history.pushState(null, '', hash);
   renderDetail(id);
   if (isCryptoId(id) || pairs[id]) { connectWS(); loadCryptoOnce(); }
+  if (!(quotes[id] && quotes[id].ok)) {
+    ensureQuote(id).then(q => { if (q && detailId === id) renderDetail(id, true); });
+  }
 }
 
 function consumeImport() {
@@ -2514,12 +2617,19 @@ function consumeImport() {
 }
 
 function applyHash() {
-  if (consumeImport()) { tab = 'port'; go(TABS.indexOf('port'), { nohash: true, instant: true }); renderAll(); return; }
+  if (consumeImport()) {
+    if (readerItem) closeReader(true);
+    if (listState) closeListPage(true);
+    if (detailId) closeDetail(false);
+    tab = 'port'; go(TABS.indexOf('port'), { nohash: true, instant: true }); renderAll(); return;
+  }
   const h = location.hash || '#/';
   const m = h.match(/^#\/s\/([^/]+)(?:\/vs\/([^/]+))?/);
   if (m) {
     const id = decodeURIComponent(m[1]);
     const vs = m[2] ? decodeURIComponent(m[2]) : null;
+    if (readerItem) closeReader(true);
+    if (listState) closeListPage(true);
     closeIpoSheets();
     if (detailId !== id || compareId !== vs) { detailId = id; compareId = vs; renderDetail(id); }
     return;
@@ -2544,9 +2654,18 @@ function applyHash() {
     return;
   }
   if (h.startsWith('#/read')) {
-    /* stay; reader is opened from a click. Back closes it. */
+    const key = decodeURIComponent((h.split('/')[2] || '').trim());
+    if (readerItem && newsSid(readerItem) === key) return;
+    const item = key && newsStore()[key];
+    if (item) { openReader(item); return; }
     if (readerItem) return;
   }
+  if (h.startsWith('#/list/')) {
+    const parts = h.split('/');
+    openListPage(parts[2] || 'stocks', parts[3] || 'all', { fromHash: true });
+    return;
+  }
+  if (listState) closeListPage(true);
   if (readerItem) closeReader(true);
   if (detailId) closeDetail(false);
   closeIpoSheets();
@@ -2644,9 +2763,10 @@ function go(i, opts={}) {
     if (view && !opts.keepScroll) view.scrollTop = 0;
   }
   const want = TAB_HASH[name];
-  if (!opts.nohash && !detailId && location.hash !== want && !(name === 'home' && (location.hash === '' || location.hash === '#' || location.hash === '#/'))) {
+  if (!opts.nohash && !detailId && !listState && location.hash !== want && !(name === 'home' && (location.hash === '' || location.hash === '#' || location.hash === '#/'))) {
     history.replaceState(null, '', want);
   }
+  paintTitle();
 }
 
 dock.addEventListener('pointerdown', e => {
@@ -2769,15 +2889,28 @@ function readerBodyHTML(item) {
   return '';
 }
 async function fillReaderText(item, host) {
-  if (item.text && item.text.length > 280) {
+  if (item.excerpt || item.summary) {
+    host.innerHTML = readerBodyHTML({ text: item.excerpt || item.summary }) + (item.text ? '' : '<p class="empty-read">Loading the full article…</p>');
+  } else if (item.text && item.text.length > 280) {
     host.innerHTML = readerBodyHTML(item);
     return;
+  } else {
+    host.innerHTML = '<p class="empty-read">Loading article…</p>';
   }
-  host.innerHTML = '<p class="empty-read">Loading article…</p>';
-  // Same idea as Frontline's reader sheet: try a text proxy, then fall back to the original.
+  let url = item.url || '';
+  try {
+    if (/news\.google\.com/i.test(url)) {
+      const r = await fetch('https://r.jina.ai/' + url, { mode: 'cors' });
+      if (r.ok) {
+        const raw = await r.text();
+        const m = raw.match(/https?:\/\/(?!news\.google\.com)[^\s)\]>"]+/);
+        if (m) url = m[0].replace(/[.,]+$/, '');
+      }
+    }
+  } catch (e) {}
   const proxies = [
-    'https://r.jina.ai/' + item.url,
-    'https://r.jina.ai/http://' + item.url.replace(/^https?:\/\//, '')
+    'https://r.jina.ai/' + url,
+    'https://r.jina.ai/http://' + url.replace(/^https?:\/\//, '')
   ];
   for (const u of proxies) {
     try {
@@ -2790,8 +2923,8 @@ async function fillReaderText(item, host) {
       clean = clean.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
       clean = clean.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
       clean = clean.replace(/https?:\/\/\S+/g, '');
-      const paras = clean.split(/\n+/).map(t => t.replace(/[#*_`]+/g,' ').replace(/\s+/g,' ').trim())
-        .filter(t => t.length > 50 && !/^(image \d+|bloomberg via|getty)/i.test(t)).slice(0, 36);
+      const paras = clean.split(/\n+/).map(s => s.replace(/[#*_`]+/g,' ').replace(/\s+/g,' ').trim())
+        .filter(s => s.length > 50 && !/^(image \d+|bloomberg via|getty)/i.test(s)).slice(0, 36);
       if (paras.length) {
         item.text = paras.join('\n\n');
         if (readerItem === item) host.innerHTML = readerBodyHTML(item);
@@ -2800,7 +2933,8 @@ async function fillReaderText(item, host) {
     } catch (e) {}
   }
   if (readerItem !== item) return;
-  host.innerHTML = '<p class="empty-read">This publisher blocked an extracted preview. Use Open original to read the full piece, or try an embedded view.</p>' +
+  host.innerHTML = (item.excerpt || item.summary ? readerBodyHTML({ text: item.excerpt || item.summary }) : '') +
+    '<p class="empty-read">This publisher blocked an extracted preview. Use Open original to read the full piece, or try an embedded view.</p>' +
     (item.url ? '<p><button type="button" class="btn ghost" data-act="embed-article" data-url="' + esc(item.url) + '">Try embedded view</button></p>' : '');
 }
 function openReader(item) {
@@ -2821,14 +2955,15 @@ function openReader(item) {
       '<div class="actions"><a class="btn full" href="' + esc(item.url) + '" target="_blank" rel="noopener">Open original</a></div>' +
     '</div>';
   if (!item.text || item.text.length < 280) fillReaderText(item, $('#readerBody'));
-  if (location.hash.indexOf('#/read') !== 0) history.pushState({ reader: item._key || item.url }, '', '#/read');
+  const key = newsSid(item);
+  if (location.hash.indexOf('#/read/') !== 0) history.pushState({ reader: key }, '', '#/read/' + encodeURIComponent(key));
 }
 
 function fsBar(title) {
   return '<div class="fs-bar"><button class="ib" data-act="close-fs" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><h3>' + esc(title || 'Chart') + '</h3></div>' +
     '<div class="fs-chart"><div id="fsChart"></div></div>' +
-    '<div class="rng" id="fsRanges">' + ['1D','1W','1M','3M','1Y','MAX'].map(r =>
-      '<button type="button" data-fsrange="' + r + '" class="' + (r===chartRange?'on':'') + '">' + r + '</button>').join('') + '</div>' +
+    '<div class="rng" id="fsRanges">' + ['1D','1W','1M','YTD','1Y','MAX'].map(r =>
+      '<button type="button" data-fsrange="' + r + '" class="' + (r===chartRange?'on':'') + '">' + (r==='MAX'?'All':r) + '</button>').join('') + '</div>' +
     '<div class="tools" id="fsTools">' +
       '<button type="button" data-fskind="line" class="' + (chartKind!=='candles'?'on':'') + '">Line</button>' +
       '<button type="button" data-fskind="candles" class="' + (chartKind==='candles'?'on':'') + '">Candles</button>' +
@@ -2846,14 +2981,18 @@ async function paintFsChart() {
     drawValueChart(host, pts, { showAxes: true, height: host.clientHeight || 320 });
     return;
   }
-  const packA = isCryptoId(detailId) || pairs[detailId]
+  let packA = isCryptoId(detailId) || pairs[detailId]
     ? { bars: await cryptoBars(detailId, chartRange), currency: 'USD', label: coin(detailId), ohlc: true }
     : Object.assign(await stockPack(detailId, chartRange), { label: detailId });
   const q0 = quotes[detailId] || {};
+  const fromA = packA.currency || q0.currency || 'USD';
+  const toA = displayCcyFor(detailId);
+  if (!isIndexId(detailId) && !isCommodityId(detailId) && !isYieldId(detailId)) packA = scalePack(packA, fromA, toA);
+  const conv = v => (v == null || isIndexId(detailId) || isCommodityId(detailId)) ? v : convert(v, fromA, packA.currency || toA);
   drawChart(host, packA, null, chartRange, chartKind, chartInd, {
     api: 'fs', showAxes: true, id: detailId,
-    buyPrice: holdingAvg(detailId), buyCurrency: q0.currency || packA.currency || 'USD',
-    prevClose: q0.prev != null ? q0.prev : q0.regularClose
+    buyPrice: conv(holdingAvg(detailId)), buyCurrency: packA.currency || toA,
+    prevClose: conv(q0.prev != null ? q0.prev : q0.regularClose)
   });
 }
 let fsSource = 'detail';
@@ -2898,12 +3037,31 @@ function onClick(e) {
   }
   const closeR = e.target.closest('[data-act="close-reader"]');
   if (closeR) { closeReader(); return; }
-  const readBtn = e.target.closest('[data-act="read"]');
-  if (readBtn) {
-    const item = newsStore()[readBtn.dataset.key];
-    if (item) openReader(item);
+  const embed = e.target.closest('[data-act="embed-article"]');
+  if (embed && embed.dataset.url) {
+    const body = $('#readerBody');
+    if (body) body.innerHTML = '<iframe class="reader-frame" src="' + esc(embed.dataset.url) + '" title="Article" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>';
     return;
   }
+  const readBtn = e.target.closest('[data-act="read"]');
+  if (readBtn) {
+    e.preventDefault();
+    const item = newsStore()[readBtn.dataset.key];
+    if (item) openReader(item);
+    else toast('Could not open that story in the reader.');
+    return;
+  }
+  const openList = e.target.closest('[data-act="open-list"]');
+  if (openList) {
+    openListPage(openList.dataset.pane || marketsPane, openList.dataset.list || marketsList);
+    return;
+  }
+  const closeList = e.target.closest('[data-act="close-list"]');
+  if (closeList) { closeListPage(); return; }
+  const lsort = e.target.closest('[data-act="list-sort"]');
+  if (lsort && listState) { listState.sort = lsort.dataset.id; listState.shown = 40; renderListPage(); return; }
+  const lmore = e.target.closest('[data-act="list-more"]');
+  if (lmore && listState) { listState.shown = (listState.shown || 40) + 40; renderListPage(); return; }
   const pane = e.target.closest('[data-act="m-pane"]');
   if (pane) {
     marketsPane = pane.dataset.id;
@@ -3020,11 +3178,23 @@ function onClick(e) {
 }
 
 async function refreshAll() {
-  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadSentiment(), loadIpos(), loadPairs().then(loadCryptoOnce)]); applyCryptoMarkets();
+  await Promise.all([loadStocks(), loadNews(), loadAnalysis(), loadLogos(), loadVolumes(), loadCryptoMarkets(), loadSentiment(), loadIpos(), loadInstruments(), loadMovers3m()]);
+  applyCryptoMarkets();
   renderAll();
-  loadCryptoSparks().then(() => { if (tab === 'watch' || tab === 'markets') { renderWatch(); renderMarkets(); } if (tab === 'home') updatePortfolioLive(); });
-  connectWS();
   setLive();
+  loadPairs().then(loadCryptoOnce).then(() => {
+    applyCryptoMarkets();
+    updatePrices();
+    if (tab === 'home' || tab === 'port') updatePortfolioLive();
+    if (tab === 'markets') renderMarkets();
+    if (tab === 'watch') renderWatch();
+    setLive();
+  }).catch(() => { setLive(); });
+  loadCryptoSparks().then(() => {
+    if (tab === 'watch' || tab === 'markets') { renderWatch(); renderMarkets(); }
+    if (tab === 'home' || tab === 'port') updatePortfolioLive();
+  });
+  connectWS();
 }
 
 function applyTheme(t, persist) {
@@ -3043,6 +3213,361 @@ function bootTheme() {
   const saved = store.get('theme', null);
   applyTheme(saved === 'light' || saved === 'dark' ? saved : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'), false);
 }
+
+
+function instrumentRec(id) {
+  return (instruments && instruments.byId && instruments.byId[id]) || null;
+}
+async function loadInstruments() {
+  try {
+    const r = await fetch('data/instruments.json?t=' + BUILD, { cache: 'no-cache' });
+    if (!r.ok) return;
+    const d = await r.json();
+    const items = d.instruments || d.items || [];
+    const byId = {};
+    items.forEach(it => { if (it && it.id) byId[it.id] = it; });
+    instruments = { items: items, byId: byId, asOf: d.asOf, source: d.source };
+  } catch (e) {}
+}
+async function loadMovers3m() {
+  try {
+    const r = await fetch('data/movers_3m.json?t=' + BUILD, { cache: 'no-cache' });
+    if (!r.ok) return;
+    movers3m = await r.json();
+  } catch (e) {}
+}
+
+function allocHTML(st) {
+  if (!st || !st.lines || !st.lines.length) return '';
+  const pal = PALETTE();
+  const map = {};
+  for (const l of st.lines) {
+    if (l.valUSD == null) continue;
+    const k = kindOf(l.h.id, l.q);
+    const label = k === 'crypto' ? 'Crypto' : k === 'etf' ? 'ETFs' : k === 'commodity' ? 'Metals' : 'Stocks';
+    map[label] = (map[label] || 0) + l.valUSD;
+  }
+  const rows = Object.entries(map).sort((a, b) => b[1] - a[1]);
+  if (!rows.length) return '';
+  const total = rows.reduce((a, b) => a + b[1], 0) || 1;
+  const colors = { Stocks: '#3b82f6', ETFs: '#00C805', Crypto: '#a855f7', Metals: '#f5c542' };
+  return '<div class="sec-h"><h2>Asset breakdown</h2></div><div class="alloc">' +
+    rows.map((ent, i) => {
+      const pctV = ent[1] / total * 100;
+      const col = colors[ent[0]] || pal[i % pal.length];
+      return '<div class="alloc-row"><div><div class="lab">' + esc(ent[0]) + '</div><div class="sub">' + money(ent[1], 'USD') + '</div></div><div class="pct">' + pctV.toFixed(0) + '%</div>' +
+        '<div class="alloc-bar"><i style="width:' + pctV.toFixed(1) + '%;background:' + col + '"></i></div></div>';
+    }).join('') + '</div>';
+}
+function largestHTML(st) {
+  if (!st || !st.lines) return '';
+  const rows = st.lines.filter(l => l.valUSD != null).sort((a, b) => b.valUSD - a.valUSD);
+  if (!rows.length) return '';
+  const total = rows.reduce((s, l) => s + l.valUSD, 0) || 1;
+  const top = rows.slice(0, 3);
+  const other = rows.slice(3).reduce((s, l) => s + l.valUSD, 0);
+  const tiles = top.map(l => {
+    const id = l.h.id, q = l.q || quotes[id] || {};
+    const share = l.valUSD / total * 100;
+    return '<a class="lg-tile" href="#/s/' + encodeURIComponent(id) + '">' + avHTML(id, q.name || id, kindOf(id, q), 'lg') +
+      '<div class="k">' + esc(q.symbol || coin(id) || id) + ' ' + share.toFixed(0) + '%</div>' +
+      '<div class="v">' + money(l.valUSD, 'USD') + '</div></a>';
+  }).join('');
+  const otherTile = other > 0 ? '<div class="lg-tile"><div class="av ph lg">+</div><div class="k">Other ' + (other / total * 100).toFixed(0) + '%</div><div class="v">' + money(other, 'USD') + '</div></div>' : '';
+  return '<div class="sec-h"><h2>Largest holdings</h2></div><div class="largest">' + tiles + otherTile + '</div>';
+}
+
+function up3mIds() { return (movers3m && movers3m.items || []).map(x => x.id).filter(Boolean); }
+function up3mSectionHTML(where) {
+  const items = (movers3m && movers3m.items) || [];
+  if (!items.length) return '';
+  const ids = items.slice(0, 10).map(x => x.id);
+  const rows = ids.map(id => {
+    const rec = (movers3m.items || []).find(x => x.id === id) || {};
+    return rowHTML(id, { spark: true, rgt: '<div class="px">' + (quotes[id] && quotes[id].price != null ? pxText(id, quotes[id].price, { px: true }) : '—') + '</div><div class="chg up">' + pct(rec.ret) + '</div>' });
+  }).join('');
+  return '<div class="sec-h"><h2>Up 10%+ in 3 months</h2>' +
+    (items.length > 10 ? '<button type="button" class="more" data-act="open-list" data-pane="stocks" data-list="up3m">See all</button>' : '') +
+    '</div><div class="list">' + rows + '</div>' +
+    '<p class="note">About three months of daily closes. Not a prediction, not financial advice.</p>';
+}
+
+function moverStripHTML(ids, pane) {
+  const gain = sortMarketIds(ids.slice(), 'gainers').filter(id => (quotes[id] && quotes[id].changePct) > 0).slice(0, 12);
+  const lose = sortMarketIds(ids.slice(), 'losers').filter(id => (quotes[id] && quotes[id].changePct) < 0).slice(0, 12);
+  function cards(list, title, listId) {
+    if (!list.length) return '';
+    return '<div class="sec-h"><h2>' + title + '</h2><button type="button" class="h-expand" data-act="open-list" data-pane="' + esc(pane) + '" data-list="' + esc(listId) + '">Expand</button></div>' +
+      '<div class="h-scroll">' + list.map(id => {
+        const q = quotes[id] || {};
+        const name = q.shortName || q.name || id;
+        const up = (q.changePct || 0) >= 0;
+        return '<a class="h-card" href="#/s/' + encodeURIComponent(id) + '">' + avHTML(id, name, kindOf(id, q)) +
+          '<div class="nm">' + esc(name) + '</div><div class="tk">' + esc(q.symbol || coin(id) || id) + '</div>' +
+          '<div class="px">' + (q.price != null ? pxText(id, q.price, { px: true }) : '—') + '</div>' +
+          '<div class="chg ' + chgClass(q.changePct) + '">' + (q.changePct != null ? pct(q.changePct) : '—') + '</div></a>';
+      }).join('') + '</div>';
+  }
+  return cards(gain, 'Top gainers 24h', 'gainers') + cards(lose, 'Top losers 24h', 'losers');
+}
+
+function perfGridPlaceholder() {
+  return '<div class="sec-h"><h2>Performance</h2></div><div class="perf-grid" id="perfGrid">' +
+    ['1D','1W','1M','3M','YTD','1Y'].map(r => '<div class="perf-cell" data-pr="' + r + '"><div class="k">' + r + '</div><div class="v">…</div></div>').join('') +
+    '</div><p class="note">Period returns from your holdings and saved prices. Not a prediction, not financial advice.</p>';
+}
+async function fillPerformanceGrid(st) {
+  const host = $('#perfGrid');
+  if (!host) return;
+  const cells = {};
+  $$('#perfGrid .perf-cell').forEach(el => { cells[el.dataset.pr] = el.querySelector('.v'); });
+  if (cells['1D'] && st && st.dayPct != null) {
+    cells['1D'].textContent = pct(st.dayPct);
+    cells['1D'].className = 'v ' + chgClass(st.dayPct);
+  }
+  for (const r of ['1W','1M','3M','YTD','1Y']) {
+    try {
+      const pts = await portfolioSeries(r);
+      if (!cells[r] || pts.length < 2) { if (cells[r] && cells[r].textContent === '…') cells[r].textContent = '—'; continue; }
+      const a = pts[0].value, b = pts[pts.length - 1].value;
+      if (!a) { cells[r].textContent = '—'; continue; }
+      const p = (b - a) / a * 100;
+      cells[r].textContent = pct(p);
+      cells[r].className = 'v ' + chgClass(p);
+    } catch (e) { if (cells[r]) cells[r].textContent = '—'; }
+  }
+}
+
+function calendarHTML() {
+  const rows = [];
+  const seen = new Set();
+  const add = (t, title, sub, href) => {
+    if (!t || !isFinite(t)) return;
+    const key = title + t;
+    if (seen.has(key)) return;
+    seen.add(key);
+    rows.push({ t: t, title: title, sub: sub, href: href });
+  };
+  const asTs = v => {
+    if (v == null) return null;
+    if (typeof v === 'number') return v < 1e12 ? v * 1000 : v;
+    const n = Date.parse(v);
+    return isFinite(n) ? n : null;
+  };
+  if (analysis && analysis.bySymbol) {
+    for (const [id, rec] of Object.entries(analysis.bySymbol)) {
+      const nxt = rec && rec.nextEarnings;
+      if (!nxt) continue;
+      const t = asTs(nxt.date || nxt.earningsDate || nxt.time);
+      const q = quotes[id] || {};
+      add(t, (q.symbol || id) + ' earnings', q.name || 'Upcoming report', '#/s/' + encodeURIComponent(id));
+    }
+  }
+  const evs = news && news.earnings;
+  const evList = Array.isArray(evs) ? evs : (evs && typeof evs === 'object' ? Object.values(evs) : []);
+  for (const ev of evList) {
+    if (!ev || typeof ev !== 'object' || Array.isArray(ev)) continue;
+    const t = asTs(ev.date || ev.when || ev.published);
+    add(t, ev.title || ev.symbol || 'Earnings', ev.source || 'Calendar', ev.symbol ? '#/s/' + encodeURIComponent(ev.symbol) : '');
+  }
+  for (const h of holdings) {
+    const q = quotes[h.id] || {};
+    if (q.lastDiv && q.lastDiv.date) add(asTs(q.lastDiv.date), (q.symbol || h.id) + ' dividend', 'Last paid', '#/s/' + encodeURIComponent(h.id));
+  }
+  const now = Date.now();
+  const upcoming = rows.filter(r => r.t >= now - 2 * 86400000).sort((a, b) => a.t - b.t).slice(0, 12);
+  if (!upcoming.length) return '';
+  return '<div class="sec-h"><h2>Dividends &amp; earnings</h2></div>' +
+    upcoming.map(r => {
+      const whenStr = new Date(r.t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/London' }) + ' UK';
+      const inner = '<div class="when">' + esc(whenStr) + '</div><div class="what"><b>' + esc(r.title) + '</b><span>' + esc(r.sub || '') + '</span></div>';
+      return r.href ? '<a class="cal-row" href="' + esc(r.href) + '">' + inner + '</a>' : '<div class="cal-row">' + inner + '</div>';
+    }).join('');
+}
+
+function sectorHeatHTML() {
+  const map = {};
+  for (const q of Object.values(quotes)) {
+    if (!q || q.kind !== 'equity' || q.changePct == null) continue;
+    const inst = instrumentRec(q.id);
+    const sector = (inst && inst.sector) || q.sector;
+    if (!sector) continue;
+    (map[sector] || (map[sector] = [])).push(q.changePct);
+  }
+  const cells = Object.entries(map).map(([k, arr]) => {
+    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+    return { k: k, avg: avg, n: arr.length };
+  }).sort((a, b) => Math.abs(b.avg) - Math.abs(a.avg)).slice(0, 8);
+  if (!cells.length) return '';
+  return '<div class="sec-h"><h2>Sector heatmap</h2></div><div class="heat">' +
+    cells.map(c => '<div class="heat-cell ' + chgClass(c.avg) + '"><div class="k">' + esc(c.k) + '</div><div class="v">' + pct(c.avg) + '</div></div>').join('') +
+    '</div><p class="note">Average session move of names in each sector, from the covered universe. Not financial advice.</p>';
+}
+
+function listPageIds(pane, list) {
+  if (list === 'up3m') return up3mIds();
+  if (pane === 'crypto') {
+    applyCryptoMarkets();
+    if (list === 'trending') return (cryptoMarkets.trending || []).map(c => c.ticker).filter(Boolean);
+    if (list === 'new') return (cryptoMarkets.newListings || []).map(c => c.ticker).filter(Boolean);
+    return sortMarketIds((cryptoMarkets.coins || []).map(c => c.ticker).filter(Boolean), list === 'all' ? 'mcap' : list);
+  }
+  if (pane === 'commodities') return sortMarketIds(COMMODITY_IDS.filter(id => quotes[id] && quotes[id].ok), list === 'all' ? 'all' : list);
+  if (pane === 'etfs') {
+    const ids = Object.values(quotes).filter(q => q && q.ok && q.kind === 'etf').map(q => q.id);
+    const extra = (instruments.items || []).filter(it => it.kind === 'etf' && !ids.includes(it.id)).map(it => it.id);
+    return sortMarketIds(ids.concat(list === 'all' ? extra : []), list === 'all' ? 'all' : list);
+  }
+  let ids = Object.values(quotes).filter(q => q && q.ok && q.kind === 'equity').map(q => q.id);
+  if (list === 'all') {
+    const extra = (instruments.items || []).filter(it => it.kind === 'equity' && !ids.includes(it.id)).map(it => it.id);
+    ids = ids.concat(extra);
+  }
+  return sortMarketIds(ids, list === 'all' ? 'all' : (list === 'up3m' ? 'gainers' : list));
+}
+function listTitle(pane, list) {
+  const names = { gainers: 'Top gainers 24h', losers: 'Top losers 24h', volume: 'Most active', mcap: 'Market cap', up3m: 'Up 10%+ in 3 months', trending: 'Trending', new: 'New listings', all: (pane === 'crypto' ? 'All crypto' : pane === 'etfs' ? 'All ETFs' : pane === 'commodities' ? 'Commodities' : 'All stocks'), ipos: 'IPOs' };
+  return names[list] || 'Markets';
+}
+function openListPage(pane, list, opts) {
+  opts = opts || {};
+  pane = MARKET_PANES.includes(pane) || pane === 'stocks' ? pane : 'stocks';
+  const sort0 = list === 'losers' ? 'losers'
+    : (list === 'gainers' || list === 'up3m') ? 'gainers'
+    : (list === 'mcap' || (pane === 'crypto' && (list === 'all' || !list))) ? 'mcap'
+    : list === 'volume' ? 'volume'
+    : 'name';
+  listState = { pane: pane, list: list || 'all', q: '', sort: sort0, shown: 40 };
+  const el = $('#listPage');
+  if (!el) return;
+  if (detailId) closeDetail(false);
+  if (readerItem) closeReader(true);
+  go(1, { nohash: true });
+  el.hidden = false;
+  document.body.classList.add('hide-dock');
+  if (!opts.fromHash) history.pushState({ list: pane + '/' + list }, '', '#/list/' + encodeURIComponent(pane) + '/' + encodeURIComponent(list));
+  renderListPage();
+}
+function closeListPage(fromPop) {
+  const el = $('#listPage');
+  if (el) { el.hidden = true; el.innerHTML = ''; }
+  listState = null;
+  document.body.classList.remove('hide-dock');
+  if (!fromPop && location.hash.indexOf('#/list/') === 0) {
+    if (history.length > 1) history.back();
+    else history.replaceState(null, '', '#/markets');
+  }
+}
+function listFiltered() {
+  if (!listState) return [];
+  let ids = listPageIds(listState.pane, listState.list);
+  const q = (listState.q || '').trim().toLowerCase();
+  if (q) {
+    ids = ids.filter(id => {
+      const rec = quotes[id] || instrumentRec(id) || {};
+      return (id + ' ' + (rec.symbol || '') + ' ' + (rec.name || '')).toLowerCase().includes(q);
+    });
+  }
+  const sort = listState.sort;
+  if (sort === 'name') ids = ids.slice().sort((a, b) => ((quotes[a] && quotes[a].name) || a).localeCompare((quotes[b] && quotes[b].name) || b));
+  else if (sort === 'price') ids = ids.slice().sort((a, b) => ((quotes[b] && quotes[b].price) || 0) - ((quotes[a] && quotes[a].price) || 0));
+  else ids = sortMarketIds(ids, sort === 'losers' ? 'losers' : sort === 'volume' ? 'volume' : sort === 'mcap' ? 'mcap' : 'gainers');
+  if (listState.list === 'up3m') {
+    const rank = {};
+    (movers3m.items || []).forEach((x, i) => { rank[x.id] = x.ret; });
+    if (sort === 'gainers' || sort === 'losers') ids = ids.slice().sort((a, b) => (rank[b] || 0) - (rank[a] || 0));
+  }
+  return ids;
+}
+function renderListPage() {
+  const el = $('#listPage');
+  if (!el || !listState) return;
+  const keepY = el.scrollTop || 0;
+  const ids = listFiltered();
+  const shown = ids.slice(0, listState.shown || 40);
+  const opts = listState.pane === 'crypto' ? cryptoRowOpts() : { spark: true };
+  if (listState.list === 'up3m') {
+    opts.rgt = null;
+    // custom rgt set per row below
+  }
+  const rows = shown.map(id => {
+    if (listState.list === 'up3m') {
+      const rec = (movers3m.items || []).find(x => x.id === id) || {};
+      return rowHTML(id, { spark: true, rgt: '<div class="px">' + (quotes[id] && quotes[id].price != null ? pxText(id, quotes[id].price, { px: true }) : '—') + '</div><div class="chg up">' + (rec.ret != null ? pct(rec.ret) : '—') + '</div>' });
+    }
+    const o = Object.assign({}, opts);
+    if (typeof o.sub === 'function') o.sub = o.sub(id);
+    return rowHTML(id, o);
+  }).join('');
+  const chips = [
+    ['gainers', 'Gainers'], ['losers', 'Losers'], ['volume', 'Most active'], ['name', 'Name']
+  ];
+  if (listState.pane === 'crypto') chips.push(['mcap', 'Market cap']);
+  el.innerHTML =
+    '<div class="d-bar"><button class="ib" data-act="close-list" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><h2>' + esc(listTitle(listState.pane, listState.list)) + '</h2><span style="width:36px"></span></div>' +
+    '<div class="d-in list-page">' +
+      '<div class="search list-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+      '<input id="listQ" type="search" placeholder="Search name or symbol" value="' + esc(listState.q || '') + '" autocomplete="off"></div>' +
+      '<div class="filters">' + chips.map(c => '<button type="button" class="' + (listState.sort === c[0] ? 'on' : '') + '" data-act="list-sort" data-id="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>' +
+      '<p class="list-status">' + ids.length + ' names' + (listState.list === 'up3m' ? ' · up 10% or more over about 3 months. Not financial advice.' : '') + '</p>' +
+      '<div class="list">' + (rows || '<div class="empty"><p>Nothing in this list yet.</p></div>') + '</div>' +
+      (ids.length > shown.length ? '<button type="button" class="see-all" data-act="list-more">Show more</button>' : '') +
+    '</div>';
+  const input = $('#listQ');
+  if (input) {
+    input.addEventListener('input', () => {
+      listState.q = input.value;
+      listState.shown = 40;
+      const pos = input.selectionStart;
+      renderListPage();
+      const next = $('#listQ');
+      if (next) { next.focus(); try { next.setSelectionRange(pos, pos); } catch (e) {} }
+    });
+    el.onscroll = () => {
+      if (!listState) return;
+      if (el.scrollTop + el.clientHeight > el.scrollHeight - 240) {
+        const all = listFiltered();
+        if (listState.shown < all.length) { listState.shown += 40; renderListPage(); }
+      }
+    };
+  }
+  el.scrollTop = keepY;
+}
+
+async function ensureQuote(id) {
+  if (!id) return;
+  if (quotes[id] && quotes[id].ok && quotes[id].price != null) return quotes[id];
+  if (quoteFails[id] >= 2) return null;
+  const yahoo = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(id) + '?range=1d&interval=1d';
+  const urls = [yahoo, 'https://r.jina.ai/' + yahoo];
+  for (const u of urls) {
+    try {
+      const r = await fetch(u, { mode: 'cors' });
+      if (!r.ok) continue;
+      let d = await r.text();
+      const start = d.indexOf('{');
+      if (start > 0) d = d.slice(start);
+      const json = JSON.parse(d);
+      const res = ((json.chart || {}).result || [])[0];
+      if (!res) continue;
+      const meta = res.meta || {};
+      const px = meta.regularMarketPrice;
+      if (px == null) continue;
+      upsert(id, {
+        symbol: id, name: meta.longName || meta.shortName || (instrumentRec(id) && instrumentRec(id).name) || id,
+        kind: (instrumentRec(id) && instrumentRec(id).kind) || 'equity',
+        currency: meta.currency || 'USD', price: px, prev: meta.previousClose || meta.chartPreviousClose,
+        change: (meta.regularMarketPrice != null && meta.previousClose) ? meta.regularMarketPrice - meta.previousClose : null,
+        changePct: (meta.regularMarketPrice != null && meta.previousClose) ? (meta.regularMarketPrice - meta.previousClose) / meta.previousClose * 100 : null,
+        ok: true, source: 'yahoo-ondemand', asOf: meta.regularMarketTime
+      });
+      return quotes[id];
+    } catch (e) {}
+  }
+  quoteFails[id] = (quoteFails[id] || 0) + 1;
+  return null;
+}
+
 
 async function boot() {
   loadUser();
