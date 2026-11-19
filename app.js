@@ -1,5 +1,5 @@
 /* Ticker v2 */
-const BUILD = 't18';
+const BUILD = 't19';
 const TABS = ['home', 'markets', 'watch', 'port', 'alerts'];
 const TAB_HASH = { home: '#/', markets: '#/markets', watch: '#/watch', port: '#/portfolio', alerts: '#/alerts' };
 const DEFAULT_WATCH = ['USAR', 'MP', 'BTC-USD', 'ETH-USD', 'SOL-USD', 'AAPL', 'NVDA', 'TSLA', 'SPY', 'VUSA.L'];
@@ -419,6 +419,7 @@ async function loadStocks() {
         volume: q.volume, marketCap: q.marketCap,
         ok: true, source: 'yahoo', live: false
       });
+      applyDayChange(quotes[sym]);
     }
   } catch (e) {
     meta.stockOk = false;
@@ -857,6 +858,40 @@ function lastExtendedBar(bars, meta, now) {
   const sess = (windows.post && t >= windows.post[0]) ? 'post' : 'pre';
   return { price: b.c != null ? b.c : b.value, t, sess };
 }
+function sparkImpliedPrev(q, price) {
+  const spark = (q && q.spark) || [];
+  if (spark.length < 2 || price == null || !isFinite(price)) return null;
+  const last = spark[spark.length - 1], prior = spark[spark.length - 2];
+  if (last == null || !isFinite(last)) return null;
+  const near = v => v != null && isFinite(v) && Math.abs(v - price) / Math.max(Math.abs(price), 1e-9) < 0.02;
+  if (near(last)) return (prior != null && isFinite(prior) && prior !== 0) ? prior : null;
+  return last !== 0 ? last : null;
+}
+function applyDayChange(q) {
+  if (!q || q.price == null || q.kind === 'crypto' || q.kind === 'fx') return q;
+  const price = q.price;
+  const yahoo = q.prev;
+  const hist = sparkImpliedPrev(q, price);
+  let prev = yahoo;
+  if (hist != null && hist !== 0) {
+    if (prev == null || prev === 0 || Math.abs(prev - hist) / Math.abs(hist) > 0.08) prev = hist;
+  }
+  if (prev != null && prev !== 0 && isFinite(prev)) {
+    q.prev = prev;
+    q.change = price - prev;
+    q.changePct = q.change / prev * 100;
+  }
+  if (q.changePct != null && Math.abs(q.changePct) > 40 && q.dayLow != null && q.dayHigh != null) {
+    const span = Math.abs(q.dayHigh - q.dayLow);
+    if (span > 0 && Math.abs(q.change) > span * 3) {
+      q.changePct = null;
+      q.changeError = true;
+    }
+  } else if (q.changeError) {
+    delete q.changeError;
+  }
+  return q;
+}
 function applyYahooQuote(id, meta, bars) {
   if (!id || !meta || meta.regularMarketPrice == null) return;
   const scale = yahooScale(meta);
@@ -864,8 +899,12 @@ function applyYahooQuote(id, meta, bars) {
   let price = Number(meta.regularMarketPrice) * scale;
   let asOf = meta.regularMarketTime;
   let session = 'regular';
-  let prev = meta.previousClose != null ? meta.previousClose : meta.chartPreviousClose;
+  let prev = meta.regularMarketPreviousClose != null ? meta.regularMarketPreviousClose
+    : (meta.previousClose != null ? meta.previousClose : meta.chartPreviousClose);
   if (prev != null) prev = Number(prev) * scale;
+  const cur = quotes[id] || {};
+  const histPrev = sparkImpliedPrev(cur, cur.price != null ? cur.price : price);
+  if (histPrev != null && (prev == null || prev === 0 || Math.abs(prev - histPrev) / Math.abs(histPrev) > 0.08)) prev = histPrev;
   const regularClose = price;
   const regularTime = asOf;
   const ext = lastExtendedBar(bars, meta, now);
@@ -892,8 +931,8 @@ function applyYahooQuote(id, meta, bars) {
     price = Number(ext.price) * scale;
     asOf = ext.t;
     session = ext.sess;
-    rec.change = regularClose ? price - regularClose : null;
-    rec.changePct = regularClose ? (price - regularClose) / regularClose * 100 : null;
+    rec.change = (prev != null && prev) ? price - prev : null;
+    rec.changePct = (prev != null && prev) ? (price - prev) / prev * 100 : null;
   } else {
     rec.change = (prev != null) ? price - prev : null;
     rec.changePct = (prev != null && prev) ? (price - prev) / prev * 100 : null;
@@ -904,6 +943,7 @@ function applyYahooQuote(id, meta, bars) {
   rec.asOf = asOf;
   rec.session = session;
   upsert(id, rec);
+  applyDayChange(quotes[id]);
   return quotes[id];
 }
 const quoteInflight = {};
@@ -3871,8 +3911,9 @@ function isLiquidMover(id) {
 }
 function moverStripHTML(ids, pane) {
   const pool = (ids || []).filter(isLiquidMover);
-  const gain = sortMarketIds(pool.slice(), 'gainers').filter(id => (quotes[id] && quotes[id].changePct) > 0).slice(0, 12);
-  const lose = sortMarketIds(pool.slice(), 'losers').filter(id => (quotes[id] && quotes[id].changePct) < 0).slice(0, 12);
+  const dayOk = id => { const q = quotes[id]; return q && q.changePct != null && !q.changeError && isFinite(q.changePct); };
+  const gain = sortMarketIds(pool.slice(), 'gainers').filter(id => dayOk(id) && quotes[id].changePct > 0).slice(0, 12);
+  const lose = sortMarketIds(pool.slice(), 'losers').filter(id => dayOk(id) && quotes[id].changePct < 0).slice(0, 12);
   function cards(list, title, listId) {
     if (!list.length) return '';
     return '<div class="sec-h"><h2>' + title + '</h2><button type="button" class="h-expand" data-act="open-list" data-pane="' + esc(pane) + '" data-list="' + esc(listId) + '">Expand</button></div>' +
@@ -3886,7 +3927,7 @@ function moverStripHTML(ids, pane) {
           '<div class="chg ' + chgClass(q.changePct) + '">' + (q.changePct != null ? pct(q.changePct) : '—') + '</div></a>';
       }).join('') + '</div>';
   }
-  return cards(gain, 'Top gainers 24h', 'gainers') + cards(lose, 'Top losers 24h', 'losers');
+  return cards(gain, "Today's gainers", 'gainers') + cards(lose, "Today's losers", 'losers');
 }
 
 function perfGridPlaceholder() {

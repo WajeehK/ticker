@@ -18,6 +18,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -252,16 +253,62 @@ def last_extended(intra: list, meta: dict) -> tuple | None:
     return float(b["c"]), t, session
 
 
-def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
+
+def exchange_tz(symbol: str, meta: dict):
+    name = (meta.get("exchangeTimezoneName") or meta.get("timezone") or "")
+    if name:
+        try:
+            return ZoneInfo(name)
+        except Exception:
+            pass
+    if str(symbol).endswith(".L"):
+        return ZoneInfo("Europe/London")
+    return ZoneInfo("America/New_York")
+
+
+def hist_previous_close(symbol: str, meta: dict, daily_bars: list, now: float | None = None):
+    """Last daily close from a session strictly before today, in the exchange TZ."""
+    if not daily_bars:
+        return None
+    now = now if now is not None else time.time()
+    try:
+        tz = exchange_tz(symbol, meta)
+        today = datetime.fromtimestamp(now, tz).date()
+        prior = []
+        for b in daily_bars:
+            ts, c = b.get("t"), b.get("c")
+            if ts is None or c is None:
+                continue
+            if datetime.fromtimestamp(int(ts), tz).date() < today:
+                prior.append(float(c))
+        if prior:
+            return prior[-1]
+    except Exception:
+        return None
+    return None
+
+
+def pack_quote(symbol: str, meta: dict, daily_bars: list) -> dict | None:
     price = meta.get("regularMarketPrice")
     if price is None:
         return None
-    prev = meta.get("previousClose")
-    if prev is None:
-        prev = meta.get("chartPreviousClose")
     price = float(price)
-    prev = float(prev) if prev is not None else None
-    closes_f = [float(c) for c in daily_closes if c is not None]
+    daily_bars = daily_bars or []
+    closes_f = [float(b["c"]) for b in daily_bars if isinstance(b, dict) and b.get("c") is not None]
+    yahoo_prev = meta.get("regularMarketPreviousClose")
+    if yahoo_prev is None:
+        yahoo_prev = meta.get("previousClose")
+    if yahoo_prev is None:
+        yahoo_prev = meta.get("chartPreviousClose")
+    try:
+        yahoo_prev = float(yahoo_prev) if yahoo_prev is not None else None
+    except (TypeError, ValueError):
+        yahoo_prev = None
+    hist_prev = hist_previous_close(symbol, meta, daily_bars)
+    prev = yahoo_prev
+    if hist_prev not in (None, 0):
+        if prev in (None, 0) or abs(prev - hist_prev) / abs(hist_prev) > 0.08:
+            prev = hist_prev
     if prev is None and len(closes_f) >= 2:
         prev = closes_f[-2]
     chg = (price - prev) if prev not in (None, 0) else None
@@ -282,13 +329,13 @@ def pack_quote(symbol: str, meta: dict, daily_closes: list) -> dict | None:
             return None if v is None else float(v) * scale
         day_high, day_low = _s(meta.get("regularMarketDayHigh")), _s(meta.get("regularMarketDayLow"))
         high52, low52 = _s(meta.get("fiftyTwoWeekHigh")), _s(meta.get("fiftyTwoWeekLow"))
-        spark = [round(v * scale, 6) for v in spark_from(daily_closes)]
+        spark = [round(v * scale, 6) for v in spark_from(closes_f)]
     else:
         day_high = meta.get("regularMarketDayHigh")
         day_low = meta.get("regularMarketDayLow")
         high52 = meta.get("fiftyTwoWeekHigh")
         low52 = meta.get("fiftyTwoWeekLow")
-        spark = spark_from(daily_closes)
+        spark = spark_from(closes_f)
     rec = {
         "symbol": symbol,
         "name": name,
@@ -394,7 +441,7 @@ def run_quotes(stop_after_quotes: bool = False) -> int:
             meta = daily.get("meta") or {}
             daily_bars = bars(daily, ohlc=True)
             closes = [b["c"] for b in daily_bars]
-            q = pack_quote(sym, meta, closes)
+            q = pack_quote(sym, meta, daily_bars)
             if not q:
                 errors.append(f"{sym}: no market price")
                 time.sleep(0.15)
@@ -410,7 +457,7 @@ def run_quotes(stop_after_quotes: bool = False) -> int:
                     intra = bars(raw_i, ohlc=False)
                     m2 = raw_i.get("meta") or {}
                     merged = {**meta, **{k: v for k, v in m2.items() if v is not None}}
-                    q2 = pack_quote(sym, merged, closes)
+                    q2 = pack_quote(sym, merged, daily_bars)
                     if q2:
                         q2["spark"] = q["spark"]
                         q = q2
@@ -429,11 +476,12 @@ def run_quotes(stop_after_quotes: bool = False) -> int:
                         q["price"] = ext_px
                         q["asOf"] = ext_t
                         q["session"] = sess
-                        # Change vs the official regular close (the after-hours move),
-                        # which is what brokers show once the extended session is the last print.
-                        if regular_close not in (None, 0):
-                            q["change"] = ext_px - regular_close
-                            q["changePct"] = q["change"] / regular_close * 100
+                        # Day change versus the previous official close, including
+                        # pre/post prints. regularChange* keeps the regular-session move.
+                        prev_c = q.get("prev")
+                        if prev_c not in (None, 0):
+                            q["change"] = ext_px - prev_c
+                            q["changePct"] = q["change"] / prev_c * 100
                     else:
                         q["session"] = "regular"
             except Exception as e:
